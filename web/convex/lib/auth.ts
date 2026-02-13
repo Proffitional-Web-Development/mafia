@@ -10,3 +10,7 @@ export async function requireAuthUserId(ctx: QueryCtx | MutationCtx) {
   }
   return userId;
 }
+
+export async function getOptionalAuthUserId(ctx: QueryCtx | MutationCtx) {
+  return getAuthUserId(ctx);
+}

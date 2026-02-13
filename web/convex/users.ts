@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { requireAuthUserId } from "./lib/auth";
+import { getOptionalAuthUserId, requireAuthUserId } from "./lib/auth";
 
 function normalizeUsername(username: string) {
   return username.trim().toLowerCase();
@@ -23,7 +23,11 @@ function validateUsername(username: string) {
 export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await requireAuthUserId(ctx);
+    const userId = await getOptionalAuthUserId(ctx);
+    if (!userId) {
+      return null;
+    }
+
     const user = await ctx.db.get(userId);
     if (!user) {
       throw new ConvexError("Authenticated user record not found.");

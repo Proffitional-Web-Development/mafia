@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export const ROOM_STATUSES = ["waiting", "in-game", "finished"] as const;
 export type RoomStatus = (typeof ROOM_STATUSES)[number];
@@ -36,6 +37,8 @@ export const ACTION_ROLES = ["sheikh", "girl", "boy"] as const;
 export type ActionRole = (typeof ACTION_ROLES)[number];
 
 export default defineSchema({
+  ...authTables,
+
   users: defineTable({
     name: v.optional(v.string()),
     email: v.optional(v.string()),
