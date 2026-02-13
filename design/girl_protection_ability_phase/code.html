@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Girl Protection Ability Phase</title>
+<!-- Google Fonts: Space Grotesk -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8311d4",
+                        "primary-dark": "#5e0b96",
+                        "primary-light": "#a345e6",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1a1022",
+                        "success-glow": "#22c55e",
+                        "neutral-surface": "#2d2038",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar for hidden feel */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Pulse Background Effect */
+        .bg-pulse-radial {
+            background: radial-gradient(circle at center, rgba(131, 17, 212, 0.15) 0%, rgba(26, 16, 34, 0) 70%);
+            animation: pulse-opacity 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Selection Ring Animation */
+        .selection-ring {
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.5), inset 0 0 10px rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-white h-screen overflow-hidden flex flex-col relative selection:bg-primary selection:text-white">
+<!-- Ambient Background Effects -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-pulse-slow"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary/10 rounded-full blur-[80px] animate-pulse-slow" style="animation-delay: 1.5s;"></div>
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+</div>
+<!-- Header Section -->
+<header class="relative z-10 pt-12 pb-4 px-6 flex flex-col items-center justify-center shrink-0">
+<!-- Role Badge -->
+<div class="flex items-center gap-2 bg-neutral-surface/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-primary/30 shadow-lg mb-4 animate-float">
+<span class="material-icons-round text-primary text-xl">medical_services</span>
+<span class="text-sm font-bold tracking-widest uppercase text-primary-light">The Girl</span>
+</div>
+<!-- Timer & Phase -->
+<div class="w-full flex justify-between items-end mb-2">
+<div>
+<h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">Night Phase</h1>
+<p class="text-white/60 text-sm">Use your ability wisely.</p>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-xs text-primary-light uppercase font-bold tracking-wider mb-1">Time Left</span>
+<div class="text-2xl font-mono font-bold text-white tabular-nums tracking-tight">00:15</div>
+</div>
+</div>
+<!-- Progress Bar for Timer -->
+<div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[45%] rounded-full shadow-[0_0_10px_rgba(131,17,212,0.8)]"></div>
+</div>
+</header>
+<!-- Main Content: Instruction & Grid -->
+<main class="relative z-10 flex-1 overflow-y-auto no-scrollbar px-6 pb-24">
+<div class="text-center py-6">
+<p class="text-xl font-medium text-white/90">Choose a player to protect tonight</p>
+<p class="text-sm text-white/40 mt-1">If the Mafia attacks them, they will survive.</p>
+</div>
+<!-- Players Grid -->
+<div class="grid grid-cols-2 gap-4 pb-8">
+<!-- Player Card 1 (Selected) -->
+<div class="group relative bg-neutral-surface/60 backdrop-blur-sm border-2 border-primary/30 rounded-xl p-4 flex flex-col items-center gap-3 transition-all duration-300 transform scale-[1.02] selection-ring cursor-pointer">
+<div class="absolute -top-3 -right-3 w-8 h-8 bg-success-glow rounded-full flex items-center justify-center shadow-lg z-20 animate-bounce">
+<span class="material-icons-round text-white text-sm font-bold">shield</span>
+</div>
+<div class="relative w-20 h-20 rounded-full p-1 border-2 border-success-glow overflow-hidden">
+<img alt="Portrait of a young woman with a serious expression" class="w-full h-full object-cover rounded-full grayscale-[20%]" data-alt="User Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4OgbH_tWI_2d2auW6flHJFcahH6E7q11L4t2vVbcroTPFkPHktpLx6fmepis1xOM3lnWYH01Jo_bPiJJiqelpy1K7KFW63Q4wwlcJEywkQCckH4WtpXuk_7RjZj-Q8up0mg6Od5PAN7Bq0O4t9iXsFg52Kh_S5L1OC-9YByjv-YNIgPD4b2XViYTZJ24QsU1Q5HGcDJ94k178wo18ap-bY4w8dICY4AxaI0xm-axTbRwv3aGoR3ENO5Co0__EKbc0wNP7QcS9QkAZ"/>
+</div>
+<div class="text-center">
+<h3 class="font-bold text-white text-lg leading-tight">Sarah J.</h3>
+<span class="text-xs text-success-glow font-medium uppercase tracking-wider">Protecting</span>
+</div>
+<!-- Selection Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-b from-success-glow/5 to-success-glow/10 rounded-xl pointer-events-none"></div>
+</div>
+<!-- Player Card 2 (Normal) -->
+<div class="group relative bg-neutral-surface/40 backdrop-blur-sm border border-white/5 rounded-xl p-4 flex flex-col items-center gap-3 transition-all duration-200 active:scale-95 hover:bg-neutral-surface/60 cursor-pointer">
+<div class="relative w-20 h-20 rounded-full p-0.5 border border-white/20 overflow-hidden group-hover:border-primary/50 transition-colors">
+<img alt="Portrait of a man looking sideways" class="w-full h-full object-cover rounded-full grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Player Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBXnB03fIP2RIb8wfGpfziqmJG2ZY6as3I14yaB19FCz6kfH1zIUYb9jVTGSLidx7TqlORMCcRu32iWzW6IagogR5WZpndIkd_yFCwBur_GynVsIgyfHQD__e5Ua0YXLHvUdCaoPPv-jlohLmcMy8nDgZOVlZm4uNvhEYsWS2jH-sLjmQBtl55Dejl7uY9pGsJ14QiLakUAsL8m14dZYri8qNHMuVUhFrnz_8qV2O9EAdQxGhkVAPfXNrBdCvWV3itwGX8hTcCWiYz"/>
+</div>
+<div class="text-center">
+<h3 class="font-medium text-white/60 group-hover:text-white transition-colors text-lg leading-tight">Mike R.</h3>
+<span class="text-xs text-white/30 font-medium uppercase tracking-wider">Player 2</span>
+</div>
+</div>
+<!-- Player Card 3 (Self) -->
+<div class="group relative bg-neutral-surface/40 backdrop-blur-sm border border-white/5 rounded-xl p-4 flex flex-col items-center gap-3 transition-all duration-200 active:scale-95 hover:bg-neutral-surface/60 cursor-pointer">
+<div class="absolute top-2 left-2 px-2 py-0.5 bg-white/10 rounded text-[10px] text-white/60 font-bold uppercase tracking-wide">You</div>
+<div class="relative w-20 h-20 rounded-full p-0.5 border border-white/20 overflow-hidden group-hover:border-primary/50 transition-colors">
+<img alt="Portrait of a woman with red ambient light" class="w-full h-full object-cover rounded-full grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Player Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHsUoxJ9_1j-_oEDFJHlJ5g_wCGUlOIHs5LDXS1dfR-sdItl0v8C3ZU-PPvSK0Qhr8i4bVR1BKHQ4booN1gsSO260A1HtbeKMw0CI-oGlwlw1UAmCazhWeTA1gEbinCMxmtGd0tHoYfjrw652q_3rIQi4kG2FrWMtxMUeqh4TgcDyq73TZDRQFosTky8P2QLveDWFh5ETRL0Qn5L5BzlcNtdjuBlsFJv3Pj4bnKLrAx0DJznUwBar5kzLWh2H2T60jiXk-HN8cbd4e"/>
+</div>
+<div class="text-center">
+<h3 class="font-medium text-white/60 group-hover:text-white transition-colors text-lg leading-tight">Jessica</h3>
+<span class="text-xs text-white/30 font-medium uppercase tracking-wider">Player 3</span>
+</div>
+</div>
+<!-- Player Card 4 (Normal) -->
+<div class="group relative bg-neutral-surface/40 backdrop-blur-sm border border-white/5 rounded-xl p-4 flex flex-col items-center gap-3 transition-all duration-200 active:scale-95 hover:bg-neutral-surface/60 cursor-pointer">
+<div class="relative w-20 h-20 rounded-full p-0.5 border border-white/20 overflow-hidden group-hover:border-primary/50 transition-colors">
+<img alt="Portrait of a smiling man" class="w-full h-full object-cover rounded-full grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Player Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq2vUxop9b9h6apcfivNVh0XIOXEZqj82YmA1cUoDj2CDUx5t6WQIucRKBcU0sPUy6wpNs7j-252UCB4G-3bhQzWrS_Id_EGOxNZ3s7ryiLcQSqR3z8ckLmVeON1XOBlxzW5-_gy4ZreYr3lZhUn66DTCvLlG9mvMrFGq9zxD2YUNpl-ZgM98YO0NbaATjmzU5zHYcweuFMZptT3BPYCKfOczD8uDUHSEP4kHRi3dIWa34xU9-xxDosEH3xM1GFFyqeXe4rqt9Lj3_"/>
+</div>
+<div class="text-center">
+<h3 class="font-medium text-white/60 group-hover:text-white transition-colors text-lg leading-tight">Alex K.</h3>
+<span class="text-xs text-white/30 font-medium uppercase tracking-wider">Player 4</span>
+</div>
+</div>
+<!-- Player Card 5 (Normal) -->
+<div class="group relative bg-neutral-surface/40 backdrop-blur-sm border border-white/5 rounded-xl p-4 flex flex-col items-center gap-3 transition-all duration-200 active:scale-95 hover:bg-neutral-surface/60 cursor-pointer">
+<div class="relative w-20 h-20 rounded-full p-0.5 border border-white/20 overflow-hidden group-hover:border-primary/50 transition-colors">
+<img alt="Portrait of a woman outdoors" class="w-full h-full object-cover rounded-full grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all" data-alt="Player Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYSOqd1CKV6v4fCSx_Q3tfYbEazcPuQUmxBHBDts42JNsF98TjcGiHBIkOYDDnVqyPCBL0BJbeZ1wG3dVPvBFa2_JVdAA-t6S7X2tB-pTnpec0d5vKOkKBUiy--Zju4f_VXRqn9RvvTMyHoFCdCZmausIGX-2kdRQUVPRaYfUyhFOLfCUglarlSzPzS3gn4IFtG7KKaLgvt5BhkSI-w7yOCIqTIUnjFDXbWSZtHehRmdpb9quhWNUJy25BJOZEtHvPYnoIIyyhFU3i"/>
+</div>
+<div class="text-center">
+<h3 class="font-medium text-white/60 group-hover:text-white transition-colors text-lg leading-tight">Emily W.</h3>
+<span class="text-xs text-white/30 font-medium uppercase tracking-wider">Player 5</span>
+</div>
+</div>
+<!-- Player Card 6 (Dead - Disabled) -->
+<div class="relative bg-neutral-surface/20 border border-white/5 rounded-xl p-4 flex flex-col items-center gap-3 opacity-50 cursor-not-allowed">
+<div class="absolute inset-0 flex items-center justify-center z-10">
+<span class="bg-black/80 text-white text-xs px-3 py-1 rounded border border-white/10 uppercase font-bold tracking-widest">Eliminated</span>
+</div>
+<div class="relative w-20 h-20 rounded-full p-0.5 border border-white/5 overflow-hidden">
+<img alt="Portrait of a smiling woman" class="w-full h-full object-cover rounded-full grayscale blur-[2px]" data-alt="Player Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-z4usfYLl_I3mBjt17DJc6IB_qD8Ybpt_GPhKwm8nbPnk1K9QhNztj5f1A-1dRlpQoHLbFOF2xGZzSqIklmdpquG8Gox4sMzn_lePzMdUDLjD5Yh2NL8cc5tRHIEJnUh8e6sqX62I1vbO0FvKS0ySVnBmXrHooaLNJB9oJLcSARU1T0SAB_9xCelDnHd05G03DxRFiYH4usmYIAxTN3u6X4y_aBW2xiIEsi-jIkzMcf17ajqtdOgRiFhZxBm72Jrju8WG_DqVr-Il"/>
+</div>
+<div class="text-center">
+<h3 class="font-medium text-white/30 text-lg leading-tight">Maria</h3>
+<span class="text-xs text-white/10 font-medium uppercase tracking-wider">Player 6</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Action -->
+<div class="fixed bottom-0 left-0 right-0 p-6 z-50 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent pb-8">
+<button class="w-full bg-primary hover:bg-primary-light active:bg-primary-dark text-white font-bold text-lg py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(131,17,212,0.4)] hover:shadow-[0_0_30px_rgba(131,17,212,0.6)] transition-all transform active:scale-[0.98] flex items-center justify-center gap-3">
+<span class="material-icons-round">local_hospital</span>
+            Protect Sarah J.
+        </button>
+</div>
+<!-- Hidden State: Success Modal Overlay (Simulated as hidden by default, uncomment or toggle visibility to see) -->
+<!-- 
+    <div class="fixed inset-0 z-[60] bg-background-dark/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 animate-fade-in">
+        <div class="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-6 relative">
+            <div class="absolute inset-0 rounded-full border-4 border-primary/40 border-t-primary animate-spin"></div>
+            <span class="material-icons-round text-primary text-4xl">check</span>
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-2 text-center">Protection Submitted</h2>
+        <p class="text-white/50 text-center max-w-xs">Your choice has been locked in. Waiting for other players to finish their night actions...</p>
+        
+        <div class="mt-12 flex items-center gap-2 text-white/30 text-sm">
+            <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+            Waiting for server...
+        </div>
+    </div> 
+    -->
+</body></html>

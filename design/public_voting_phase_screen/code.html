@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Public Voting Phase - Mafia Game</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#8311d4",
+                "background-light": "#f7f6f8",
+                "background-dark": "#1a1022",
+                "surface-dark": "#2d1b36", 
+                "surface-dark-lighter": "#3e254a",
+              },
+              fontFamily: {
+                "display": ["Space Grotesk", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+              boxShadow: {
+                  "glow": "0 0 15px rgba(131, 17, 212, 0.6)",
+                  "glow-strong": "0 0 25px rgba(131, 17, 212, 0.8)",
+              }
+            },
+          },
+        }
+      </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Pulse animation for the timer */
+        @keyframes pulse-red {
+            0%, 100% { color: #ef4444; }
+            50% { color: #ffffff; }
+        }
+        .timer-urgent {
+            animation: pulse-red 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 h-screen w-screen overflow-hidden flex flex-col relative selection:bg-primary selection:text-white">
+<!-- Background Pattern/Effect -->
+<div class="absolute inset-0 z-0 opacity-10 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary via-background-dark to-background-dark"></div>
+<!-- Header Section: Timer & Title -->
+<header class="relative z-10 px-6 pt-8 pb-4 flex flex-col items-center justify-center shrink-0">
+<h1 class="text-lg font-medium text-gray-400 uppercase tracking-widest mb-2">Public Execution</h1>
+<!-- Timer Display -->
+<div class="flex items-center justify-center space-x-2">
+<span class="material-icons text-primary animate-pulse">timer</span>
+<span class="text-5xl font-bold tracking-tighter tabular-nums timer-urgent">00:45</span>
+</div>
+<p class="text-sm text-gray-500 mt-2">Tap a player to cast your suspicion</p>
+<!-- Progress Bar -->
+<div class="w-full h-1.5 bg-surface-dark rounded-full mt-6 overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-purple-400 w-3/4 rounded-full"></div>
+</div>
+</header>
+<!-- Main Content: Player Grid -->
+<main class="flex-1 overflow-y-auto no-scrollbar px-4 pb-32 pt-2 relative z-10">
+<!-- Grid Layout -->
+<div class="grid grid-cols-2 gap-4 pb-4">
+<!-- Card 1: Standard State -->
+<button class="group relative flex flex-col items-center bg-surface-dark rounded-xl p-4 transition-all duration-200 active:scale-95 border border-white/5 hover:border-white/10">
+<div class="relative mb-3">
+<img alt="Avatar of user SussyBaka" class="w-20 h-20 rounded-full object-cover border-2 border-surface-dark-lighter shadow-lg" data-alt="Young man avatar with neutral expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI4Pdh5gEQhE01ccpR2u4VYuUE9cNnB6FFI6wmvupq7hXFeeTgxWBP0VF3g3tVn1_79eYmDfmp-UGu6_-ZzVQhkN88NiyV548j2V6c2R18M5VNi0A-lWvE3CxADxvbSzQtvq_gnc98Ria7gYYYGrJkVJy1yTK911l2nCDxU9JcaKfQaUM8zRFMx7QAjtE4vWM2HnDPLgLNWvYUPM8UqeeVIJ36N3KSdvBYoQxNEhnYGnvJrXRIYHYuxvuOseSN1aMH03AqUjbVvCsp"/>
+<!-- Vote Badge -->
+<div class="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-surface-dark shadow-md">
+                        2
+                    </div>
+</div>
+<h3 class="font-bold text-lg truncate w-full text-center">SussyBaka</h3>
+<!-- Voters Row -->
+<div class="flex -space-x-2 mt-3 h-6 items-center justify-center">
+<img alt="Voter 1" class="w-6 h-6 rounded-full border-2 border-surface-dark" data-alt="Small avatar of a smiling woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXDw70pLjQuyx5zjjPmIgaCA3nJXkz2ka1ntqBEswIDUfFbWhuvf4VgHI1BXBa35UPkuljL86YJdqM98ZEWsOQ-XV664Ksi80L8N_amju20QBNPt7flLdECElbNNkJYWsDm2ERpQdg-nB-kW6Q8JopYi9OC68UUWyA3EyuMTY-Ct_rzzyWPOMHmTCnPFerixLB1bk4b06wvBm4f9D2aWQSCaactDI1p7-Ho1wUn7nRrZ5ynN8AtwhgYeVbX76Bbl70O2a8z7_441Wk"/>
+<img alt="Voter 2" class="w-6 h-6 rounded-full border-2 border-surface-dark" data-alt="Small avatar of a man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8WxsZpOMBWSCRRloMTv6M5oN_BszBCAfs-iMd7K3ikZYLO0oBrmm0-VftoJKNDuYYf8UruH1WcV3aekoJnEAfVc_8z73I9TJwXoo627ZaPWLVNYMqTb642rxJMzBZgyXVhYf9VLjE5YyxRab5dbuofqikatj6hurydSEmgvH7fXdHueFatBcDFnn87Mw293UGRH1A4pWCLEUM9szHNLjKVjWjYeZYm2MvXnC3oJl3M64ObF_apVN8cy1Utvh4yo5Caok-JYTCUDAT"/>
+</div>
+</button>
+<!-- Card 2: Selected State -->
+<button class="group relative flex flex-col items-center bg-surface-dark rounded-xl p-4 transition-all duration-200 border-2 border-primary shadow-glow transform scale-[1.02]">
+<div class="absolute top-2 right-2 text-primary">
+<span class="material-icons text-xl">check_circle</span>
+</div>
+<div class="relative mb-3">
+<img alt="Avatar of user MafiaDon" class="w-20 h-20 rounded-full object-cover border-2 border-primary shadow-lg" data-alt="Man with beard avatar looking serious" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQQY9KpCrs791VsqsBZsaPbnmU9v4zYTYB6h9pt-q-mjgHjkgKXfOWsCxQiZfw1s0vcJwPcPaUJGs6vpdYiMrWyvzwLrSXPVALgQJJr20N67r94bO4ZiTKYdFDik1qjtR1jja6fJXUZG-sJSQpteCR7J626hjgIW4w7cuSmeSmFYh-HDE7D52jxvTiZroha25s1EGDqqz2euHFOPDiS3usRT7LrfYhA4iAYJB1avLRVlJJtk-rdWCcrKufw_7a0U5cjmZEkhbvuAyD"/>
+<!-- Vote Badge High -->
+<div class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-surface-dark shadow-md animate-bounce">
+                        5
+                    </div>
+</div>
+<h3 class="font-bold text-lg truncate w-full text-center text-primary">MafiaDon</h3>
+<!-- Voters Row (Truncated) -->
+<div class="flex -space-x-2 mt-3 h-6 items-center justify-center">
+<img alt="Voter 1" class="w-6 h-6 rounded-full border-2 border-surface-dark" data-alt="Small avatar of a woman with curly hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDZFw8wZUHyOfekP1Yk0o2sL8zsUT8uxKCuwqQyc6XFy47fSbHnZ_oCfbp0n67pKxswixCpZpUVqT-G_e8swJvNFW_QG7CQusuz5RUQdLzWUMeRbMZ0V-HHw2DypBkWmOLU76M2CNirZNREttXo8qTYj6WjNfFdI3tgUdGJpAkKjcMtANT8FhmWphbEDiX9QlVI86fTxWTCKx4ipF4rkwHF0auDUNfBKwAaen6eUmCXunvSkuAlo5qbbNsWTxAtJP4a-ypJf8mAP5R"/>
+<img alt="Voter 2" class="w-6 h-6 rounded-full border-2 border-surface-dark" data-alt="Small avatar of a man looking left" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg12EVvQfHRK3AkGlBMSN2q_bNe6e79HA0i1P9HuENG-0FqZs0eNSSTRoJCCDJPl8LdDKNVXxQD9Xz9nAcsVGLw_H01f5hlAyUJKrAxrxeajFn2hHOZf3c9uzvVvTEfRYCCo7vaQ2ArEJAokY9He5Js85uU3I7ExVXslX_bvyIa79OtoS7NaCoOZivh-ZyT427kACCRHeAl-kuULdEW2Q5NOFGThECCakfOJigtrbJkSPrRoQcw0_m2A1aQp_GlR9Vi9bHClzUC4ts"/>
+<img alt="Voter 3" class="w-6 h-6 rounded-full border-2 border-surface-dark" data-alt="Small avatar of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs6gExPIRzx5Xbe4u31DzX2Ud2prtsZVJY4scQKZVDNFRf3WPQcIZUDA5c2waO_mWXt6o2rEVlbfS9j4SiC3bML_o0eCY0HxazMga0L_Lc9rcD1zjKkLdC_i92R4kxBXxIdP8PkABIHYcfOiPX6zJHcz68B2msZ_IN_aLy2q8LA06deGBwnK5MHOdDwTeOUCxUohFfY0P5zwRXCZcbRLm1BEQ8AKn6Lh_YcrtP1uDz6L8POyLnyMFbySULyAYRN_UhDjuCcDODVz4D"/>
+<div class="w-6 h-6 rounded-full border-2 border-surface-dark bg-surface-dark-lighter text-[10px] flex items-center justify-center text-gray-300 font-bold">+2</div>
+</div>
+</button>
+<!-- Card 3 -->
+<button class="group relative flex flex-col items-center bg-surface-dark rounded-xl p-4 transition-all duration-200 active:scale-95 border border-white/5 hover:border-white/10 opacity-75">
+<div class="relative mb-3">
+<img alt="Avatar of user InnocentGirl" class="w-20 h-20 rounded-full object-cover border-2 border-surface-dark-lighter shadow-lg grayscale-[0.3]" data-alt="Woman avatar with bright smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd_bHhNjoDL7QhLnhdhNzsJGrpvZjO-748xXBqzy3SEgaKlRE4vC014fGcYxi8PViS02XvsUBCqwzVnSRsTIxmYL9vYUVrihBPISCb79y0NYN7uFU9lEVcm98M9zR2JCXLAYHEiKwbVMK6mhuR-tguGGiJzc4lhLhVRH-zEkKsHJ0p9FcY7DbYQzrk_JdVHL30gbISVxxyixpYCxtuTl7kiwB2jVuqO610jUUjjWfbaPHqSOOZEZqcTnM8f2BI64jLccKAZsz8p-La"/>
+</div>
+<h3 class="font-bold text-lg truncate w-full text-center text-gray-300">InnocentGirl</h3>
+<!-- No Voters -->
+<div class="flex mt-3 h-6 items-center justify-center">
+<span class="text-[10px] text-gray-600 uppercase tracking-wide">No Votes</span>
+</div>
+</button>
+<!-- Card 4 -->
+<button class="group relative flex flex-col items-center bg-surface-dark rounded-xl p-4 transition-all duration-200 active:scale-95 border border-white/5 hover:border-white/10">
+<div class="relative mb-3">
+<img alt="Avatar of user DetectiveX" class="w-20 h-20 rounded-full object-cover border-2 border-surface-dark-lighter shadow-lg" data-alt="Digital avatar character with sunglasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhUNXA2n2UtkA7zSIcRNbrhw6hIvCuV-hyEwqRXzSLTtTNuy90vgyWRZvwPomHNgrVgXZujy-pR0CGWBm8DC-ypQRX5M6mc0tVGSTEYfYDOQ3NDNfPWBeMF2PjPNX-asb6nUmjT5YwGbHPqWAxHQ9gQZ8oKtlmTRqoUtOFBEUi782JtngW9XHzxWHbj04RXmoEOacsUYCM3k5fdwW81kKbkHldU4eewg3nw7pYklFWCzLh6Fy9YEykHOKLGMfVIJIO-fF750aLHTA-"/>
+<!-- Vote Badge -->
+<div class="absolute -top-1 -right-1 bg-primary/80 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full border-2 border-surface-dark shadow-md">
+                        1
+                    </div>
+</div>
+<h3 class="font-bold text-lg truncate w-full text-center">DetectiveX</h3>
+<!-- Voters Row -->
+<div class="flex -space-x-2 mt-3 h-6 items-center justify-center">
+<img alt="Voter 1" class="w-6 h-6 rounded-full border-2 border-surface-dark" data-alt="Small avatar of a man in suit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBICG8_HsPHnCQrHdFaZ0mmJYYKJujbtPfpSZUL9ISl47enpD0mOxCOWgGjUtYQhamCExao4BfC7EjSrHXA1sI6i9TfyMSlGJe4wPDDQwucklUCHjfiksDVe7s6l2iHt9jk5ZAE0c--UZLb-x0IfJjCjLihJCBXRdABtmi655crJ5VN8hR6vmDgzq9s74suirLdpMghRxQ0Ly9NYbpajt-cvYgMlB2anDDte1IhjBKa3lrsFVLITU_vmcJAddBSQRkgwEz3OlE3M06X"/>
+</div>
+</button>
+<!-- Card 5 -->
+<button class="group relative flex flex-col items-center bg-surface-dark rounded-xl p-4 transition-all duration-200 active:scale-95 border border-white/5 hover:border-white/10">
+<div class="relative mb-3">
+<img alt="Avatar of user DoctorWho" class="w-20 h-20 rounded-full object-cover border-2 border-surface-dark-lighter shadow-lg" data-alt="Woman looking stern avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnlfsWAuB3QTURyF34h4J-_cK73NfltzjOnlaZaeJtlBQVNiBKTYFWh73LEq8KBysVjYNeTvpCCVCrZd2c7kO1XxpITEzrNgaVrvGrJNCEC8u7u3tWClSJzT3Wz03CzvpGv-M0qnP065scb-wmnhXAg6nUhY4-sRf_fx0ZJ8DFrTqJ5ll3KEzpTMFaVFmqDGDSg_mhsv0pQGmEbrsXS0g2MP-f9cA672qoJhpapKF8KL5zcx5mABXJkt6EREFal5UrR6dGW1H7kQSd"/>
+</div>
+<h3 class="font-bold text-lg truncate w-full text-center">DoctorWho</h3>
+<!-- No Voters -->
+<div class="flex mt-3 h-6 items-center justify-center">
+<span class="text-[10px] text-gray-600 uppercase tracking-wide">No Votes</span>
+</div>
+</button>
+<!-- Card 6 -->
+<button class="group relative flex flex-col items-center bg-surface-dark rounded-xl p-4 transition-all duration-200 active:scale-95 border border-white/5 hover:border-white/10">
+<div class="relative mb-3">
+<img alt="Avatar of user AverageJoe" class="w-20 h-20 rounded-full object-cover border-2 border-surface-dark-lighter shadow-lg" data-alt="Man portrait looking up" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAskvOcaadm9wvLl9YfX2r8MNZmCYKIb9pcmHOdqra9KH594QjdQHAxl7TVSNlddlAMEOxDTIuZe4fbKrHRjOJ_uqhmGrt6tiLywZ5tWG7e7EJoFtIW_QCrd7pBqm8gSWY0D_NWSYvSd9bhxEBskmjoQrVln9J-WlraV-WEuRtlb_Q4jWoWatA4UbSbvNX6BvSlj4RsSppDKgHhnz5BRYLVAwA9k3OXGxjMbj0aTMtOf503rsFwz4_gwfAY51AiDSg8wJB82VtYx_bT"/>
+</div>
+<h3 class="font-bold text-lg truncate w-full text-center">AverageJoe</h3>
+<!-- No Voters -->
+<div class="flex mt-3 h-6 items-center justify-center">
+<span class="text-[10px] text-gray-600 uppercase tracking-wide">No Votes</span>
+</div>
+</button>
+</div>
+<!-- Skip Button (Inside scroll area but at bottom) -->
+<div class="mt-4 px-2">
+<button class="w-full py-4 rounded-xl border-2 border-dashed border-gray-600 text-gray-400 font-bold uppercase tracking-wider hover:bg-white/5 hover:text-white hover:border-gray-400 transition-colors flex items-center justify-center gap-2">
+<span class="material-icons text-xl">block</span>
+                Skip Vote
+            </button>
+</div>
+</main>
+<!-- Bottom Actions Layer -->
+<div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent z-20 pointer-events-none">
+<!-- Owner Action Button (Visible only to owner) -->
+<!-- Pointer events auto enables clicking on the button even if container is none -->
+<div class="pointer-events-auto">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold text-lg py-4 rounded-xl shadow-glow-strong flex items-center justify-center gap-2 transition-transform active:scale-95">
+<span class="material-icons">gavel</span>
+                Confirm Results
+            </button>
+<p class="text-center text-xs text-primary/60 mt-2 font-medium">Only the Room Owner can end voting early</p>
+</div>
+</div>
+</body></html>

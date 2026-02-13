@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Game - Discussion Phase</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8311d4",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1a1022",
+                        "surface-dark": "#2d1b36",
+                        "surface-darker": "#23152b",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px #8311d4' },
+                            '100%': { boxShadow: '0 0 20px #8311d4, 0 0 10px #8311d4' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8311d4; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b0ea3; 
+        }
+        
+        /* Pulse animation for the timer ring */
+        .timer-pulse {
+            box-shadow: 0 0 0 0 rgba(131, 17, 212, 0.7);
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(131, 17, 212, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 15px rgba(131, 17, 212, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(131, 17, 212, 0);
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 h-screen flex flex-col overflow-hidden selection:bg-primary selection:text-white">
+<!-- Header Section -->
+<header class="flex-none pt-6 pb-4 px-6 relative z-10 bg-gradient-to-b from-background-dark via-background-dark to-transparent">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-icons text-primary/70 text-sm">public</span>
+<span class="text-xs uppercase tracking-widest text-primary/70 font-bold">Global Chat</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-dark rounded-full border border-primary/20">
+<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+<span class="text-xs font-medium text-slate-300">Live Phase</span>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center mt-4">
+<h1 class="text-xl font-bold text-white mb-4 tracking-tight">Discussion Round 1</h1>
+<!-- Timer Component -->
+<div class="relative group cursor-default">
+<div class="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse-slow"></div>
+<div class="timer-pulse relative w-24 h-24 bg-surface-darker border-2 border-primary rounded-full flex items-center justify-center z-10 shadow-[0_0_30px_rgba(131,17,212,0.3)]">
+<div class="text-center">
+<span class="block text-2xl font-bold text-white leading-none">01:45</span>
+<span class="text-[10px] text-primary/80 font-medium uppercase tracking-wide">Remaining</span>
+</div>
+</div>
+</div>
+<p class="text-center text-sm text-slate-400 mt-4 max-w-xs mx-auto leading-relaxed">
+                Discuss who is acting suspicious. Accusations open in 2 minutes.
+            </p>
+</div>
+</header>
+<!-- Main Content: Player Grid -->
+<main class="flex-1 overflow-y-auto px-4 py-2 pb-32">
+<div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+<!-- Player Card: Speaking -->
+<div class="relative group">
+<div class="absolute inset-0 bg-primary/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative bg-surface-dark border-2 border-primary rounded-xl p-3 flex flex-col items-center gap-2 shadow-lg transition-transform active:scale-95">
+<div class="absolute top-2 right-2">
+<span class="flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+</span>
+</div>
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-primary p-0.5 overflow-hidden">
+<img alt="Avatar of Player One" class="w-full h-full object-cover rounded-full" data-alt="Young man avatar portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMMmpO0JLU5eKkhLfH1-42JqD4wygPNT2P-UAN-hASgJT9ZnzEJgbTKZ22Aaz389xlN97PPtIR6xj3R4cnNejCqHm8nMef7e7NOe_y18Qg1A2TG9h8Bd3Bmz3kHox6wqiFpUs30Rcl1gz8nX4abggal0SY5o3BlA35zD9zi8Voc4oZDvqlFJxfc62sGhv596kM-Qrk3h_wJzb4_zl91bdCs3lDZA744nkl0X-00R2_h0qfDuTVUlaw8iCFPaUi0byktVIQj3ScIbTY"/>
+</div>
+<div class="text-center">
+<p class="font-bold text-sm text-white truncate w-24">AlexTheDon</p>
+<span class="text-[10px] text-primary font-medium flex items-center justify-center gap-1">
+<span class="material-icons text-[12px]">mic</span> Speaking
+                        </span>
+</div>
+</div>
+</div>
+<!-- Player Card: Silent -->
+<div class="relative group">
+<div class="relative bg-surface-dark border border-white/5 rounded-xl p-3 flex flex-col items-center gap-2 shadow-lg hover:border-white/20 transition-all">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden opacity-90">
+<img alt="Avatar of Player Two" class="w-full h-full object-cover rounded-full" data-alt="Young woman avatar smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw-9Y4Dq7OWAQ9ik4fQN1cUA3V-BbdkheoWG1GS_3DgjoiXoTeeXSnzehH6Utf5Q6uUkd4kjzyxc7CN71MXEcomryqoV-j0791tyheXsSvIJNz8MRn2yHxS57LFufP2gjV0Hlu96IxjigMlZR1w-houdzVJ786Eb3xzVNVviWRqfkGrF06ph2cTHh2RQLNVVqBJaI4BQa8DE5BRWb93U4zhMl7Ot5J9jAsKRu4zo-H5FjuQURXublXre-dsr82_tW56WWz13VxD1iv"/>
+</div>
+<div class="text-center">
+<p class="font-medium text-sm text-slate-200 truncate w-24">MysticMia</p>
+<span class="text-[10px] text-slate-500 font-medium block h-4"></span>
+</div>
+</div>
+</div>
+<!-- Player Card: Silent -->
+<div class="relative group">
+<div class="relative bg-surface-dark border border-white/5 rounded-xl p-3 flex flex-col items-center gap-2 shadow-lg hover:border-white/20 transition-all">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden opacity-90">
+<img alt="Avatar of Player Three" class="w-full h-full object-cover rounded-full" data-alt="Man with glasses avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnV_XII0ClCb9G_Ji0N8lpc0M9QNTd277UNAW7ffEjDDLikteEAp2yudI82rgjJ6NxrQ8_HxfTWAA-_jISdbBV06m7UXgdNUcm1t-vS543_ynGBw5hQ3PWGrnFPhPldpm7nSwmXAkPoGOtl6o69u587sR2nerQdVXX0hvZWC-d-MGjDpOs-oVZWCeQb_xVaA8zbBCv5lZTaK_nT90eCe7jzz8n1tzZ_yOhq6Dit5OmMpR8tbeIIJeBfgwx2tccBFr6RQSouxEtLrlm"/>
+</div>
+<div class="text-center">
+<p class="font-medium text-sm text-slate-200 truncate w-24">DetectiveX</p>
+<span class="text-[10px] text-slate-500 font-medium block h-4"></span>
+</div>
+</div>
+</div>
+<!-- Player Card: User (Me) -->
+<div class="relative group">
+<div class="relative bg-surface-dark/50 border border-primary/50 rounded-xl p-3 flex flex-col items-center gap-2 shadow-lg bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+<div class="absolute top-0 right-0 bg-primary text-white text-[9px] px-1.5 py-0.5 rounded-bl-lg rounded-tr-lg font-bold">YOU</div>
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary/80 to-purple-900 overflow-hidden ring-2 ring-primary/30">
+<img alt="Avatar of User" class="w-full h-full object-cover rounded-full" data-alt="Man with beard avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY_QWxhhJSteO2D6p84vEuNwANdDgO3VBi7VdmYyqSBBFOengaoVsphbly0YbKhHJZaF-tkHjZWUMOs_HqGa0CrFrEufRXQPgZpmasBzNdvEILlEsYuM0KoG4pHr_sqQSIUfuhzdvoFdJdaXERcI1lLh_UzevpaFaMu3IwnxNiPUofGlT8HIAgwr6cwmt1oYu7W2MnzcTj-ZOcym3AfCIyd2YYDtBB_3CbMlJNYhUF9CoGPhHkDdWOi_ubhGMz1z7WLtwsGY1icnjM"/>
+</div>
+<div class="text-center">
+<p class="font-bold text-sm text-primary truncate w-24">VitoScaletta</p>
+<span class="text-[10px] text-slate-500 font-medium block h-4"></span>
+</div>
+</div>
+</div>
+<!-- Player Card: Silent -->
+<div class="relative group">
+<div class="relative bg-surface-dark border border-white/5 rounded-xl p-3 flex flex-col items-center gap-2 shadow-lg hover:border-white/20 transition-all">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden opacity-90">
+<img alt="Avatar of Player Five" class="w-full h-full object-cover rounded-full" data-alt="Woman with dark hair avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaainYgEi7PtFgsEg3GJkvfLl_KbFDSkMrmqO-hqagKl4ov9Qm_deAd6SOwdYxYapsBE0GhiNyhkMgSODiAjX3bINe2kuUN8nK8Sd8XhCxdBLWMjYFaEv5yUPTVYjZH9ze8xaQx9RvBebzhlKny8DGtuFQmBZLOTSHMYPKDyYYIJN5JTKHdZ0wnRyyRUd46YAJh2XCp3RMdKxer6ONwJ4wllZP9GcJbj0YLU3yqllY7oZwj3P9Fs4iZJ_MFRvofxJYvUgpV4z2jPGM"/>
+</div>
+<div class="text-center">
+<p class="font-medium text-sm text-slate-200 truncate w-24">SilentBob</p>
+<span class="text-[10px] text-slate-500 font-medium block h-4"></span>
+</div>
+</div>
+</div>
+<!-- Player Card: Silent -->
+<div class="relative group">
+<div class="relative bg-surface-dark border border-white/5 rounded-xl p-3 flex flex-col items-center gap-2 shadow-lg hover:border-white/20 transition-all">
+<div class="w-14 h-14 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden opacity-90">
+<img alt="Avatar of Player Six" class="w-full h-full object-cover rounded-full" data-alt="Man with serious face avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6wCkGz9ZlG5a810XUkjSxOdZwLEXvtr0Qbftl__ukRcL6nw0FOHeatNJErEiPiQSrHoH2tRsEnVtRJ870UoGkn5RQyxenRSHip5FXnC2juxkTXKD8BeFBUQH5tLkLqLsw5d0Sh1l_QcLVoIYY-ZPaShDCuqFs9gEAafy88ynBpKkc1RrtarCQ_wV8WR7m4FCCGFmZhqB01jBiwXWfBk00ZhpDImWi75mW2811Lvn2bbTzkkn-p0KT6PH1yOEjYEaQKGgkpGiazJ--"/>
+</div>
+<div class="text-center">
+<p class="font-medium text-sm text-slate-200 truncate w-24">TheGodfather</p>
+<span class="text-[10px] text-slate-500 font-medium block h-4"></span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action & Graveyard Area -->
+<div class="fixed bottom-0 left-0 right-0 z-20 flex flex-col items-center">
+<!-- Owner Action Button (Floating) -->
+<div class="mb-4 w-full max-w-md px-6">
+<button class="w-full bg-surface-darker hover:bg-surface-dark border border-primary text-primary hover:text-white transition-all duration-300 font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 group">
+<span class="material-icons text-lg group-hover:scale-110 transition-transform">gavel</span>
+<span>End Discussion Early</span>
+</button>
+</div>
+<!-- Graveyard Sheet -->
+<div class="w-full bg-surface-darker/95 backdrop-blur-md border-t border-white/5 rounded-t-2xl px-6 pt-4 pb-8 safe-area-pb shadow-[0_-5px_20px_rgba(0,0,0,0.4)]">
+<div class="w-12 h-1 bg-white/10 rounded-full mx-auto mb-4"></div>
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Graveyard</h3>
+<span class="text-xs text-slate-600 font-mono">0 Eliminated</span>
+</div>
+<!-- Empty State for Round 1 -->
+<div class="flex items-center justify-center h-16 border-2 border-dashed border-white/5 rounded-lg bg-white/5">
+<p class="text-xs text-slate-500 italic">No casualties yet...</p>
+</div>
+<!-- Example of what it would look like populated (Hidden for Round 1 context but coded for completeness/structure) -->
+<!-- 
+            <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                 <div class="flex flex-col items-center opacity-50 grayscale">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 relative">
+                        <img src="..." class="w-full h-full rounded-full object-cover">
+                        <div class="absolute -bottom-1 -right-1 bg-red-900 rounded-full p-0.5 border border-surface-darker"><span class="material-icons text-[10px] text-white">close</span></div>
+                    </div>
+                    <span class="text-[10px] text-slate-500 mt-1">DeadGuy</span>
+                 </div>
+            </div> 
+            -->
+</div>
+</div>
+<!-- Background Decoration -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+<div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/10 rounded-full blur-[100px]"></div>
+</div>
+<style>
+        /* CSS for safe area padding on mobile devices with notches/home bars */
+        .safe-area-pb {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+    </style>
+</body></html>

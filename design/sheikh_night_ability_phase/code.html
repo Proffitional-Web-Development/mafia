@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sheikh Night Ability Phase</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#8311d4",
+              "background-light": "#f7f6f8",
+              "background-dark": "#1a1022",
+              "neutral-dark": "#2d2438", 
+              "neutral-light": "#e0dce4"
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            animation: {
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for webkit to fit the dark theme */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1022; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a3b55; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8311d4; 
+        }
+        
+        .glass-panel {
+            background: rgba(45, 36, 56, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(131, 17, 212, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-white font-display min-h-screen flex flex-col items-center justify-center overflow-hidden relative">
+<!-- Background Elements for Atmosphere -->
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[120px]"></div>
+<!-- Stars/Dust -->
+<div class="absolute top-[20%] right-[20%] w-1 h-1 bg-white rounded-full opacity-60"></div>
+<div class="absolute top-[40%] left-[10%] w-1.5 h-1.5 bg-primary rounded-full opacity-40"></div>
+<div class="absolute bottom-[30%] left-[30%] w-1 h-1 bg-white rounded-full opacity-30"></div>
+</div>
+<!-- Main Container (Mobile Form Factor) -->
+<main class="w-full max-w-md h-[100dvh] flex flex-col relative bg-transparent">
+<!-- Header -->
+<header class="pt-6 pb-2 px-6 flex justify-between items-center z-20">
+<div class="flex flex-col">
+<span class="text-xs font-bold tracking-widest text-primary uppercase mb-1 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    Night Phase 3
+                </span>
+<h1 class="text-2xl font-bold flex items-center gap-2">
+                    Sheikh 
+                    <span class="material-icons text-yellow-400 text-xl" title="Role Icon">stars</span>
+</h1>
+</div>
+<!-- Timer -->
+<div class="flex flex-col items-center justify-center w-12 h-12 rounded-full border-2 border-primary/30 bg-background-dark relative">
+<span class="text-sm font-bold text-white">24s</span>
+<svg class="absolute top-0 left-0 w-full h-full -rotate-90 pointer-events-none">
+<circle class="origin-center translate-x-[2px] translate-y-[2px]" cx="22" cy="22" fill="none" r="20" stroke="#8311d4" stroke-dasharray="125" stroke-dashoffset="30" stroke-width="2"></circle>
+</svg>
+</div>
+</header>
+<!-- Dynamic Content Area -->
+<section class="flex-1 flex flex-col px-6 overflow-hidden relative">
+<!-- Instructions -->
+<div class="mt-2 mb-6 text-center">
+<p class="text-gray-400 text-sm">The village sleeps. Use your influence to uncover the truth.</p>
+<div class="mt-4 inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-primary/10 border border-primary/30">
+<span class="material-icons text-primary text-sm mr-2">visibility</span>
+<span class="text-sm font-medium text-primary-100">Select a suspect to investigate</span>
+</div>
+</div>
+<!-- Player Grid -->
+<div class="flex-1 overflow-y-auto pb-4 scroll-smooth">
+<div class="grid grid-cols-3 gap-3">
+<!-- Player Card: Active Selection -->
+<button class="group relative flex flex-col items-center p-3 rounded-xl bg-primary/20 border-2 border-primary shadow-[0_0_15px_rgba(131,17,212,0.4)] transition-all duration-200">
+<div class="relative w-12 h-12 rounded-full mb-2 overflow-hidden ring-2 ring-primary bg-neutral-dark">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Avatar of user named Alex" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4SQJSmz67IP0EHRCYz32JyW_di4wKnNtx2GNOXe-o-Rx1eIEdNcopvjlQLVdSWhJxwlg76OuiQ7MeCet6QYZ-L_Sg87hEBvjHoGfNScC2mGNe5ExROCfc3dZtm3AwwuImzCAaHKKoZsi2k_08CGctL843THSv4cbkFZ4Fi2jgbBGGWCax3kD2aneXkoTYChAUPJ6Dle56kxw8acPkcced6_BLvX5rRjjAN4F8wl0J4te64qxWtyaBPTuexsp-SJvDUWJhFpOJ9evn"/>
+<div class="absolute inset-0 bg-primary/20 mix-blend-overlay"></div>
+</div>
+<span class="text-xs font-semibold truncate w-full text-center text-white">@Alex_K</span>
+<div class="absolute top-1 right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+<span class="material-icons text-[10px] text-white">check</span>
+</div>
+</button>
+<!-- Player Card: Default -->
+<button class="group relative flex flex-col items-center p-3 rounded-xl bg-neutral-dark border border-white/5 hover:border-primary/50 hover:bg-neutral-dark/80 transition-all duration-200">
+<div class="relative w-12 h-12 rounded-full mb-2 overflow-hidden bg-neutral-700">
+<img alt="Avatar" class="w-full h-full object-cover opacity-90 group-hover:opacity-100" data-alt="Avatar of user named Sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJGvbnWeyETb2yt2T7jGjB6R_JleB-e-heThHc5nKCQT6FXoiRXpoZXhtf5buLjVS_0Ub9_hw1UUlwsP2ChAsQt8Vj0BSI5E-vE_ijcxqNp8jI2LWn1ZAk7IC0qVPAvXyBR0s4OQA6MPDVcxsTyRd0E4bFwKGuT8KIre_U7Busp3tuU4GvSb8Va_OAq5sX1QN_Q4RvHtHNdhsTdMcej1JfUgyLmyRtGYeZ0_rpXO-Dry_YUHurpwC3cAX-3EOYNoYeacrSuPUNklSD"/>
+</div>
+<span class="text-xs font-medium truncate w-full text-center text-gray-400 group-hover:text-white">@Sarah99</span>
+</button>
+<!-- Player Card: Default -->
+<button class="group relative flex flex-col items-center p-3 rounded-xl bg-neutral-dark border border-white/5 hover:border-primary/50 hover:bg-neutral-dark/80 transition-all duration-200">
+<div class="relative w-12 h-12 rounded-full mb-2 overflow-hidden bg-neutral-700">
+<div class="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">DK</div>
+</div>
+<span class="text-xs font-medium truncate w-full text-center text-gray-400 group-hover:text-white">@DrkKnight</span>
+</button>
+<!-- Player Card: Default -->
+<button class="group relative flex flex-col items-center p-3 rounded-xl bg-neutral-dark border border-white/5 hover:border-primary/50 hover:bg-neutral-dark/80 transition-all duration-200">
+<div class="relative w-12 h-12 rounded-full mb-2 overflow-hidden bg-neutral-700">
+<img alt="Avatar" class="w-full h-full object-cover opacity-90 group-hover:opacity-100" data-alt="Avatar of user named Marcus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn3056dVaxguTdGFei_NUqf337iT_gs0_GbI2ZyUo03GDncqV5hqrmdljvOg9Pr7lM8LUoA8ghUC3spkzBcwakllDDKxtXEwNrzzRhsEYtVVzEHW12EGd1JJjkvj4TTFFqMFkFF7vzLnNbUOR9V21NR4hQi5DJEvhKDXh_DB2h_Di-uRTiZpCbloLdBJSzN76UrZ-8A-NOj8RLk99gPbXsVZc5LeQRWavh_TPpshSdbm8vd-AGI9KRZOUvZ0NZxXO_hX3n76w9BooO"/>
+</div>
+<span class="text-xs font-medium truncate w-full text-center text-gray-400 group-hover:text-white">@MarcusV</span>
+</button>
+<!-- Player Card: Default -->
+<button class="group relative flex flex-col items-center p-3 rounded-xl bg-neutral-dark border border-white/5 hover:border-primary/50 hover:bg-neutral-dark/80 transition-all duration-200">
+<div class="relative w-12 h-12 rounded-full mb-2 overflow-hidden bg-neutral-700">
+<img alt="Avatar" class="w-full h-full object-cover opacity-90 group-hover:opacity-100" data-alt="Avatar of user named Lisa" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDR2hDQi82WCGkXX1ZzOr_grMrmKaZjt52W8R3OqvVurdEi7lN4-GtciUblbcQ8KUXZcyZ8sH9NuzI_pBDftY1yoYs5kiuCdkkuvtETP4wRx1jh5VoA035r9jDuJhFGdsgQB_4YXa8AjO7l19dxzT2v4i5_dgp5GEiD6it-FyHbNSWWlu_JPpCGiwci8HQ5Hrt5tr0uiub5ETv5JtV-eDCOwZUiUkU-5umo7NV8C8813E2SnrXeekWFlFY0rQ9fkXz-v4PhgHOZ1hub"/>
+</div>
+<span class="text-xs font-medium truncate w-full text-center text-gray-400 group-hover:text-white">@LisaM</span>
+</button>
+<!-- Player Card: Default -->
+<button class="group relative flex flex-col items-center p-3 rounded-xl bg-neutral-dark border border-white/5 hover:border-primary/50 hover:bg-neutral-dark/80 transition-all duration-200">
+<div class="relative w-12 h-12 rounded-full mb-2 overflow-hidden bg-neutral-700">
+<img alt="Avatar" class="w-full h-full object-cover opacity-90 group-hover:opacity-100" data-alt="Avatar of user named John" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArwBLD-sYfWHLH24tXBPfOcgsh9GeY2dkXnG3-PtPd3duuX-VZooWAqtnT7buLPpdU0E-vb-YxAKeQtvOA8M0tzv10MtY3quckQHxwSuJxNLlShcesNujLOuEkUDT_LLnoNzw4vJmztIjSMs7VOR6Y9Y7EAE6jk7vr0soFTV9ZLWHdYdRe5EH6MQHQ7V0B81_JhkX5pFJoxVaAi4BI9RVG1DEGraYtjEx6X9tQsyCQAurR54HbmX1hN2vXDR_q7jmeeQQ8idqUkdC3"/>
+</div>
+<span class="text-xs font-medium truncate w-full text-center text-gray-400 group-hover:text-white">@JohnDoe</span>
+</button>
+<!-- Player Card: Dead/Disabled -->
+<div class="relative flex flex-col items-center p-3 rounded-xl bg-neutral-dark/30 border border-transparent opacity-50 grayscale cursor-not-allowed">
+<div class="relative w-12 h-12 rounded-full mb-2 overflow-hidden bg-neutral-800">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Avatar of dead user named Rip" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHYBWZEEzj1GeNFEU5H3btVk8pBBLS1vST4yBeBkef8sMBHBqHDcTP8Ybc1Lyxa2AkqN9CgHGo-EZEOPumN4XGS3Bugh8r-vQrjSd6cslCeCd6zvKKmdcQDU4CaUZU_JpAXjUoHZJmJz4suLlZq9KX4-BpzjE_CMFt7oR_vA5kzV1lsRrcnM8KqCclKtgzc62g0F9Zvfd7_Kr7XZ5nG-gXTmZemP7Cv_uj1JdlPbUFjnR_aQ4uw6Zf1YuIMlNvy7qE-BWzuX65NLIk"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/60">
+<span class="material-icons text-red-500 text-lg">close</span>
+</div>
+</div>
+<span class="text-xs font-medium truncate w-full text-center text-gray-600 line-through">@RipVan</span>
+</div>
+</div>
+</div>
+<!-- Investigation History Log -->
+<div class="mt-4 mb-4">
+<div class="glass-panel rounded-xl overflow-hidden">
+<div class="bg-primary/10 px-4 py-2 border-b border-primary/10 flex justify-between items-center">
+<h3 class="text-xs font-bold uppercase tracking-wider text-primary-200">Investigation Log</h3>
+<span class="material-icons text-primary/60 text-sm">history</span>
+</div>
+<div class="max-h-24 overflow-y-auto p-2 space-y-2">
+<!-- Log Item 1: Villager -->
+<div class="flex items-center justify-between p-2 rounded bg-background-dark/50 border border-white/5">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-gray-500">N1</span>
+<span class="text-sm text-gray-200">@PizzaLover</span>
+</div>
+<span class="text-xs font-bold px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/30">
+                                Innocent
+                            </span>
+</div>
+<!-- Log Item 2: Mafia -->
+<div class="flex items-center justify-between p-2 rounded bg-background-dark/50 border border-white/5">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-gray-500">N2</span>
+<span class="text-sm text-gray-200">@CryptoKing</span>
+</div>
+<span class="text-xs font-bold px-2 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">
+                                Mafia
+                            </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Fixed Bottom Action Area -->
+<footer class="p-6 pt-2 bg-gradient-to-t from-background-dark via-background-dark to-transparent z-20">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-primary/30 active:scale-95 transition-all flex items-center justify-center gap-2 group">
+<span class="material-icons group-hover:rotate-12 transition-transform">search</span>
+                INVESTIGATE @Alex_K
+            </button>
+</footer>
+</main>
+<!-- Waiting State Overlay (Hidden by default, can be toggled by removing 'hidden') -->
+<!-- This is how the screen looks for non-ability players -->
+<div class="hidden absolute inset-0 z-50 bg-background-dark/95 flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+<div class="relative mb-8">
+<div class="text-6xl animate-pulse-slow">🌙</div>
+<div class="absolute inset-0 bg-primary/20 blur-[40px] rounded-full animate-pulse"></div>
+</div>
+<h2 class="text-2xl font-bold text-white mb-2">The night is quiet...</h2>
+<p class="text-gray-400">Waiting for other players to make their moves.</p>
+<div class="mt-12 flex space-x-2">
+<div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0s"></div>
+<div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+<div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+</div>
+</div>
+</body></html>

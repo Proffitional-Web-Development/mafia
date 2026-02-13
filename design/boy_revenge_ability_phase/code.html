@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Boy Revenge Ability Phase</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+            extend: {
+                colors: {
+                "primary": "#da0b0b",
+                "background-light": "#f8f5f5",
+                "background-dark": "#221010",
+                },
+                fontFamily: {
+                "display": ["Space Grotesk"]
+                },
+                borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                keyframes: {
+                    pulseRed: {
+                        '0%, 100%': { boxShadow: '0 0 10px rgba(218, 11, 11, 0.2)' },
+                        '50%': { boxShadow: '0 0 25px rgba(218, 11, 11, 0.6)' },
+                    },
+                    countdown: {
+                        '0%': { transform: 'scale(1)' },
+                        '50%': { transform: 'scale(1.05)' },
+                        '100%': { transform: 'scale(1)' },
+                    }
+                },
+                animation: {
+                    'pulse-red': 'pulseRed 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    'countdown-tick': 'countdown 1s ease-in-out infinite',
+                }
+            },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 font-display min-h-screen flex items-center justify-center p-0 m-0 overflow-hidden relative selection:bg-primary/30">
+<!-- Red Pulse Vignette Effect for Urgency/Dying State -->
+<div class="fixed inset-0 pointer-events-none z-0 border-[8px] border-primary/20 dark:border-primary/10 rounded-[40px]"></div>
+<div class="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(218,11,11,0.15)_100%)]"></div>
+<!-- Main Container (Phone Form Factor) -->
+<div class="relative w-full max-w-md h-[100dvh] flex flex-col bg-white/50 dark:bg-[#1a0808] backdrop-blur-md shadow-2xl overflow-hidden">
+<!-- Status Bar Area (Mockup) -->
+<div class="h-12 w-full flex items-center justify-between px-6 pt-2 z-20 text-xs font-medium text-gray-500 dark:text-gray-400">
+<span>9:41</span>
+<div class="flex gap-1.5">
+<span class="material-icons text-sm">signal_cellular_alt</span>
+<span class="material-icons text-sm">wifi</span>
+<span class="material-icons text-sm">battery_full</span>
+</div>
+</div>
+<!-- Header Section: Timer & Title -->
+<header class="flex flex-col items-center justify-center px-6 pt-2 pb-6 z-10 shrink-0">
+<!-- Countdown Timer -->
+<div class="mb-4">
+<div class="relative flex items-center justify-center w-20 h-20 rounded-full border-4 border-primary/30 bg-background-light dark:bg-[#2a1212] shadow-lg shadow-primary/20 animate-countdown-tick">
+<!-- Progress Ring SVG (Static for mockup) -->
+<svg class="absolute inset-0 w-full h-full -rotate-90 text-primary" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="44" stroke="currentColor" stroke-dasharray="276" stroke-dashoffset="60" stroke-linecap="round" stroke-width="6"></circle>
+</svg>
+<span class="text-3xl font-bold text-primary tracking-tighter tabular-nums drop-shadow-md">00:24</span>
+</div>
+</div>
+<h1 class="text-3xl font-bold text-gray-900 dark:text-white uppercase tracking-tight text-center drop-shadow-sm">
+                Last Revenge!
+            </h1>
+<p class="mt-2 text-sm text-center text-gray-600 dark:text-gray-400 max-w-[280px] leading-relaxed">
+                You were eliminated. Select one player to take down with you.
+            </p>
+</header>
+<!-- Main Content: Player Grid -->
+<main class="flex-1 overflow-y-auto px-5 pb-32 no-scrollbar z-10 mask-image-linear-gradient">
+<div class="grid grid-cols-2 gap-4">
+<!-- Player Card 1 (Selected) -->
+<button class="group relative flex flex-col items-center bg-white dark:bg-[#2c1515] p-3 rounded-xl border-2 border-primary shadow-lg shadow-primary/20 transition-all active:scale-95">
+<div class="absolute -top-3 -right-3 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center shadow-md z-20">
+<span class="material-icons text-lg font-bold">close</span>
+</div>
+<!-- Crosshair Overlay -->
+<div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+<span class="material-icons text-6xl text-primary opacity-80 drop-shadow-lg">my_location</span>
+</div>
+<div class="relative w-20 h-20 rounded-full mb-3 ring-4 ring-primary/30 overflow-hidden bg-gray-200 dark:bg-gray-800">
+<img alt="Portrait of player user123" class="w-full h-full object-cover grayscale brightness-75 contrast-125" data-alt="Close up portrait of a young woman with serious expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDADyB6byGWVsBN3h2MbrT8WkWA1ofBZVkjE9hEqVWufEels_2MWke0l3kDvriRbiIlru8nV5c2Mzuwjyg4tKCzC063tfFEWWirlT3vdqH2IP6n71WglIscrwImPA3PNJmP8mxuFJ1Ew7Mm6XlkzO7ortBzCHrVb3bj4DcJw3itd1Crgs3PmM8LVJlX7x9IghBvG-aWfoV2adfQ5U2pf7xMI_mQxmRcGQD6i-jhzgTzWdWXr0XKB9gXO_ub5GwjRSvzTrHDWy0_PtYU"/>
+</div>
+<div class="text-center w-full">
+<h3 class="font-bold text-primary truncate w-full text-lg">Sarah_W</h3>
+<span class="text-[10px] uppercase tracking-widest text-primary/80 font-semibold">Target Locked</span>
+</div>
+</button>
+<!-- Player Card 2 -->
+<button class="group relative flex flex-col items-center bg-white dark:bg-[#2a1a1a] p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all active:scale-95">
+<div class="relative w-20 h-20 rounded-full mb-3 overflow-hidden bg-gray-200 dark:bg-gray-800">
+<img alt="Portrait of player mike_t" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Portrait of a smiling man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyD3YbRbB6XA8h-exZMJOQX2Sr4dba60fZkjhbrJ73H8JctnFDDdbTYsCvzYRC9TuDAV8nR4mnZLp7V0ldGADJVVUQbCzpGQ3E4vpfQe9MGyozFHU-l1-5TNFS5vFRXY6GOXDZmxWvOMxe-3Xj_cCxTmgHRrrrMZoZgVH3Pq4MDn2fjyABFU60LW1Al140LDTqPOzksIcgbG1XlOynJjf1xqwWVWoDftnSNyTXqK623MPzGHbQVMQ9EkX6zBKYFKD2GLjOeT252g2h"/>
+</div>
+<div class="text-center w-full">
+<h3 class="font-medium text-gray-800 dark:text-gray-200 truncate w-full">Mike_T</h3>
+<span class="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Alive</span>
+</div>
+</button>
+<!-- Player Card 3 -->
+<button class="group relative flex flex-col items-center bg-white dark:bg-[#2a1a1a] p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all active:scale-95">
+<div class="relative w-20 h-20 rounded-full mb-3 overflow-hidden bg-gray-200 dark:bg-gray-800">
+<img alt="Portrait of player detective_x" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Portrait of a woman looking away pensively" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLgNYT9iefxhP0Fic94MAxb7vhxM0Ac8iplDq4_8h8yJ4ZpHZoMpomTKz04dihuunIkwcYlrTgzOX1Xs1vnV34ea-7sQMzgdvBqJnrF8go2bqITAH2c4h7zwIoOKH2pw-EehONNeZJLrvmgSQEqUyL0alK-O_QI5nrkfm3ramdZm3_EY7zu-2LyPIBCx9--SV6eFR2D_Wtz9g_JeS6xpTObxlrcIv6UUX-iMs05I_XqvviZ7RzdLiCgHmH6H4QX-KJFqpmaIGUnx2z"/>
+</div>
+<div class="text-center w-full">
+<h3 class="font-medium text-gray-800 dark:text-gray-200 truncate w-full">Detective_X</h3>
+<span class="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Alive</span>
+</div>
+</button>
+<!-- Player Card 4 -->
+<button class="group relative flex flex-col items-center bg-white dark:bg-[#2a1a1a] p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all active:scale-95">
+<div class="relative w-20 h-20 rounded-full mb-3 overflow-hidden bg-gray-200 dark:bg-gray-800">
+<img alt="Portrait of player shadow_king" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Portrait of a serious man looking at camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWpSt96sZKcHgqB1lZG4SJC7kDSbk1DBaaomhX51RbnNc-VCiXuF7ceepKzEn1F_VfW68uiC984I9iflAuRdcAiTFGvq8oHn0-XBKY2wW1OqLUE-zo5o0BrJuqMK8JFcZmybegk-IoqdgciQErkMSSDk7RPm0eetKVFejMxCwCWDFkThp2hFnFwASxml_wvPA1Y73gKMqvmfhfBrvPpPPtaN_wFBRcGRrOdr33_OGad3UssgwQ9bBaM3bMvSQKzoy2xXJZ2mfEinHP"/>
+</div>
+<div class="text-center w-full">
+<h3 class="font-medium text-gray-800 dark:text-gray-200 truncate w-full">Shadow_King</h3>
+<span class="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Alive</span>
+</div>
+</button>
+<!-- Player Card 5 -->
+<button class="group relative flex flex-col items-center bg-white dark:bg-[#2a1a1a] p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all active:scale-95">
+<div class="relative w-20 h-20 rounded-full mb-3 overflow-hidden bg-gray-200 dark:bg-gray-800">
+<img alt="Portrait of player sneaky_fox" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Portrait of a happy young woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnGNTjnErzQLSDUNJlsz_8zLWq5Cj1YO5OH9h__CRPvdo0kzETJbThxO1yB9TW2FWMoXb0HDlf3HO5PLKyWxVk7TU5wzvsB9Xtbie3E_edquyr9fQSuqMjurc-EcRv5fSCYfBue0sMvkgIR0CaoNZZmA77vn0oLN9Tyukzekk_3gs5VJuwzFvWZE4yKWKlPOWHnA5DAIKR0flT7SYdPQsfQxMxn0F_WexyQOYori9JzA9M_ATHDo5-z3qYrn1U8AftrNJHAd_F2tYj"/>
+</div>
+<div class="text-center w-full">
+<h3 class="font-medium text-gray-800 dark:text-gray-200 truncate w-full">Sneaky_Fox</h3>
+<span class="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Alive</span>
+</div>
+</button>
+<!-- Player Card 6 -->
+<button class="group relative flex flex-col items-center bg-white dark:bg-[#2a1a1a] p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-primary/50 transition-all active:scale-95">
+<div class="relative w-20 h-20 rounded-full mb-3 overflow-hidden bg-gray-200 dark:bg-gray-800">
+<img alt="Portrait of player big_boss" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Portrait of a man with stubble beard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTp5TCwGBVKUoNIhuuJ6tswaajlnLD8lYiObU2CrEjMiviEpS_k2pMfVPKHy-fEQNBz1joYSDbL-p8s2SY4oDYau8XNLJn9r_5he9KL9MYQd9fqgbdEjRzWGBDy430NG_J1E6Tv4oB0WEgAXSL7EBSqDoPfCV5mytcqXe1okhThdD_Sjkc7wLDIdIFm-Qn18ZMwyRLQaqKrL2J5j87sA7IYqYZKM8uiWbvFrwxtTsgHQ07bitejiHGtfJkaBLoDck3pIXjRqrpfa2T"/>
+</div>
+<div class="text-center w-full">
+<h3 class="font-medium text-gray-800 dark:text-gray-200 truncate w-full">Big_Boss</h3>
+<span class="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Alive</span>
+</div>
+</button>
+</div>
+</main>
+<!-- Bottom Action Area -->
+<footer class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-[#221010] dark:via-[#221010] dark:to-transparent z-20">
+<div class="flex flex-col gap-3">
+<!-- Action Button -->
+<button class="w-full bg-primary hover:bg-red-700 text-white font-bold text-lg py-4 rounded-xl shadow-lg shadow-primary/40 flex items-center justify-center gap-2 transform active:scale-[0.98] transition-all relative overflow-hidden group">
+<!-- Subtle shine effect -->
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 skew-y-12"></div>
+<span class="material-icons">gavel</span>
+<span>USE REVENGE</span>
+</button>
+<p class="text-center text-xs text-primary/60 dark:text-primary/40 font-medium tracking-wide">
+                    IRREVERSIBLE ACTION
+                </p>
+</div>
+</footer>
+</div>
+</body></html>

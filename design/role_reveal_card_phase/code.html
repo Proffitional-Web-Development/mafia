@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Role Reveal - Mafia Game</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8311d4",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1a1022",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom CSS for 3D Card Flip */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Checkbox hack for state management without JS */
+        #card-toggle:checked ~ .scene .card {
+            transform: rotateY(180deg);
+        }
+        
+        #card-toggle:checked ~ .actions .instruction-text {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #card-toggle:checked ~ .actions .ready-btn {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Background Pattern Utility */
+        .bg-pattern {
+            background-color: #1a1022;
+            background-image: radial-gradient(#8311d4 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-white min-h-screen flex flex-col overflow-hidden relative selection:bg-primary selection:text-white">
+<!-- Ambient Background Effects -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary/10 rounded-full blur-[100px] mix-blend-screen"></div>
+<div class="absolute inset-0 bg-pattern z-0"></div>
+</div>
+<!-- Hidden Checkbox for Interaction State -->
+<input class="hidden peer" id="card-toggle" type="checkbox"/>
+<!-- Header Status -->
+<header class="relative z-10 w-full pt-12 pb-4 px-6 text-center">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background-dark/50 border border-white/10 backdrop-blur-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-bold tracking-widest uppercase text-white/70">Card Distribution</span>
+</div>
+</header>
+<!-- Main Content Area: Card Scene -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center p-6 perspective-1000 scene w-full max-w-md mx-auto">
+<!-- The Card Wrapper -->
+<label class="card relative w-full aspect-[2/3] max-h-[60vh] cursor-pointer transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] preserve-3d group shadow-2xl shadow-primary/20 hover:shadow-primary/40" for="card-toggle">
+<!-- Card Back (Face Down) -->
+<div class="absolute inset-0 w-full h-full backface-hidden rounded-xl overflow-hidden border border-white/10 bg-background-dark shadow-inner">
+<!-- Abstract Pattern for Card Back -->
+<div class="absolute inset-0 opacity-40" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'0 0 2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%238311d4\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
+</div>
+<!-- Central Emblem on Back -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-32 h-32 rounded-full border-2 border-primary/30 flex items-center justify-center bg-background-dark/80 backdrop-blur-sm shadow-[0_0_30px_rgba(131,17,212,0.3)]">
+<span class="material-icons text-5xl text-primary drop-shadow-[0_0_10px_rgba(131,17,212,0.8)]">help_outline</span>
+</div>
+</div>
+<!-- Decorative Borders -->
+<div class="absolute inset-3 border border-dashed border-primary/30 rounded-lg"></div>
+<div class="absolute inset-0 bg-gradient-to-tr from-black/80 via-transparent to-primary/20 pointer-events-none"></div>
+</div>
+<!-- Card Front (Face Up) -->
+<div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 rounded-xl overflow-hidden bg-background-dark border border-primary/50 shadow-[0_0_50px_rgba(131,17,212,0.15)] flex flex-col">
+<!-- Card Header Art -->
+<div class="relative h-2/5 w-full bg-gradient-to-b from-primary/20 to-background-dark overflow-hidden">
+<img alt="Abstract purple gradient representing authority and mystery" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay" data-alt="Abstract purple gradient representing authority and mystery" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtoVrDw-DmpqQygLThfdqfr4rPfYpcXNF_KhVt_A4zu4WgB7R6_ex3hbJT5KZoF2aQhfdue07HcvjUCHF6tAHXPlPF-0Fm0GOTWVSt9Cc_TA5pjiY1PiAPzbQ8Oc5xb4gFtpr3LWRWSmdLEGsGBtAzjz227hjoK86cOfazeOQtIoJHlzT0ANsAl64Mxv214K3vRwvsJaGZ8RxxdjEcRMFGI95oizh1dpIU9K28URQm8FgD8WconPaAF8PSE_jEoWlIWu6AHZkcsj9s"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-24 h-24 rounded-full bg-background-dark border-4 border-primary shadow-lg flex items-center justify-center relative z-10">
+<span class="material-icons text-5xl text-primary">local_police</span>
+</div>
+</div>
+</div>
+<!-- Card Content -->
+<div class="flex-1 p-6 flex flex-col items-center text-center">
+<h2 class="text-3xl font-bold text-white mb-1 tracking-tight">SHERIFF</h2>
+<span class="text-xs font-semibold uppercase tracking-widest text-primary mb-6">Team Town</span>
+<div class="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6"></div>
+<p class="text-base text-gray-300 leading-relaxed max-w-[260px]">
+                        Investigate one player each night to discover their true alignment.
+                    </p>
+<div class="mt-auto pt-6 w-full">
+<!-- Teammate List Logic (Hidden for Sheriff/Town usually, but added per prompt context about placement) -->
+<!-- NOTE: Context implies teammates are for Mafia, but this is a Sheriff card. Keeping section visible but empty/placeholder style as if waiting or N/A for this role, or showing a hint. For accuracy to prompt "For Mafia players... visible below card", I will put it below the card container in the main flow, not inside the card face. -->
+<div class="flex items-center justify-center gap-2 opacity-50">
+<span class="material-icons text-sm text-gray-500">visibility_off</span>
+<span class="text-xs text-gray-500">Identity is secret</span>
+</div>
+</div>
+</div>
+<!-- Shine effect -->
+<div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 pointer-events-none"></div>
+</div>
+</label>
+<!-- Dynamic Footer / Actions -->
+<div class="actions mt-10 w-full flex flex-col items-center justify-end h-24 relative">
+<!-- Instruction Text (Default State) -->
+<p class="instruction-text text-white/60 animate-pulse font-light tracking-wide absolute top-0 transition-opacity duration-500">
+                Tap card to reveal role
+            </p>
+<!-- Ready Button (Revealed State) -->
+<button class="ready-btn opacity-0 translate-y-4 transition-all duration-700 delay-300 w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 rounded-xl shadow-[0_10px_20px_rgba(131,17,212,0.3)] border-t border-white/20 active:scale-[0.98] flex items-center justify-center gap-3">
+<span>I AM READY</span>
+<span class="material-icons text-sm">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- Optional: Mafia Teammates List (Contextual - Placed below card area) -->
+<!-- This would be conditionally rendered. Showing a 'ghost' state for visual completeness of the request context -->
+<!-- Since user is Sheriff (Town), this area might be empty or show "No Known Allies" -->
+<div class="fixed bottom-0 w-full p-6 pb-8 bg-gradient-to-t from-background-dark via-background-dark to-transparent z-0 pointer-events-none">
+<!-- If this was Mafia, the list would be here. -->
+</div>
+</body></html>

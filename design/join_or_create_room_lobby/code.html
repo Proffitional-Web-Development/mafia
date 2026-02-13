@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Game Lobby</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8311d4",
+                        "primary-light": "#9c3ce6",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1a1022",
+                        "surface-dark": "#2d1b36",
+                        "surface-darker": "#24152b",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for clean mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Gradient text utility */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to right, #c084fc, #8311d4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white min-h-screen flex flex-col items-center justify-center overflow-hidden selection:bg-primary selection:text-white">
+<!-- Mobile Container -->
+<div class="w-full max-w-md h-[100dvh] flex flex-col relative bg-background-light dark:bg-background-dark shadow-2xl mx-auto overflow-hidden">
+<!-- Background Elements -->
+<div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+<div class="absolute -top-[20%] -right-[20%] w-[80%] h-[50%] bg-primary/20 blur-[100px] rounded-full"></div>
+<div class="absolute top-[40%] -left-[20%] w-[60%] h-[40%] bg-blue-600/10 blur-[80px] rounded-full"></div>
+</div>
+<!-- Top Navigation / Header -->
+<header class="relative z-10 px-6 pt-12 pb-4 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-10 h-10 rounded-full bg-surface-dark border border-white/10 overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="User profile avatar image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI494Be94wMt1nqFj52kLYhVKoGXMUO8e2o0EPF5ZQv8SC_TdlqSWJd2S3i4iaHjdu-5vcPaJUwoza-fSxJzXbaXZPWjCE8HLmN2xh2u2Y8XFsvsuZMvvXDMYeWFlMoM6_CCNRqWL6u-WgarIDPR_gZIMo1n7tWoalyTKdjvVqW9rtHeCkkU6S4yGCRWv5E9Y7JnW6ZXeD52QyPaoNVkx7dTWR8r_B2xhsIWI72tGPlelk1o9mfBcbEuKk5Vc72Y_e4kM2Unf8cddA"/>
+</div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background-dark"></div>
+</div>
+<div>
+<p class="text-xs text-white/50 uppercase tracking-wider font-bold">Player</p>
+<p class="text-sm font-semibold">Detective_01</p>
+</div>
+</div>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors backdrop-blur-md">
+<span class="material-icons-round text-sm text-primary-light">language</span>
+<span class="text-xs font-medium text-white/80">EN / FR</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 relative z-10 flex flex-col px-6 pt-4 pb-24 overflow-y-auto no-scrollbar">
+<!-- Hero Title -->
+<div class="mb-8 text-center mt-4">
+<h1 class="text-4xl font-bold mb-2 tracking-tight">
+                    Start <span class="text-gradient">Playing</span>
+</h1>
+<p class="text-white/40 text-sm">Join the mystery or orchestrate the chaos.</p>
+</div>
+<!-- Create Room Action (Hero) -->
+<button class="group relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-8 transition-transform active:scale-[0.98] shadow-lg shadow-primary/20">
+<!-- Background Image with Overlay -->
+<div class="absolute inset-0 bg-surface-dark">
+<img alt="Create Room Background" class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700" data-alt="Dark moody abstract background with purple tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbPYd0Chxorq3Yg7fZ4WSNd39kWggk-8W2gJgFRoI1aY4alkidDYpItkoLV1Y7mdkRt-tqS87uKjzYpQ6nl6zEQ9Ks0XeaZEfTUaSyD8EGl9rXbcSk0gJhMXFTLWfxuz10jDvOJ0p6hkmtUDLwK-Z1-lo8xz0yN5DZfcv0H_gA4zFHzQhmuCOR3bMqpEAO4V5_wPh3phT8x2JSmCI20CINcRWT1hV2G5hL9yMDf3IaPd_j5lr_Pw5KPjBy9jqlUYFn-G8OrNq-sFpU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-surface-dark/40 mix-blend-multiply"></div>
+<div class="absolute inset-0 bg-gradient-to-br from-transparent via-primary/20 to-primary/60 opacity-60"></div>
+</div>
+<!-- Content -->
+<div class="relative h-full flex flex-col items-center justify-center p-6 text-center z-10">
+<div class="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 group-hover:bg-white/20 transition-colors border border-white/20 shadow-inner">
+<span class="material-icons-round text-4xl text-white">add</span>
+</div>
+<h2 class="text-2xl font-bold text-white mb-2">Create Room</h2>
+<p class="text-white/70 text-sm max-w-[200px]">Host a new game session and invite your friends.</p>
+</div>
+<!-- Shine Effect -->
+<div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine"></div>
+</button>
+<!-- Divider -->
+<div class="flex items-center gap-4 mb-8">
+<div class="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10"></div>
+<span class="text-xs uppercase tracking-widest text-white/30 font-bold">OR JOIN</span>
+<div class="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10"></div>
+</div>
+<!-- Join Room Section -->
+<div class="bg-surface-darker border border-white/5 rounded-2xl p-6 backdrop-blur-sm relative overflow-hidden">
+<!-- Decorative Glow -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<label class="block text-sm font-medium text-white/70 mb-4 flex items-center gap-2">
+<span class="material-icons-round text-primary text-base">vpn_key</span>
+                        Enter Room Code
+                    </label>
+<div class="flex gap-2 mb-6 justify-between">
+<!-- Simulated Input Boxes for Code -->
+<div class="relative w-full h-14">
+<input class="w-full h-full bg-background-dark border border-white/10 rounded-xl text-center text-2xl font-mono tracking-[0.5em] text-white placeholder-white/20 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all uppercase" maxlength="6" placeholder="XJ29KP" style="text-transform: uppercase;" type="text"/>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+<span class="material-icons-round text-green-400 opacity-0">check_circle</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-white/5 hover:bg-primary text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-white/10 hover:border-primary group">
+<span>Join Game</span>
+<span class="material-icons-round text-white/50 group-hover:text-white transition-colors">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="absolute bottom-0 w-full bg-surface-darker/90 backdrop-blur-xl border-t border-white/5 pt-2 pb-6 px-6 z-50">
+<div class="flex justify-between items-center max-w-sm mx-auto">
+<!-- Home (Active) -->
+<button class="flex flex-col items-center gap-1 w-16 group">
+<div class="w-12 h-8 rounded-full bg-primary/20 flex items-center justify-center transition-all group-hover:bg-primary/30">
+<span class="material-icons-round text-primary">home</span>
+</div>
+<span class="text-[10px] font-medium text-primary">Lobby</span>
+</button>
+<!-- Profile -->
+<button class="flex flex-col items-center gap-1 w-16 group">
+<div class="w-12 h-8 rounded-full flex items-center justify-center transition-all group-hover:bg-white/5">
+<span class="material-icons-round text-white/40 group-hover:text-white/80 transition-colors">person</span>
+</div>
+<span class="text-[10px] font-medium text-white/40 group-hover:text-white/80 transition-colors">Profile</span>
+</button>
+<!-- Settings -->
+<button class="flex flex-col items-center gap-1 w-16 group">
+<div class="w-12 h-8 rounded-full flex items-center justify-center transition-all group-hover:bg-white/5">
+<span class="material-icons-round text-white/40 group-hover:text-white/80 transition-colors">settings</span>
+</div>
+<span class="text-[10px] font-medium text-white/40 group-hover:text-white/80 transition-colors">Settings</span>
+</button>
+</div>
+</nav>
+</div>
+<script>
+        // Simple script to handle input auto-capitalization and focus styles
+        const input = document.querySelector('input[type="text"]');
+        input.addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
+</body></html>

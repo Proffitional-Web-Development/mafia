@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Game Home Screen</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d33",
+                        "background-light": "#f8f5f6",
+                        "background-dark": "#221013",
+                        "surface-dark": "#2d1619",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    backgroundImage: {
+                        'noir-pattern': "radial-gradient(circle at center, transparent 0%, #221013 100%)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            /* Fix specifically for mobile height issues */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .safe-area-top {
+            padding-top: env(safe-area-inset-top, 20px);
+        }
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        /* Custom glow for the primary button */
+        .glow-effect {
+            box-shadow: 0 0 20px -5px rgba(242, 13, 51, 0.5);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(242, 13, 51, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 overflow-hidden relative selection:bg-primary selection:text-white">
+<!-- Background Ambience -->
+<div class="absolute inset-0 z-0 opacity-40 pointer-events-none bg-[url('https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?q=80&amp;w=1000&amp;auto=format&amp;fit=crop')] bg-cover bg-center mix-blend-overlay" data-alt="abstract dark noir smoke texture"></div>
+<div class="absolute inset-0 z-0 bg-gradient-to-b from-background-dark/80 via-background-dark/95 to-background-dark"></div>
+<!-- Main Container -->
+<div class="relative z-10 flex flex-col h-screen w-full max-w-md mx-auto bg-transparent">
+<!-- Header -->
+<header class="flex justify-between items-center px-6 pt-6 safe-area-top">
+<!-- Left placeholder for balance or potential back/menu -->
+<div class="w-10"></div>
+<!-- Language Switcher -->
+<button class="flex items-center gap-1 bg-surface-dark/80 backdrop-blur-sm border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide text-white hover:bg-white/10 transition-colors">
+<span class="text-primary">EN</span>
+<span class="text-white/20">|</span>
+<span class="text-slate-400">AR</span>
+</button>
+</header>
+<!-- Content Area -->
+<main class="flex-1 flex flex-col items-center justify-center px-6 pb-20 overflow-y-auto">
+<!-- Logo & Tagline -->
+<div class="text-center mb-8 relative">
+<h1 class="text-5xl font-black tracking-tighter text-white mb-2 text-glow uppercase leading-none">
+                    Mafia <span class="text-primary">Game</span>
+</h1>
+<p class="text-sm font-medium tracking-[0.2em] text-slate-400 uppercase">Trust No One</p>
+<!-- Decorative element -->
+<div class="w-24 h-1 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mt-4 opacity-50"></div>
+</div>
+<!-- Thematic Illustration -->
+<div class="relative w-full aspect-square max-w-[280px] mb-8 group">
+<!-- Glowing backdrop -->
+<div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75 animate-pulse"></div>
+<!-- Main Image Container -->
+<div class="relative w-full h-full rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm">
+<img alt="Silhouetted figure in fedora standing in shadows" class="w-full h-full object-cover opacity-90 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700 grayscale hover:grayscale-0" data-alt="Silhouetted mystery figure in fedora" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyA68J_0m0x071WkddmXrgQv-mLibOgIeeFY9qlVZmwkbVJ3MugX0YOjpv1kjrkj_pzMbil0UbUNsq5C-BcHyK-4LMcQTxBBw6g7FvwbMybb_Q1pw7YA1IlPQ1HimccwUAxCLk3iSln2YVuZR3ASpIeaBxCCb06iMc9lByoyIQtEb2MAictulzXZsY06u4S5IJT8U6m3Ew1-I8P4-pOgTe3fpH88uwuGSF4LSGbD6bBcZS03BggYxmp8c176wkfP6X9cB0lt7Cgl7Y"/>
+<!-- Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-80"></div>
+</div>
+<!-- Floating User Status Card -->
+<div class="absolute -bottom-5 left-1/2 -translate-x-1/2 w-[90%] bg-surface-dark/90 backdrop-blur-md border border-white/10 rounded-xl p-3 flex items-center justify-between shadow-lg transform transition-transform group-hover:-translate-y-1">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="User Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-primary" data-alt="User profile avatar close up" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNuom9cSAuGABLhBthEsn6zI5M8r_PbLERST5lQIPp_-oS-fQvDK_7AG2Oq99QWUn6yec6JX3vwiy0ZhgIs5MXQTXb7o7n4wiehG9Admn-DNrwiVXzh12-CKfqGaMadY2qWW7zn-o37wKPL57OJ0hqRf6fIJokkSUkPysz5-QCK10B-gRC_gkXGJr0UCRe3_COT-EfGAdRzA8uNIcf96XlYiT2JD5qxYLYc5v1Z6UmyaBispWnMirLkmODdxgRlcg4QOna5zkbskXV"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-surface-dark"></div>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-primary font-bold tracking-wider">Agent</span>
+<span class="text-sm font-bold text-white">Don Corleone</span>
+</div>
+</div>
+<div class="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center text-primary">
+<span class="material-icons-round text-lg">verified_user</span>
+</div>
+</div>
+</div>
+<!-- Spacer -->
+<div class="flex-grow"></div>
+<!-- Primary Action -->
+<div class="w-full mt-auto mb-6">
+<button class="group relative w-full bg-primary hover:bg-red-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg glow-effect transition-all active:scale-[0.98]">
+<div class="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="flex items-center justify-center gap-2 text-lg tracking-wide uppercase">
+                        Go to Game
+                        <span class="material-icons-round group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</span>
+</button>
+<p class="text-center text-xs text-slate-500 mt-4">248 players online now</p>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="bg-surface-dark/95 backdrop-blur-xl border-t border-white/5 safe-area-bottom">
+<div class="flex justify-around items-center px-2 py-3">
+<!-- Home Tab (Active) -->
+<button class="flex flex-col items-center justify-center w-16 gap-1 group">
+<div class="bg-primary/20 p-1.5 rounded-lg group-hover:bg-primary/30 transition-colors">
+<span class="material-icons-round text-primary text-2xl">home</span>
+</div>
+<span class="text-[10px] font-medium text-primary">Home</span>
+</button>
+<!-- Profile Tab -->
+<button class="flex flex-col items-center justify-center w-16 gap-1 group">
+<div class="p-1.5 rounded-lg group-hover:bg-white/5 transition-colors">
+<span class="material-icons-round text-slate-400 group-hover:text-white text-2xl transition-colors">person</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-white transition-colors">Profile</span>
+</button>
+<!-- Settings Tab -->
+<button class="flex flex-col items-center justify-center w-16 gap-1 group">
+<div class="p-1.5 rounded-lg group-hover:bg-white/5 transition-colors">
+<span class="material-icons-round text-slate-400 group-hover:text-white text-2xl transition-colors">settings</span>
+</div>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-white transition-colors">Settings</span>
+</button>
+</div>
+</nav>
+</div>
+</body></html>

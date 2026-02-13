@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Morning Resolution Screen - Mafia Game</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8311d4",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1a1022",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for granular control */
+        .glass-panel {
+            background: rgba(26, 16, 34, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(131, 17, 212, 0.2);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(131, 17, 212, 0.6);
+        }
+
+        .dead-overlay {
+            background: rgba(26, 16, 34, 0.85);
+            backdrop-filter: grayscale(100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 min-h-screen overflow-hidden relative flex flex-col items-center justify-between p-4 selection:bg-primary selection:text-white">
+<!-- Background Ambient Effects -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] opacity-40"></div>
+<div class="absolute bottom-0 right-0 w-[300px] h-[300px] bg-purple-900/20 rounded-full blur-[100px] opacity-30"></div>
+</div>
+<!-- Main Content Container -->
+<main class="relative z-10 w-full max-w-md flex flex-col h-full gap-6 pt-6 pb-4 flex-grow">
+<!-- Header: Morning Has Broken -->
+<header class="text-center space-y-2 animate-fade-in-down">
+<div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-yellow-500/10 mb-2 border border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+<span class="material-icons text-yellow-400 text-2xl">wb_sunny</span>
+</div>
+<h1 class="text-3xl font-bold tracking-tight text-white glow-text">Morning has broken</h1>
+<p class="text-gray-400 text-sm">Day 4 • Discussion Phase begins soon</p>
+</header>
+<!-- Elimination Card -->
+<section class="w-full">
+<div class="glass-panel rounded-xl p-6 text-center border-t-4 border-t-red-500/70 shadow-2xl transform transition-all hover:scale-[1.02]">
+<div class="relative w-24 h-24 mx-auto mb-4">
+<img alt="User Avatar" class="w-full h-full object-cover rounded-full border-4 border-red-500/30 grayscale" data-alt="Young man with glasses avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1ELDSdUHtpW_M1QOGp4tRmOAXN8jC_mDVmKTW2pPh2PjmxNDhELvoDxTtfftDdexe6wdVEgRA8A390dTeO6RBF9e5_DmLfuaka9yfqdxirHlfKguUl3hmzYANYomjET103bgOqqt1dBshrnF0ahAvygUJOiv6HOBCbw8EPJmFkopy2M-SlGCYnfQ2Jy3Y9Qge7Lbh6PqV4G0U4MZMZa9m-osSyocmgv0uTVRaYo1G7pdF9AEPbJBpDtcjnm_98LB8c6UDV6cowA-u"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-icons text-red-500 text-5xl font-bold drop-shadow-lg">close</span>
+</div>
+</div>
+<h2 class="text-2xl font-bold text-red-400 mb-1">@targetUsername</h2>
+<div class="h-px w-16 bg-red-500/30 mx-auto my-3"></div>
+<p class="text-gray-300 text-lg leading-relaxed">
+                    was eliminated by the <span class="text-primary font-bold">Mafia</span>.
+                </p>
+</div>
+</section>
+<!-- Conditional: Revenge Selection (Boy Role) -->
+<!-- This section appears because a 'Boy' role was killed -->
+<section class="w-full animate-pulse">
+<div class="bg-gradient-to-r from-red-900/40 to-primary/40 rounded-xl p-4 border border-red-500/50 flex flex-col gap-3 shadow-[0_0_20px_rgba(220,38,38,0.2)]">
+<div class="flex items-center justify-between border-b border-white/10 pb-2">
+<div class="flex items-center gap-2">
+<span class="material-icons text-red-400">local_fire_department</span>
+<span class="font-bold text-red-100 text-sm uppercase tracking-wider">Revenge Opportunity</span>
+</div>
+<div class="flex items-center gap-1 text-red-300 font-mono text-lg font-bold">
+<span class="material-icons text-base">timer</span> 00:15
+                    </div>
+</div>
+<p class="text-xs text-gray-300">Take someone with you! Select a target before you die.</p>
+<!-- Mini Target Carousel -->
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide pt-1">
+<!-- Target 1 -->
+<button class="flex-shrink-0 group relative w-12 h-12 rounded-full border border-gray-600 hover:border-red-500 transition-colors">
+<img alt="Player" class="w-full h-full rounded-full object-cover opacity-70 group-hover:opacity-100" data-alt="Smiling woman avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwwGBpL2g9TFXLRs2s3b969E1PBOSOT131VD35q00aZAoTzBeq2M7T6dOHDpD9hlNd_Gvm80iWOdyKCHdVdeY_eNqXnOnKLlMnum7FVcywq2BBwk45z9zQ2Rt33ubQdkgSoa7meVt2ii907aHMtMBgguX2m_Ite8R8IMFKD-_5UzC5ocZ03pH_dy6wRc76QuAS2-6tnzO2pCyOfZZDccnVTwaKZgj3rroZc24miNx1b2uORM9NFVSIyhM6EKY-ielnGIDuCZkDrUB2"/>
+</button>
+<!-- Target 2 -->
+<button class="flex-shrink-0 group relative w-12 h-12 rounded-full border-2 border-red-500 shadow-[0_0_10px_rgba(220,38,38,0.6)]">
+<img alt="Player" class="w-full h-full rounded-full object-cover" data-alt="Man with beard avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwgiKfNW0VcgtSj5t1dUIiF01reg36un9SrQaLMDsGzn3FOEUqRv6-E6Qazl10GHYqUC8a7apvats1wx7169B6o9ueOWgTX-LZtOEYPseeoVzStf1kkn3XboiJ-Db8PxQHVu-bMDlbJzRUHpZ5sUes7FKbu5gz6SoAIMvqc6gMJnblmcTkLQSHq3dkEdOnEy5bYL6ULPBXG2mx5no5KUaW51yAGNqsrzXJRU9bMqrAhznTn2ZvivsNI61QncZ4CPxNNjkPJreMtwW1"/>
+<div class="absolute -top-1 -right-1 bg-red-600 rounded-full w-4 h-4 flex items-center justify-center border border-black">
+<span class="material-icons text-[10px] text-white">check</span>
+</div>
+</button>
+<!-- Target 3 -->
+<button class="flex-shrink-0 group relative w-12 h-12 rounded-full border border-gray-600 hover:border-red-500 transition-colors">
+<img alt="Player" class="w-full h-full rounded-full object-cover opacity-70 group-hover:opacity-100" data-alt="Man with short hair avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx863EU2HcwkvjFkXaSb7CrWDT9ErNvoQXC1jIzjKJfn9uywCUGq-SbpVeXfRpkoNV4q8-UQViez1of6-BS8hDqnt0Igy6cWTElwyrgsRPQ6qkIpLoFXAi1eDjSOnYiPBzXMZdXF3Hz5Xc1xYDFaRgi-NpaV_ZghwNTbWLbH2wJRMqNfYfEBs6OKqbW18iWhO882ly58Yk-C62RAkQ0P417LTKLcveWMWn-Rrv0hxm1Kaxb43E-T2nCUHOInUYQ0ztq1E6xb3rDpDY"/>
+</button>
+<!-- Target 4 -->
+<button class="flex-shrink-0 group relative w-12 h-12 rounded-full border border-gray-600 hover:border-red-500 transition-colors">
+<img alt="Player" class="w-full h-full rounded-full object-cover opacity-70 group-hover:opacity-100" data-alt="Woman looking aside avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuZB_fPVuT8n40iVoBRG1vbZX4tQIdIdQcwUC99_1PsRdhTmj1cKN0ZI84cOs_yHlV5VvryZz9BCLjsFL9uUeQRcomm3RHbkvTVPLMIGsbDYGgSeiC9_ZqPOp38wfJlaLOn7DgDCRcrbFnxizaljqbTegq1PTHrz80vJel2Q1coJGrXeEe2m18pg-yUeSDctfXkpooizVC3xA_EOPpQYaniRN-rvyovWb1jsnlMFVPuURwazj6zm4m1lkXU6WTaV_FB1O9e7ogXaOa"/>
+</button>
+</div>
+</div>
+</section>
+<!-- Player Status Grid -->
+<section class="flex-grow overflow-y-auto w-full">
+<h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 px-1">Survivors Status</h3>
+<div class="grid grid-cols-4 gap-3 pb-20">
+<!-- Alive Player -->
+<div class="flex flex-col items-center gap-1 group">
+<div class="relative w-14 h-14">
+<div class="absolute inset-0 bg-primary/20 rounded-xl rotate-3 group-hover:rotate-6 transition-transform"></div>
+<img alt="Player" class="relative w-full h-full object-cover rounded-xl border-2 border-primary/40 group-hover:border-primary transition-colors" data-alt="Woman with blonde hair avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZKvtiYNW0TIQbI8tGq9mCe2PJ3bqBKtRh8M_1CVtNf7xK-NGBrzxvGqxQnN7D0Mlu1Q50jf57fPDIkakcOXCjtOWtNWnuiaDSrgWpHwf8iP4yriHow5iuRnFy23BxaylkY2kNH2n-CjRgCphqvZ2MlpqcdR_dL3OA3HYjFbYHspzKSWj0xhlkUZSIYzVfmYHUOqHY8Y19TW34yri3wFZU-YqiPrWuDth_sId6uyuV94AtDNDCOAKTJO614yiCYXcYgcRvTAErmGmA"/>
+<div class="absolute -bottom-1 -right-1 bg-green-500 w-3 h-3 rounded-full border-2 border-background-dark"></div>
+</div>
+<span class="text-[10px] font-medium text-gray-300 truncate w-full text-center">@sarah</span>
+</div>
+<!-- Alive Player (Self) -->
+<div class="flex flex-col items-center gap-1 group">
+<div class="relative w-14 h-14">
+<div class="absolute inset-0 bg-yellow-500/10 rounded-xl rotate-3"></div>
+<img alt="You" class="relative w-full h-full object-cover rounded-xl border-2 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)]" data-alt="Man with glasses smiling avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYd-sxzSv91gY0oBuA85JPkuOE3_lOr6l96n8KwoV2Gpb7r2CDZcsOdFoIoqOCCdS4lhYP7HkBh9s5Doxy2-k3o-kMStNzk42uPHS65KkF3VfILU4AVAjl4v0tCxbCdMNog78OiIRsFoV8O4zMlpPQEQvhW5ahRndCV_Ho3nR4QjEMg-n0Wd0klIeVjD7YxlOP0rsu1BU37KYB9ImUQAXlPVgtv2qu1RiwOQnTFSoZC5H4-zqgPh-cuTX3TiE5GBMR2nTwJ5DKx-G8"/>
+<div class="absolute -top-2 left-1/2 -translate-x-1/2 bg-yellow-500 text-background-dark text-[8px] font-bold px-1.5 rounded-full">YOU</div>
+</div>
+<span class="text-[10px] font-bold text-yellow-500 truncate w-full text-center">@mike_g</span>
+</div>
+<!-- Dead Player -->
+<div class="flex flex-col items-center gap-1 opacity-50">
+<div class="relative w-14 h-14">
+<img alt="Player" class="w-full h-full object-cover rounded-xl grayscale" data-alt="Man smiling avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrXVohdQCtWW0ApgEV3KZLJDPcTEsSl6V6EDnaD3d_QbLpS0N9NZ6y0_hHNhozjm6jBCEq9dUf3Z_jN9bCqleFIT-rsh8EK40Cyvc3ZxwPI6FV9Ba_T_gLtVrMiFm7thti2wzmoPgULf7ZkYa1a7ToyhhUK5LQ6-NxXoNp_hLucT0uxkbhFXLmGAAJjd2ZWLKqWG_JtN5H4A5X90_BFn-oaEhN8wHmSl3Cs3jzndN2s320RVg3w6goxHnLgkSoOH3CcMj7mPtnMgZ4"/>
+<div class="absolute inset-0 dead-overlay rounded-xl flex items-center justify-center">
+<span class="material-icons text-red-500/80 text-xl">skull</span>
+</div>
+</div>
+<span class="text-[10px] text-gray-500 line-through decoration-red-500/50 truncate w-full text-center">@david</span>
+</div>
+<!-- Alive Player -->
+<div class="flex flex-col items-center gap-1 group">
+<div class="relative w-14 h-14">
+<img alt="Player" class="w-full h-full object-cover rounded-xl border border-gray-700" data-alt="Woman with serious face avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfjQpuTwq_jyGARdhbEZH4qlVa0fDgXXL9Qgs5JLnuSCUs6W6CY4tjH689Wnn5p23tmPm7EPABRSh5SBecrfkgF9-vv4jWarrEOCwP6yq0NOl3-csrOUWHOzrOpVvCGrVQOuKzhTq72lpQZGuvA2oNYq4fRdu1Ih5VOm__T6jsSNIb3qvUoObRrCVlWW-_V-ucf8lg2GbxY8CMDxycZgLh-9RXvrA_sw0Owbwdbs3ohWIbPabm_HMAaWG2mkKdELffpvMzy_u7AjK-"/>
+</div>
+<span class="text-[10px] text-gray-400 truncate w-full text-center">@jenny</span>
+</div>
+<!-- Alive Player -->
+<div class="flex flex-col items-center gap-1 group">
+<div class="relative w-14 h-14">
+<img alt="Player" class="w-full h-full object-cover rounded-xl border border-gray-700" data-alt="Man looking up avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5RFnaKNQDzvh40s0c8WbwMkZdvP5KQB8z5uzHwK79FhHqO6PmENMh_mXA4ggMduHl1oNwwmww-07K0t80jcMTAZnJYn6i1ZPvM1VRkdjyRvbWqF_iQ4S8-mYZsVGAlDboXUcquK7C3OAhCgZf9eyswmkMrMA40leZ2-gb_7LK56gw-mOqa52uKohmlejLrnhW0lkmhxetE7H8EfAtUOEi6S5ApA1p8As3oe7X79oCENeUJvLN5AnJQM1fl8HyOrxeYQUkvvA-JXTZ"/>
+</div>
+<span class="text-[10px] text-gray-400 truncate w-full text-center">@tom</span>
+</div>
+<!-- The Recently Eliminated (Shows as dead) -->
+<div class="flex flex-col items-center gap-1">
+<div class="relative w-14 h-14">
+<img alt="Player" class="w-full h-full object-cover rounded-xl grayscale border border-red-900" data-alt="Young man with glasses avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ8Rufk9OTyuZ3oHtv03570wh24V-VRWS9i7W1IO9gviVRgOHwhqtJJqIfOxW3Q7QxD2M49Ir_6IyHC9I9yfQaKXWfDJ03KPg0yGaSEdzcaCNn4eBAgs_VgqGUBTAu3sGWoSjsI18-yS1mD2f4Zzk-Qu29DMOQWhCE1xZy-2LXS0aWEgKGPoQe-BGhzNlyfl2-NRpD-vCn3xM3ooHI3CBIuWzwlCOhyXRFUesIuMFoD297bKSgJk7lQWath0qldPUXNWwtjltkqqUu"/>
+<div class="absolute inset-0 bg-red-900/40 rounded-xl flex items-center justify-center border border-red-500/50">
+<span class="material-icons text-white text-lg font-bold">close</span>
+</div>
+</div>
+<span class="text-[10px] text-red-400 font-bold truncate w-full text-center">@target</span>
+</div>
+<!-- Alive Player -->
+<div class="flex flex-col items-center gap-1 group">
+<div class="relative w-14 h-14">
+<img alt="Player" class="w-full h-full object-cover rounded-xl border border-gray-700" data-alt="Woman profile view avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOb1tnSEbjbONSNLuLYRmqn380nJqXYTeh36n5yMIy4tIfcyXBGmf3pxpYorrQQWyubcMIlCdJ7IKmf7LHSJ_4wThkK44DuJNwv9wV7f3BkzzpeUS-eT9ZkOe5ZZhQNbCBgvX32Iy6Vph3JTO2wt48JhsOFTJX-vga0fUyB0MPafxH055VvHG0-pE_zvFuUOlxb9DBuaDTo-EtIDZLDVEY9NzcyIKC3yv1y4xP1PMdmprfWDRa-1Nqgx6ek_mM6p_FAVmYdyjXD4ao"/>
+</div>
+<span class="text-[10px] text-gray-400 truncate w-full text-center">@lisa</span>
+</div>
+<!-- Alive Player -->
+<div class="flex flex-col items-center gap-1 group">
+<div class="relative w-14 h-14">
+<img alt="Player" class="w-full h-full object-cover rounded-xl border border-gray-700" data-alt="Man with intense look avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlgfJBZgIDPI6-c91L0nK_WJ-o_HuohxBFfJApq84DlhM8nBlaaR4Y2cEriQ5PgiG_BWm1CJC9DFMTSIuH6V2ZZlt6kylFydvOh8bS9zZuHblmWqp-nsUFPMYfV-TZM0sLS5wOQlPa-UYv6JosKCaPsIpkmEsekhn3UFHyIuLjEjOQq897pMhvTVK8C4WQLcXu9oF227XjkB-QvioNm3jYB2ZINiktuYw8R74Ukl89tHUN-cyJoRNFNsKxYv1k4mTDD1rpyd0ZutZs"/>
+</div>
+<span class="text-[10px] text-gray-400 truncate w-full text-center">@kevin</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Progress Bar (Fixed) -->
+<div class="fixed bottom-0 left-0 w-full bg-background-dark/95 backdrop-blur-md border-t border-white/5 pt-4 pb-8 px-6 z-20">
+<div class="flex justify-between items-end mb-2">
+<span class="text-sm font-medium text-gray-300">Preparing next phase...</span>
+<span class="text-xs text-primary font-mono">75%</span>
+</div>
+<div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+<div class="bg-primary h-2 rounded-full w-3/4 shadow-[0_0_10px_rgba(131,17,212,0.8)] relative">
+<div class="absolute inset-0 bg-white/20 animate-[pulse_2s_infinite]"></div>
+</div>
+</div>
+</div>
+</body></html>

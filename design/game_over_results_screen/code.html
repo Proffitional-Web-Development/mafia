@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Game Over Results Screen</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#8311d4",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#1a1022",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Custom scrollbar for the table container */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-white h-screen overflow-hidden flex flex-col font-display">
+<!-- Winner Announcement Area -->
+<header class="flex-shrink-0 pt-8 pb-6 px-6 text-center relative overflow-hidden">
+<!-- Abstract Glow Background -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary/20 blur-[60px] rounded-full pointer-events-none z-0"></div>
+<div class="relative z-10 flex flex-col items-center justify-center animate-fade-in-down">
+<!-- Faction Icon Container -->
+<div class="w-24 h-24 mb-4 rounded-full bg-gradient-to-br from-primary to-purple-900 shadow-lg shadow-primary/50 flex items-center justify-center border-4 border-white/10">
+<span class="material-icons text-white text-5xl">shield</span>
+</div>
+<h1 class="text-3xl font-bold uppercase tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-white drop-shadow-sm">
+                Winner: Citizens
+            </h1>
+<p class="text-sm text-purple-200/70 mt-1 uppercase tracking-widest text-xs">Game #8834 Ended</p>
+</div>
+</header>
+<!-- Personal Result Card -->
+<div class="flex-shrink-0 px-4 mb-4">
+<div class="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex items-center gap-4 shadow-lg">
+<!-- Role Avatar -->
+<div class="w-14 h-14 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 flex-shrink-0">
+<img class="w-full h-full object-cover rounded-lg opacity-90 mix-blend-overlay hidden" data-alt="Avatar of a middle eastern man smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeG7h4v6k1NTmk7gswEjPakjYX9_HdRXBrWqfjW90fNAuTuwcJCwKMWdcNKYeonYU-byaJH92YQg6dtN1FRClerqL3XWn-ILz5sLsk-dKK9vINZG9UizJwoV51xhQeBmsEPP4E3_P6KwaUksRVeiAIsXN8TWjVXyfDBlGKvX0TH7anDpNv6YxChpvJwABDvcE-WacPE5gHzhAftBZtu4lfLKCVDQzcfokZfnXZQAGnlRptzIWm1AnofGiGKhtr9zEmS3KKO02rggcm"/>
+<!-- Using icon instead of image for reliability in this context -->
+<span class="material-icons text-emerald-400 text-3xl">star</span>
+</div>
+<div class="flex-grow">
+<div class="text-xs uppercase text-emerald-400 font-bold tracking-wider mb-0.5">Victory</div>
+<div class="text-lg font-bold leading-tight">You were the <span class="text-primary text-emerald-300">Sheikh</span></div>
+<div class="text-sm text-gray-400">Your team eliminated the Mafia.</div>
+</div>
+</div>
+</div>
+<!-- Scrollable Game Report Table -->
+<div class="flex-grow px-4 overflow-hidden flex flex-col min-h-0">
+<div class="flex items-center justify-between mb-3 px-1">
+<h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400">Game Report</h2>
+<div class="text-xs px-2 py-0.5 bg-white/10 rounded text-gray-300">12 Players</div>
+</div>
+<div class="flex-grow overflow-y-auto no-scrollbar pb-24 space-y-2">
+<!-- Table Row: Alive Player (Standard) -->
+<div class="group flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-lg border border-transparent hover:border-white/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="Portrait of a woman with intense gaze" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDA5_HEoj6n79qWhDmzRx_3pVlWnlpKiyb34V_c6juNxRh-b-chnVF6EA75O4cqy4v_5-qqmWugKjJOwM28x8z8IGNcogZVvnaNrWqGsMMcXfZb2O54rwnxRen5rFpty6-HeQIb3MU_gjNFm-6zEQacjWwewOfIOrCpylI3MGy0KEq3HJd6kGTzveAIRelLU5Oov4Q1S3S5kYMo2yjpwqEPCzmLwQHw2KLjQ37UGfZqMqDS3efL2BG1RqdAxJx-ttzb_y9QmqGDdKz"/>
+</div>
+<div>
+<div class="font-semibold text-sm">Sarah_Connor</div>
+<div class="text-xs text-primary font-medium">Detective</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-xs font-medium text-green-400">Alive</span>
+</div>
+</div>
+<!-- Table Row: Dead Player (Mafia) -->
+<div class="group flex items-center justify-between bg-red-900/10 hover:bg-red-900/20 transition-colors p-3 rounded-lg border border-red-500/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border border-red-500/30 grayscale">
+<img class="w-full h-full object-cover" data-alt="Portrait of a man with beard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByBBfrmmF2jabm5N4S5v2jQtEKiEha8yubhJNC740cRc0hprJs7NwsNzNhUesqQGIPAn-cTOiXTGCH2FZUy_GWd_fN2YJEmZnViwxT-26SUG8aT6728WcCF_44kjC2u7DcpBzz__ID2xVPHI4DHf755XVG7zZmK4kNalxXcg_zqsNGydlBQOZWzf7H4ou-e-jIzn0Oow6EMvrfMkEzYTQNEg5AKc9Q5Nap3o8R_K7QnfEzYdDmIRyWgjgQ8FtBJOp9HSPG8j3zYui5"/>
+</div>
+<div>
+<div class="font-semibold text-sm text-red-200 line-through decoration-red-500/50">Don_Vito</div>
+<div class="text-xs text-red-400 font-medium">Mafia Don</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-base text-red-500">skull</span>
+<span class="text-xs font-medium text-red-400">Dead (Day 3)</span>
+</div>
+</div>
+<!-- Table Row: You (Highlighted) -->
+<div class="group flex items-center justify-between bg-emerald-900/10 p-3 rounded-lg border border-emerald-500/20 shadow-[0_0_15px_-5px_rgba(16,185,129,0.2)]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border-2 border-emerald-500">
+<img class="w-full h-full object-cover" data-alt="Portrait of a man smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJZvIl4FfdBwn7Y7YcAqBFS1WDEmY71liG53R0rsGaAemGgQqeVFBIpRZKvfYz25Rf_qlwDFc3zortZvLIP9kiQQ4d8nzKpfbSxzXDqiBHF_0SS6KF9db664-0nV8HHtShsZI1aIn-_7cwmq-LgKwd6FGPSzA2ri5auF9vzeB15uBxPWT8al3GAcLSzOHG0QEq9ilpcTuL6SjH1reEX1MvqRS8mm3ZVf1SgRiXtF4NISQg9bSw0vfokdiNVJFD0VeHJ9Ie9a-tu12q"/>
+</div>
+<div>
+<div class="font-semibold text-sm text-white">You</div>
+<div class="text-xs text-emerald-400 font-medium">Sheikh</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-xs font-medium text-green-400">Alive</span>
+</div>
+</div>
+<!-- Table Row: Dead Player (Civilian) -->
+<div class="group flex items-center justify-between bg-gray-800/30 p-3 rounded-lg border border-white/5 opacity-70">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden grayscale">
+<img class="w-full h-full object-cover" data-alt="Portrait of a smiling woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxvSZbV6gS5mqjrozREejMDy1yorxOoHfZbXMBIRJ5ccv2RIjGzf4qv3KZYvsn0OozChJlvI4UTGVtNQRPYukhRW5po_QNHD1c4KohRb4hw4kLQUzGxqZ799ARvz-b9DHMttGR5LhVWySDglD_xCzNhYo8X0iuikz71LcH_AfF1pi-Ezgn7WObVYtkiOjVe1SNftiFjwavhUXf_f03Q2QF5YQ1uC_UN8TC_OnSspjgBHDcfwPKVBYxq1uxKDiDdsQkIvkw2Xs2c60i"/>
+</div>
+<div>
+<div class="font-semibold text-sm text-gray-400 line-through">Alice_W</div>
+<div class="text-xs text-gray-500 font-medium">Citizen</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-icons text-base text-gray-500">skull</span>
+<span class="text-xs font-medium text-gray-500">Dead (Night 1)</span>
+</div>
+</div>
+<!-- Table Row: Alive Player -->
+<div class="group flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-lg border border-transparent hover:border-white/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border border-white/10">
+<div class="w-full h-full bg-purple-900 flex items-center justify-center text-xs font-bold text-white">JD</div>
+</div>
+<div>
+<div class="font-semibold text-sm">JohnDoe99</div>
+<div class="text-xs text-primary font-medium">Citizen</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-xs font-medium text-green-400">Alive</span>
+</div>
+</div>
+<!-- Table Row: Alive Player -->
+<div class="group flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-lg border border-transparent hover:border-white/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover" data-alt="Portrait of a man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD01AflHf-TxWxwQlKzIrrxZ1AkWGGD3-4T6OZirR5bJBsoCpiB61iWiwEWtxS7WAmBOK58KfOnHNvRiBBARU7xWD7lqP16QMliFLZojULUGE1Et9kkwUGBVKxUKNryXZU5F9lPDfW4GqpLfTy9_ZP2UEBZi9keLP2oW7HwX5W98cvoOLX3axZAiXiEmSQn_ai-JdjwdJaUYDT89v9F1HFB-MF1qEYQKIJ2hVgr9RCSK6NCuvzcJ36cR_4EzE6UHBs8G4IMtyzAJO2j"/>
+</div>
+<div>
+<div class="font-semibold text-sm">TechGuy_42</div>
+<div class="text-xs text-primary font-medium">Citizen</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-xs font-medium text-green-400">Alive</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Bar (Sticky Bottom) -->
+<div class="absolute bottom-0 left-0 w-full bg-background-dark/80 backdrop-blur-xl border-t border-white/10 p-4 pb-8 z-20">
+<div class="flex flex-col gap-3 max-w-md mx-auto">
+<!-- Play Again (Primary) - Only visible to owner logic assumed -->
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 px-6 rounded-xl shadow-[0_4px_14px_0_rgba(131,17,212,0.39)] transition transform active:scale-95 flex items-center justify-center gap-2">
+<span class="material-icons">replay</span>
+                Play Again
+            </button>
+<!-- Leave (Secondary) -->
+<button class="w-full bg-transparent hover:bg-white/5 text-gray-400 hover:text-white font-semibold py-3 px-6 rounded-xl border border-transparent hover:border-white/10 transition flex items-center justify-center gap-2 text-sm">
+<span class="material-icons text-lg">logout</span>
+                Leave Game
+            </button>
+</div>
+</div>
+</body></html>
