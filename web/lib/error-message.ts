@@ -50,7 +50,9 @@ export function mapAppErrorKey(input: unknown): AppErrorKey {
   }
 
   if (
-    (message.includes("game") && message.includes("already") && message.includes("start")) ||
+    (message.includes("game") &&
+      message.includes("already") &&
+      message.includes("start")) ||
     message.includes("already started") ||
     message.includes("gamealreadystarted")
   ) {

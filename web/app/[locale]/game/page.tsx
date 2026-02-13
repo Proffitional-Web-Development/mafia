@@ -3,8 +3,8 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserStatusCard } from "@/components/game/user-status-card";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { Divider } from "@/components/ui/divider";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -19,6 +19,7 @@ import { mapAppErrorKey } from "@/lib/error-message";
 export default function GamePage() {
   const t = useTranslations("room");
   const gt = useTranslations("game");
+  const ct = useTranslations("common");
   const et = useTranslations("errors");
   const router = useRouter();
   const currentUser = useQuery(api.users.getCurrentUser);
@@ -33,7 +34,11 @@ export default function GamePage() {
   if (!currentUser) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <LoadingState label={gt("loadingSession")} compact className="max-w-xs" />
+        <LoadingState
+          label={gt("loadingSession")}
+          compact
+          className="max-w-xs"
+        />
       </main>
     );
   }
@@ -74,7 +79,9 @@ export default function GamePage() {
       <section className="relative z-10 space-y-6">
         <div className="flex items-center justify-between gap-3">
           <UserStatusCard
-            username={currentUser.username ?? currentUser.name ?? gt("fallbackPlayer")}
+            username={
+              currentUser.username ?? currentUser.name ?? gt("fallbackPlayer")
+            }
             avatarUrl={currentUser.avatarUrl ?? undefined}
             subtitle={gt("lobbyTitle")}
             className="flex-1"
@@ -103,7 +110,10 @@ export default function GamePage() {
 
         <Divider label={t("orJoinExisting")} variant="gradient" />
 
-        <form onSubmit={handleJoin} className="space-y-3 rounded-2xl border border-white/10 bg-surface/60 p-5">
+        <form
+          onSubmit={handleJoin}
+          className="space-y-3 rounded-2xl border border-white/10 bg-surface/60 p-5"
+        >
           <TextInput
             type="text"
             value={joinCode}
@@ -128,15 +138,29 @@ export default function GamePage() {
         </form>
 
         {error ? (
-          <StatusBanner message={error} variant="error" className="text-center" />
+          <StatusBanner
+            message={error}
+            variant="error"
+            className="text-center"
+          />
         ) : null}
       </section>
 
       <BottomNavigation
         items={[
-          { key: "home", label: "Home", icon: "home", onClick: () => router.push("/") },
-          { key: "lobby", label: "Lobby", icon: "meeting_room", active: true },
-          { key: "settings", label: "Settings", icon: "settings" },
+          {
+            key: "home",
+            label: ct("home"),
+            icon: "home",
+            onClick: () => router.push("/"),
+          },
+          {
+            key: "lobby",
+            label: ct("lobby"),
+            icon: "meeting_room",
+            active: true,
+          },
+          { key: "settings", label: ct("settings"), icon: "settings" },
         ]}
       />
     </main>

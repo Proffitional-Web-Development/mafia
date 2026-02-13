@@ -5,6 +5,7 @@
             "matchCommandLine": true
         },
         "npx convex": true,
-        "npm run typecheck": true
+        "npm run typecheck": true,
+        "pnpm": true
     }
 }

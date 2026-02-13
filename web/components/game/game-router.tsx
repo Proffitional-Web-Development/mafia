@@ -8,9 +8,9 @@ import {
 } from "@/components/game/ability-phase";
 import { DiscussionPhase } from "@/components/game/discussion-phase";
 import { FinishedPhase } from "@/components/game/finished-phase";
-import { PhaseTransitionController } from "@/components/game/phase-transition-controller";
 import { MafiaVotingPhase } from "@/components/game/mafia-voting-phase";
 import { PhaseHeader } from "@/components/game/phase-header";
+import { PhaseTransitionController } from "@/components/game/phase-transition-controller";
 import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
 import { ResolutionPhase } from "@/components/game/resolution-phase";
@@ -27,11 +27,12 @@ interface GameRouterProps {
 export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
   const gameState = useQuery(api.stateMachine.getGameState, { gameId });
   const pt = useTranslations("phases");
+  const ct = useTranslations("common");
 
   if (!gameState) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <LoadingState label="Loading game..." compact className="max-w-xs" />
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </main>
     );
   }

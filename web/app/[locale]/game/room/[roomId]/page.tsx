@@ -4,8 +4,8 @@ import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { use, useState } from "react";
 import { GameRouter } from "@/components/game/game-router";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { SettingsPanel } from "@/components/game/settings-panel";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Badge } from "@/components/ui/badge";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -26,6 +26,7 @@ export default function RoomPage({
 }: {
   params: Promise<{ roomId: string }>;
 }) {
+  const ct = useTranslations("common");
   const { roomId } = use(params);
   const roomState = useQuery(api.rooms.getRoomState, {
     roomId: roomId as Id<"rooms">,
@@ -35,7 +36,7 @@ export default function RoomPage({
   if (!roomState || !currentUser) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <LoadingState label="Loading..." compact className="max-w-xs" />
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </main>
     );
   }
@@ -192,13 +193,24 @@ function LobbyView({
       <section className="relative z-10 space-y-5">
         <div className="flex w-full items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">{t("settingsTitle")}</h1>
-            <p className="text-xs text-text-tertiary">{t("playersCount", { current: memberCount, max: roomState.settings.maxPlayers })}</p>
+            <h1 className="text-xl font-bold tracking-tight text-white">
+              {t("settingsTitle")}
+            </h1>
+            <p className="text-xs text-text-tertiary">
+              {t("playersCount", {
+                current: memberCount,
+                max: roomState.settings.maxPlayers,
+              })}
+            </p>
           </div>
           <LanguageSwitcher variant="icon" />
         </div>
 
-        <RoomCodeCard code={roomState.code} label={t("roomCode")} className="w-full" />
+        <RoomCodeCard
+          code={roomState.code}
+          label={t("roomCode")}
+          className="w-full"
+        />
 
         <div className="-mt-2">
           <SecondaryButton
@@ -258,16 +270,21 @@ function LobbyView({
               );
             })}
 
-            {Array.from({ length: Math.max(0, roomState.settings.maxPlayers - memberCount) })
+            {Array.from({
+              length: Math.max(0, roomState.settings.maxPlayers - memberCount),
+            })
               .slice(0, Math.max(0, 12 - memberCount))
-              .map((_, idx) => (
-                <div
-                  key={`slot-${idx}`}
-                  className="flex min-h-[94px] items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 text-xs text-text-muted"
-                >
-                  +
-                </div>
-              ))}
+              .map((_, slotOffset) => {
+                const slotNumber = memberCount + slotOffset + 1;
+                return (
+                  <div
+                    key={`slot-${slotNumber}`}
+                    className="flex min-h-[94px] items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 text-xs text-text-muted"
+                  >
+                    +
+                  </div>
+                );
+              })}
           </PlayerGrid>
 
           {!canStart && (
@@ -280,7 +297,9 @@ function LobbyView({
         {/* Settings */}
         <section className="space-y-3">
           {!isOwner && (
-            <p className="text-xs text-text-tertiary">{t("readOnlySettings")}</p>
+            <p className="text-xs text-text-tertiary">
+              {t("readOnlySettings")}
+            </p>
           )}
 
           <SettingsPanel
@@ -290,14 +309,21 @@ function LobbyView({
             onDiscussionDurationChange={(value) =>
               handleSettingChange("discussionDuration", value)
             }
-            onMaxPlayersChange={(value) => handleSettingChange("maxPlayers", value)}
+            onMaxPlayersChange={(value) =>
+              handleSettingChange("maxPlayers", value)
+            }
           />
 
           <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
-            <p className="mb-2 text-sm font-medium text-white">{t("enabledRoles")}</p>
+            <p className="mb-2 text-sm font-medium text-white">
+              {t("enabledRoles")}
+            </p>
             <div className="flex flex-wrap gap-3">
               {(["sheikh", "girl", "boy"] as const).map((role) => (
-                <label key={role} className="flex items-center gap-1.5 text-sm text-text-secondary">
+                <label
+                  key={role}
+                  className="flex items-center gap-1.5 text-sm text-text-secondary"
+                >
                   <input
                     type="checkbox"
                     checked={roomState.settings.enabledRoles[role]}
@@ -319,7 +345,11 @@ function LobbyView({
 
         {/* Error */}
         {error && (
-          <StatusBanner message={error} variant="error" className="text-center" />
+          <StatusBanner
+            message={error}
+            variant="error"
+            className="text-center"
+          />
         )}
       </section>
 

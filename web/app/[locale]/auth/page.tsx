@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -10,27 +9,23 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { TextInput } from "@/components/ui/text-input";
-import { api } from "@/convex/_generated/api";
 import { useRouter } from "@/i18n/navigation";
+import { mapAppErrorKey } from "@/lib/error-message";
 
 type AuthMode = "signIn" | "signUp";
 
 export default function AuthPage() {
   const t = useTranslations("auth");
   const common = useTranslations("common");
+  const et = useTranslations("errors");
   const router = useRouter();
   const { signIn } = useAuthActions();
-  const currentUser = useQuery(api.users.getCurrentUser);
 
   const [mode, setMode] = useState<AuthMode>("signIn");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  if (currentUser) {
-    router.replace(currentUser.hasCompletedProfile ? "/game" : "/onboarding");
-  }
 
   async function submitEmailPasswordAuth(
     event: React.FormEvent<HTMLFormElement>,
@@ -47,9 +42,7 @@ export default function AuthPage() {
       });
       router.replace("/onboarding");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("authenticationFailed");
-      setErrorMessage(message);
+      setErrorMessage(et(mapAppErrorKey(error)));
     } finally {
       setLoading(false);
     }
@@ -64,9 +57,7 @@ export default function AuthPage() {
         redirectTo: "/onboarding",
       });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("googleSignInFailed");
-      setErrorMessage(message);
+      setErrorMessage(et(mapAppErrorKey(error)));
       setLoading(false);
     }
   }
@@ -107,7 +98,12 @@ export default function AuthPage() {
             onChange={(event) => setPassword(event.target.value)}
           />
 
-          <PrimaryButton disabled={loading} loading={loading} icon="login" type="submit">
+          <PrimaryButton
+            disabled={loading}
+            loading={loading}
+            icon="login"
+            type="submit"
+          >
             {loading
               ? common("pleaseWait")
               : mode === "signIn"
@@ -116,7 +112,7 @@ export default function AuthPage() {
           </PrimaryButton>
         </form>
 
-        <Divider className="my-4" label="OR" variant="gradient" />
+        <Divider className="my-4" label={common("or")} variant="gradient" />
 
         <SecondaryButton
           type="button"

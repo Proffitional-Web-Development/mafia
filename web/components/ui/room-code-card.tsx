@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { SecondaryButton } from "@/components/ui/secondary-button";
@@ -11,7 +12,9 @@ interface RoomCodeCardProps {
   className?: string;
 }
 
-export function RoomCodeCard({ code, label = "Room Code", className }: RoomCodeCardProps) {
+export function RoomCodeCard({ code, label, className }: RoomCodeCardProps) {
+  const ct = useTranslations("common");
+  const rt = useTranslations("room");
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -25,19 +28,24 @@ export function RoomCodeCard({ code, label = "Room Code", className }: RoomCodeC
   }
 
   return (
-    <section className={cn("rounded-2xl border border-white/10 bg-surface/60 p-4", className)}>
+    <section
+      className={cn(
+        "rounded-2xl border border-white/10 bg-surface/60 p-4",
+        className,
+      )}
+    >
       <div className="mb-3 flex items-center justify-between gap-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-          {label}
+          {label ?? rt("roomCode")}
         </p>
         <SecondaryButton
           variant="ghost"
           fullWidth={false}
           onClick={handleCopy}
           icon="content_copy"
-          aria-label="Copy room code"
+          aria-label={rt("copyInviteLink")}
         >
-          {copied ? "Copied" : "Copy"}
+          {copied ? ct("copied") : ct("copy")}
         </SecondaryButton>
       </div>
 

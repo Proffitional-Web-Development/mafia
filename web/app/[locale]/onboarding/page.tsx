@@ -2,22 +2,24 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { AvatarCircle } from "@/components/ui/avatar-circle";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
+import { StatusBanner } from "@/components/ui/status-banner";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { SuggestedChips } from "@/components/ui/suggested-chips";
-import { StatusBanner } from "@/components/ui/status-banner";
 import { TextInput } from "@/components/ui/text-input";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
+import { mapAppErrorKey } from "@/lib/error-message";
 
 export default function OnboardingPage() {
   const t = useTranslations("onboarding");
   const common = useTranslations("common");
+  const et = useTranslations("errors");
   const router = useRouter();
   const currentUser = useQuery(api.users.getCurrentUser);
   const completeProfile = useMutation(api.users.completeProfile);
@@ -42,9 +44,11 @@ export default function OnboardingPage() {
     "CipherFox",
   ];
 
-  if (currentUser?.hasCompletedProfile) {
-    router.replace("/game");
-  }
+  useEffect(() => {
+    if (currentUser?.hasCompletedProfile) {
+      router.replace("/game");
+    }
+  }, [currentUser, router]);
 
   async function submitProfile(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,9 +81,7 @@ export default function OnboardingPage() {
 
       router.replace("/game");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : t("profileSetupFailed");
-      setErrorMessage(message);
+      setErrorMessage(et(mapAppErrorKey(error)));
     } finally {
       setSubmitting(false);
     }
@@ -99,7 +101,9 @@ export default function OnboardingPage() {
 
         {step === 1 ? (
           <div className="space-y-4">
-            <h1 className="text-xl font-bold tracking-tight text-white">{t("title")}</h1>
+            <h1 className="text-xl font-bold tracking-tight text-white">
+              {t("title")}
+            </h1>
             <p className="text-sm text-text-tertiary">{t("description")}</p>
 
             <TextInput
@@ -132,7 +136,9 @@ export default function OnboardingPage() {
           </div>
         ) : (
           <form className="space-y-4" onSubmit={submitProfile}>
-            <h1 className="text-xl font-bold tracking-tight text-white">{t("title")}</h1>
+            <h1 className="text-xl font-bold tracking-tight text-white">
+              {t("title")}
+            </h1>
             <p className="text-sm text-text-tertiary">{t("description")}</p>
 
             <div className="flex items-center gap-4">
@@ -161,7 +167,12 @@ export default function OnboardingPage() {
               >
                 {common("back")}
               </SecondaryButton>
-              <PrimaryButton disabled={submitting} loading={submitting} icon="check" type="submit">
+              <PrimaryButton
+                disabled={submitting}
+                loading={submitting}
+                icon="check"
+                type="submit"
+              >
                 {submitting ? t("saving") : t("saveProfile")}
               </PrimaryButton>
             </div>

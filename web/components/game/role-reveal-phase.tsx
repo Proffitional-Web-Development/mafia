@@ -24,6 +24,8 @@ const ROLE_ICONS: Record<string, string> = {
 
 export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
   const t = useTranslations("roleReveal");
+  const ct = useTranslations("common");
+  const pt = useTranslations("phases");
   const rt = useTranslations("roles");
   const myRole = useQuery(api.cardDistribution.getMyRole, { gameId });
   const mafiaTeammates = useQuery(api.cardDistribution.getMafiaTeammates, {
@@ -37,7 +39,7 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
   if (!myRole) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <LoadingState label="Distributing cards..." compact className="max-w-xs" />
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </div>
     );
   }
@@ -60,7 +62,7 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
     <div className="relative flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6">
       <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-25" />
 
-      <Badge variant="phase">Card Distribution</Badge>
+      <Badge variant="phase">{pt("cardDistribution")}</Badge>
 
       {/* Card */}
       <RoleRevealCard

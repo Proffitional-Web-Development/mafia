@@ -2,7 +2,12 @@ import type * as React from "react";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
-interface PrimaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+function isDirectionalIcon(name: string): boolean {
+  return name === "arrow_forward" || name === "arrow_back";
+}
+
+interface PrimaryButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: string;
   iconPosition?: "start" | "end";
   variant?: "primary" | "danger";
@@ -48,7 +53,12 @@ export function PrimaryButton({
         <Icon
           name={loading ? "autorenew" : icon}
           variant="round"
-          className={cn(loading && "animate-spin")}
+          className={cn(
+            loading && "animate-spin",
+            !loading &&
+              isDirectionalIcon(icon) &&
+              "[html[dir='rtl']_&]:-scale-x-100",
+          )}
         />
       ) : null}
       <span className="relative z-10">{children}</span>
@@ -56,7 +66,10 @@ export function PrimaryButton({
         <Icon
           name={icon}
           variant="round"
-          className="transition-transform group-hover:translate-x-1"
+          className={cn(
+            "transition-transform group-hover:translate-x-1",
+            isDirectionalIcon(icon) && "[html[dir='rtl']_&]:-scale-x-100",
+          )}
         />
       ) : null}
     </button>

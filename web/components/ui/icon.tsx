@@ -33,6 +33,7 @@ export function Icon({
 }: IconProps) {
   return (
     <span
+      role={ariaLabel ? "img" : undefined}
       aria-hidden={ariaLabel ? undefined : true}
       aria-label={ariaLabel}
       className={cn(

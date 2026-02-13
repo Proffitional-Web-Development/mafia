@@ -1,6 +1,12 @@
+/* eslint-disable @next/next/no-page-custom-font */
+
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import type { Metadata } from "next";
-import { Be_Vietnam_Pro, Noto_Sans_Arabic, Space_Grotesk } from "next/font/google";
+import {
+  Be_Vietnam_Pro,
+  Noto_Sans_Arabic,
+  Space_Grotesk,
+} from "next/font/google";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
 import "./globals.css";
 
@@ -47,10 +53,11 @@ export default function RootLayout({
         />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&display=swap"
         />
       </head>
       <body
+        suppressHydrationWarning
         className={`${spaceGrotesk.variable} ${beVietnamPro.variable} ${notoSansArabic.variable} antialiased`}
       >
         <ConvexAuthNextjsServerProvider>

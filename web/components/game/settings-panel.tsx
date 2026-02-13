@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface SettingsPanelProps {
@@ -19,15 +20,24 @@ export function SettingsPanel({
   onMaxPlayersChange,
   className,
 }: SettingsPanelProps) {
+  const t = useTranslations("room");
+
   return (
-    <section className={cn("rounded-2xl border border-white/10 bg-surface/60 p-4", className)}>
-      <h3 className="mb-3 text-sm font-semibold text-white">Room Settings</h3>
+    <section
+      className={cn(
+        "rounded-2xl border border-white/10 bg-surface/60 p-4",
+        className,
+      )}
+    >
+      <h3 className="mb-3 text-sm font-semibold text-white">
+        {t("settingsTitle")}
+      </h3>
 
       <div className="space-y-4">
         <label className="block space-y-2">
           <div className="flex items-center justify-between text-xs text-text-tertiary">
-            <span>Discussion Duration</span>
-            <span>{discussionDuration}s</span>
+            <span>{t("discussionDuration")}</span>
+            <span>{t("seconds", { count: discussionDuration })}</span>
           </div>
           <input
             type="range"
@@ -45,7 +55,7 @@ export function SettingsPanel({
 
         <label className="block space-y-2">
           <div className="flex items-center justify-between text-xs text-text-tertiary">
-            <span>Max Players</span>
+            <span>{t("maxPlayers")}</span>
             <span>{maxPlayers}</span>
           </div>
           <input
@@ -55,7 +65,9 @@ export function SettingsPanel({
             step={1}
             value={maxPlayers}
             disabled={!editable}
-            onChange={(event) => onMaxPlayersChange?.(Number(event.target.value))}
+            onChange={(event) =>
+              onMaxPlayersChange?.(Number(event.target.value))
+            }
             className="w-full accent-primary"
           />
         </label>

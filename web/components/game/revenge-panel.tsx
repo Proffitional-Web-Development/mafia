@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { PlayerGrid, type PlayerView } from "@/components/ui/player-grid";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { cn } from "@/lib/utils";
@@ -23,11 +26,20 @@ export function RevengePanel({
   loading = false,
   className,
 }: RevengePanelProps) {
+  const t = useTranslations("resolution");
+
   return (
-    <section className={cn("rounded-2xl border border-danger/40 bg-danger/10 p-4", className)}>
-      <h3 className="mb-2 text-sm font-semibold text-danger">Last Revenge</h3>
+    <section
+      className={cn(
+        "rounded-2xl border border-danger/40 bg-danger/10 p-4",
+        className,
+      )}
+    >
+      <h3 className="mb-2 text-sm font-semibold text-danger">
+        {t("boyPrompt.title")}
+      </h3>
       <p className="mb-3 text-xs text-text-secondary">
-        Choose one final target before time runs out.
+        {t("boyPrompt.subtitle")}
       </p>
 
       <PlayerGrid

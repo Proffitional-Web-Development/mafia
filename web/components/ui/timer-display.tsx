@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useDirection } from "@/hooks/use-direction";
 import { cn } from "@/lib/utils";
 
 type TimerVariant = "circle" | "ring" | "inline" | "progress-bar" | "compact";
@@ -27,6 +28,7 @@ export function TimerDisplay({
   className,
 }: TimerDisplayProps) {
   const t = useTranslations("discussion");
+  const direction = useDirection();
   const [remaining, setRemaining] = useState(() =>
     deadlineAt ? Math.max(0, deadlineAt - Date.now()) : 0,
   );
@@ -49,23 +51,31 @@ export function TimerDisplay({
   const isCritical = remaining <= 10_000;
 
   const totalDuration = durationMs ?? Math.max(remaining, 1);
-  const progress = Math.min(100, Math.max(0, (remaining / totalDuration) * 100));
+  const progress = Math.min(
+    100,
+    Math.max(0, (remaining / totalDuration) * 100),
+  );
 
-  const ring = useMemo(() => {
-    const radius = 34;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (progress / 100) * circumference;
-    return { radius, circumference, offset };
-  }, [progress]);
+  const radius = 34;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (progress / 100) * circumference;
 
   const textClass = cn(
     "font-mono tabular-nums font-bold",
-    isCritical ? "text-danger animate-pulse" : isUrgent ? "text-warning" : "text-text-primary",
+    isCritical
+      ? "text-danger animate-pulse"
+      : isUrgent
+        ? "text-warning"
+        : "text-text-primary",
   );
 
   if (variant === "progress-bar") {
     return (
-      <div className={cn("space-y-1", className)} role="timer" aria-live="assertive">
+      <div
+        className={cn("space-y-1", className)}
+        role="timer"
+        aria-live="assertive"
+      >
         <div className="flex items-center justify-between text-xs text-text-tertiary">
           <span>{t("timeRemaining")}</span>
           <span className={textClass}>{formatTime(remaining)}</span>
@@ -74,6 +84,7 @@ export function TimerDisplay({
           <div
             className={cn(
               "h-full transition-[width] duration-200",
+              direction === "rtl" && "ms-auto",
               isCritical
                 ? "bg-danger motion-safe:animate-pulse"
                 : isUrgent
@@ -89,24 +100,44 @@ export function TimerDisplay({
 
   if (variant === "ring") {
     return (
-      <div className={cn("relative inline-flex items-center justify-center", className)} role="timer" aria-live="assertive">
-        <svg className="h-20 w-20 -rotate-90" viewBox="0 0 80 80" aria-hidden>
-          <circle cx="40" cy="40" r={ring.radius} className="fill-none stroke-white/10" strokeWidth="6" />
+      <div
+        className={cn(
+          "relative inline-flex items-center justify-center",
+          className,
+        )}
+        role="timer"
+        aria-live="assertive"
+      >
+        <svg className="h-20 w-20 -rotate-90" viewBox="0 0 80 80">
+          <title>{t("timeRemaining")}</title>
           <circle
             cx="40"
             cy="40"
-            r={ring.radius}
+            r={radius}
+            className="fill-none stroke-white/10"
+            strokeWidth="6"
+          />
+          <circle
+            cx="40"
+            cy="40"
+            r={radius}
             className={cn(
               "fill-none transition-[stroke-dashoffset] duration-200",
-              isCritical ? "stroke-danger" : isUrgent ? "stroke-warning" : "stroke-primary",
+              isCritical
+                ? "stroke-danger"
+                : isUrgent
+                  ? "stroke-warning"
+                  : "stroke-primary",
             )}
             strokeWidth="6"
-            strokeDasharray={ring.circumference}
-            strokeDashoffset={ring.offset}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
             strokeLinecap="round"
           />
         </svg>
-        <span className={cn("absolute text-sm", textClass)}>{formatTime(remaining)}</span>
+        <span className={cn("absolute text-sm", textClass)}>
+          {formatTime(remaining)}
+        </span>
       </div>
     );
   }
@@ -122,23 +153,37 @@ export function TimerDisplay({
         role="timer"
         aria-live="assertive"
       >
-        <span className="text-[10px] uppercase tracking-wider text-text-tertiary">{t("timeRemaining")}</span>
-        <span className={cn("text-xl", textClass)}>{formatTime(remaining)}</span>
+        <span className="text-[10px] uppercase tracking-wider text-text-tertiary">
+          {t("timeRemaining")}
+        </span>
+        <span className={cn("text-xl", textClass)}>
+          {formatTime(remaining)}
+        </span>
       </div>
     );
   }
 
   if (variant === "compact") {
     return (
-      <span className={cn("text-sm", textClass, className)} role="timer" aria-live="assertive">
+      <span
+        className={cn("text-sm", textClass, className)}
+        role="timer"
+        aria-live="assertive"
+      >
         {formatTime(remaining)}
       </span>
     );
   }
 
   return (
-    <div className={cn("inline-flex items-center gap-2", className)} role="timer" aria-live="assertive">
-      <span className="text-xs uppercase tracking-wider text-text-tertiary">{t("timeRemaining")}</span>
+    <div
+      className={cn("inline-flex items-center gap-2", className)}
+      role="timer"
+      aria-live="assertive"
+    >
+      <span className="text-xs uppercase tracking-wider text-text-tertiary">
+        {t("timeRemaining")}
+      </span>
       <span className={cn("text-2xl", textClass)}>{formatTime(remaining)}</span>
     </div>
   );

@@ -42,14 +42,14 @@ export function LanguageSwitcher({
   }
 
   return (
-    <div
+    <fieldset
       className={cn(
         "inline-flex items-center rounded-full border border-white/15 bg-white/5 p-1",
         className,
       )}
-      role="group"
       aria-label={t("language")}
     >
+      <legend className="sr-only">{t("language")}</legend>
       <button
         type="button"
         onClick={() => onChange("en")}
@@ -74,6 +74,6 @@ export function LanguageSwitcher({
       >
         {t("arabic")}
       </button>
-    </div>
+    </fieldset>
   );
 }

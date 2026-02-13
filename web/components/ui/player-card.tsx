@@ -1,6 +1,7 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
+import { useTranslations } from "next-intl";
 import type * as React from "react";
 import { AvatarCircle } from "@/components/ui/avatar-circle";
 import { Badge } from "@/components/ui/badge";
@@ -79,6 +80,8 @@ export function PlayerCard({
   disabled,
   ...props
 }: PlayerCardProps) {
+  const ct = useTranslations("common");
+
   const resolvedVariant = !isAlive
     ? "dead"
     : isSelected
@@ -124,8 +127,12 @@ export function PlayerCard({
         </span>
       ) : null}
 
-      {isYou ? <Badge variant="you">YOU</Badge> : null}
-      {isOwner ? <Badge variant="host" className="absolute top-1 end-1">HOST</Badge> : null}
+      {isYou ? <Badge variant="you">{ct("you")}</Badge> : null}
+      {isOwner ? (
+        <Badge variant="host" className="absolute top-1 end-1">
+          {ct("owner")}
+        </Badge>
+      ) : null}
 
       {!isAlive ? (
         <span className="absolute top-1 start-1 text-danger" aria-hidden>

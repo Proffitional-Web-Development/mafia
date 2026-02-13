@@ -2,6 +2,10 @@ import type * as React from "react";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
+function isDirectionalIcon(name: string): boolean {
+  return name === "arrow_forward" || name === "arrow_back";
+}
+
 type SecondaryButtonVariant =
   | "outline"
   | "ghost"
@@ -59,11 +63,24 @@ export function SecondaryButton({
         <Icon
           name={loading ? "autorenew" : icon}
           variant="round"
-          className={cn(loading && "animate-spin")}
+          className={cn(
+            loading && "animate-spin",
+            !loading &&
+              isDirectionalIcon(icon) &&
+              "[html[dir='rtl']_&]:-scale-x-100",
+          )}
         />
       ) : null}
       <span>{children}</span>
-      {icon && iconPosition === "end" && !loading ? <Icon name={icon} variant="round" /> : null}
+      {icon && iconPosition === "end" && !loading ? (
+        <Icon
+          name={icon}
+          variant="round"
+          className={cn(
+            isDirectionalIcon(icon) && "[html[dir='rtl']_&]:-scale-x-100",
+          )}
+        />
+      ) : null}
     </button>
   );
 }

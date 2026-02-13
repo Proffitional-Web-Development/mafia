@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/ui/icon";
+import { useDirection } from "@/hooks/use-direction";
 import { cn } from "@/lib/utils";
 
 export type BottomNavItem = {
@@ -17,6 +18,8 @@ interface BottomNavigationProps {
 }
 
 export function BottomNavigation({ items, className }: BottomNavigationProps) {
+  const direction = useDirection();
+
   return (
     <nav
       className={cn(
@@ -25,7 +28,12 @@ export function BottomNavigation({ items, className }: BottomNavigationProps) {
       )}
       aria-label="Bottom navigation"
     >
-      <div className="mx-auto flex w-full max-w-sm items-center justify-between gap-2">
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-sm items-center justify-between gap-2",
+          direction === "rtl" && "flex-row-reverse",
+        )}
+      >
         {items.map((item) => (
           <button
             key={item.key}
@@ -43,7 +51,9 @@ export function BottomNavigation({ items, className }: BottomNavigationProps) {
               name={item.icon}
               variant="round"
               size="md"
-              className={item.active ? "text-primary-light" : "text-text-tertiary"}
+              className={
+                item.active ? "text-primary-light" : "text-text-tertiary"
+              }
             />
             <span>{item.label}</span>
           </button>

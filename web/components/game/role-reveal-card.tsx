@@ -32,7 +32,6 @@ export function RoleRevealCard({
         "group relative h-80 w-56 rounded-2xl outline-none [perspective:1000px] [transform-style:preserve-3d]",
         className,
       )}
-      role="button"
       aria-pressed={revealed}
       aria-label={revealed ? roleName ?? revealLabel : revealLabel}
     >

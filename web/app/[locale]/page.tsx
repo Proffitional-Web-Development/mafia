@@ -3,16 +3,17 @@
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserStatusCard } from "@/components/game/user-status-card";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useTheme } from "@/components/theme-provider";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { useTheme } from "@/components/theme-provider";
 import { api } from "@/convex/_generated/api";
 import { Link } from "@/i18n/navigation";
 
 export default function HomePage() {
   const t = useTranslations("home");
+  const ct = useTranslations("common");
   const currentUser = useQuery(api.users.getCurrentUser);
   const { setTheme } = useTheme();
 
@@ -38,13 +39,15 @@ export default function HomePage() {
             {t("title")}
           </h1>
           <p className="text-xs uppercase tracking-[0.25em] text-text-tertiary">
-            Trust No One
+            {t("trustNoOne")}
           </p>
         </div>
 
         <div className="relative mx-auto mt-2 h-64 w-64 overflow-hidden rounded-2xl border border-white/10 bg-surface-red/70">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1),transparent_60%)]" />
-          <div className="absolute inset-0 flex items-center justify-center text-7xl">🎭</div>
+          <div className="absolute inset-0 flex items-center justify-center text-7xl">
+            🎭
+          </div>
           {currentUser?.hasCompletedProfile ? (
             <UserStatusCard
               username={currentUser.username ?? undefined}
@@ -58,22 +61,24 @@ export default function HomePage() {
         <div className="mt-auto space-y-3">
           <Link href={destination} className="block">
             <PrimaryButton variant="danger" icon="arrow_forward" shimmer>
-            {currentUser
-              ? currentUser.hasCompletedProfile
-                ? t("goToGame")
-                : t("completeProfile")
-              : t("signInOrSignUp")}
+              {currentUser
+                ? currentUser.hasCompletedProfile
+                  ? t("goToGame")
+                  : t("completeProfile")
+                : t("signInOrSignUp")}
             </PrimaryButton>
           </Link>
-          <p className="text-center text-xs text-text-tertiary">Players Online</p>
+          <p className="text-center text-xs text-text-tertiary">
+            {t("onlinePlayers")}
+          </p>
         </div>
       </section>
 
       <BottomNavigation
         items={[
-          { key: "home", label: "Home", icon: "home", active: true },
-          { key: "profile", label: "Profile", icon: "person" },
-          { key: "settings", label: "Settings", icon: "settings" },
+          { key: "home", label: ct("home"), icon: "home", active: true },
+          { key: "profile", label: ct("profile"), icon: "person" },
+          { key: "settings", label: ct("settings"), icon: "settings" },
         ]}
       />
     </main>
