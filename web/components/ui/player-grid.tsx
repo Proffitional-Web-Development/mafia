@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { UserAvatar } from "@/components/user-avatar";
+import type { ReactNode } from "react";
+import { PlayerCard } from "@/components/ui/player-card";
 import { cn } from "@/lib/utils";
 
 export interface PlayerView {
@@ -24,6 +25,9 @@ interface PlayerGridProps {
   selectable?: boolean;
   showVoteCounts?: boolean;
   showOwnerBadge?: boolean;
+  columns?: 2 | 3 | 4;
+  gap?: "sm" | "md";
+  children?: ReactNode;
   className?: string;
 }
 
@@ -35,81 +39,68 @@ export function PlayerGrid({
   selectable = false,
   showVoteCounts = false,
   showOwnerBadge = true,
+  columns,
+  gap = "md",
+  children,
   className,
 }: PlayerGridProps) {
   const t = useTranslations("common");
+  const gapClass = gap === "sm" ? "gap-2" : "gap-3";
+  const columnsClass =
+    columns === 2
+      ? "grid-cols-2"
+      : columns === 3
+        ? "grid-cols-3"
+        : columns === 4
+          ? "grid-cols-4"
+          : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4";
 
   return (
     <div
       className={cn(
-        "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4",
+        "grid",
+        columnsClass,
+        gapClass,
         className,
       )}
     >
-      {players.map((player) => {
-        const isMe = player.userId === currentUserId;
-        const isDead = player.isAlive === false;
-        const isSelected = selectedId === (player.playerId ?? player.userId);
-        const canSelect = selectable && !isDead && !isMe && onSelect;
+      {children ? children : null}
 
-        return (
-          <button
-            key={player.playerId ?? player.userId}
-            type="button"
-            disabled={!canSelect}
-            onClick={() => {
-              if (canSelect) {
-                onSelect(player.playerId ?? player.userId);
-              }
-            }}
-            className={cn(
-              "relative flex flex-col items-center gap-2 rounded-xl border p-3 transition-all",
-              isDead && "opacity-40 grayscale",
-              canSelect &&
-                "cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800",
-              isSelected && "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950",
-              !canSelect && !isDead && "cursor-default",
-            )}
-          >
-            <UserAvatar
-              username={player.username}
-              avatarUrl={player.avatarUrl}
-              size={48}
-            />
-            <span className="text-xs font-medium truncate max-w-full">
-              {player.username}
-              {isMe && <span className="text-zinc-400 ms-1">({t("you")})</span>}
-            </span>
+      {!children
+        ? players.map((player) => {
+            const isMe = player.userId === currentUserId;
+            const isDead = player.isAlive === false;
+            const isSelected = selectedId === (player.playerId ?? player.userId);
+            const canSelect = Boolean(selectable && !isDead && !isMe && onSelect);
 
-            {/* Owner badge */}
-            {showOwnerBadge && player.isOwner && (
-              <span className="absolute top-1 end-1 text-[10px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300 px-1.5 py-0.5 rounded-full">
-                {t("owner")}
-              </span>
-            )}
-
-            {/* Dead skull */}
-            {isDead && (
-              <span
-                className="absolute top-1 start-1 text-sm"
-                role="img"
-                aria-label={t("dead")}
-              >
-                💀
-              </span>
-            )}
-
-            {/* Vote count badge */}
-            {showVoteCounts &&
-              player.voteCount !== undefined &&
-              player.voteCount > 0 && (
-                <span className="absolute -top-1 -end-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                  {player.voteCount}
-                </span>
-              )}
-          </button>
-        );
-      })}
+            return (
+              <PlayerCard
+                key={player.playerId ?? player.userId}
+                username={player.username}
+                avatarUrl={player.avatarUrl}
+                isYou={isMe}
+                isOwner={showOwnerBadge ? Boolean(player.isOwner) : false}
+                isAlive={player.isAlive !== false}
+                isSelected={isSelected}
+                selectable={canSelect}
+                disabled={!canSelect}
+                showVoteCount={showVoteCounts}
+                voteCount={player.voteCount}
+                onClick={() => {
+                  if (canSelect && onSelect) {
+                    onSelect(player.playerId ?? player.userId);
+                  }
+                }}
+                variant="lobby"
+                trailing={
+                  !isDead ? undefined : (
+                    <span className="sr-only">{t("dead")}</span>
+                  )
+                }
+              />
+            );
+          })
+        : null}
     </div>
   );
 }

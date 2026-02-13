@@ -1,6 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Icon } from "@/components/ui/icon";
+import { TimerDisplay } from "@/components/ui/timer-display";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { PHASE_META, ROLE_COLORS } from "@/lib/design-tokens";
 import { cn } from "@/lib/utils";
@@ -10,9 +12,26 @@ interface PhaseHeaderProps {
   round: number;
   isAlive: boolean;
   role: string;
+  variant?:
+    | "standard"
+    | "discussion"
+    | "voting"
+    | "ability-left"
+    | "ability-split"
+    | "mafia-night";
+  deadlineAt?: number;
+  subtitle?: string;
 }
 
-export function PhaseHeader({ phase, round, isAlive, role }: PhaseHeaderProps) {
+export function PhaseHeader({
+  phase,
+  round,
+  isAlive,
+  role,
+  variant = "standard",
+  deadlineAt,
+  subtitle,
+}: PhaseHeaderProps) {
   const pt = useTranslations("phases");
   const ct = useTranslations("common");
   const rt = useTranslations("roles");
@@ -22,16 +41,49 @@ export function PhaseHeader({ phase, round, isAlive, role }: PhaseHeaderProps) {
   const roleKey = role as string;
   const phaseMeta = PHASE_META[phase];
   const roleColor = ROLE_COLORS[role];
+  const isMafiaVariant = variant === "mafia-night";
 
   return (
-    <div className="space-y-2">
+    <div
+      className={cn(
+        "space-y-2 rounded-2xl border p-3",
+        isMafiaVariant
+          ? "border-danger/40 bg-danger/10"
+          : "border-white/10 bg-surface/40",
+      )}
+    >
       {/* Top bar */}
-      <div className="flex items-center justify-between">
+      <div
+        className={cn(
+          "flex items-center justify-between gap-3",
+          (variant === "ability-left" || variant === "ability-split") &&
+            "items-start",
+        )}
+      >
         <div className="flex items-center gap-2">
-          <span className="text-lg">{phaseMeta?.icon ?? "🎮"}</span>
-          <h1 className="text-lg font-semibold">{pt(phaseKey)}</h1>
+          <Icon
+            name={phaseMeta?.icon ?? "sports_esports"}
+            className={cn(
+              "text-lg",
+              isMafiaVariant
+                ? "text-danger"
+                : phaseMeta?.color ?? "text-text-secondary",
+            )}
+            variant="round"
+          />
+          <div>
+            <h1 className="text-lg font-semibold text-white">{pt(phaseKey)}</h1>
+            {subtitle ? (
+              <p className="text-xs text-text-tertiary">{subtitle}</p>
+            ) : null}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div
+          className={cn(
+            "flex items-center gap-3",
+            variant === "ability-split" && "flex-col items-end gap-1",
+          )}
+        >
           <span className="text-xs text-zinc-500">
             {ct("round", { number: round })}
           </span>
@@ -45,6 +97,20 @@ export function PhaseHeader({ phase, round, isAlive, role }: PhaseHeaderProps) {
           >
             {rt(roleKey)}
           </span>
+          {deadlineAt ? (
+            <TimerDisplay
+              deadlineAt={deadlineAt}
+              variant={
+                variant === "discussion"
+                  ? "circle"
+                  : variant === "voting" || variant === "mafia-night"
+                    ? "inline"
+                    : variant === "ability-left" || variant === "ability-split"
+                      ? "compact"
+                      : "compact"
+              }
+            />
+          ) : null}
         </div>
       </div>
 

@@ -14,16 +14,16 @@
 
 export const FACTION_COLORS = {
   mafia: {
-    bg: "bg-red-900/30",
-    text: "text-red-400",
-    border: "border-red-800",
-    accent: "#f87171", // red-400
+    bg: "bg-danger/25",
+    text: "text-danger",
+    border: "border-danger/50",
+    accent: "#ec1313",
   },
   citizens: {
-    bg: "bg-blue-900/30",
-    text: "text-blue-400",
-    border: "border-blue-800",
-    accent: "#60a5fa", // blue-400
+    bg: "bg-primary/25",
+    text: "text-primary-light",
+    border: "border-primary/50",
+    accent: "#8311d4",
   },
 } as const;
 
@@ -36,29 +36,29 @@ export const ROLE_COLORS: Record<
   { bg: string; text: string; border: string }
 > = {
   mafia: {
-    bg: "bg-red-900/30",
-    text: "text-red-400",
-    border: "border-red-800",
+    bg: "bg-danger/20",
+    text: "text-danger",
+    border: "border-danger/50",
   },
   citizen: {
-    bg: "bg-blue-900/30",
-    text: "text-blue-400",
-    border: "border-blue-800",
+    bg: "bg-primary/20",
+    text: "text-primary-light",
+    border: "border-primary/50",
   },
   sheikh: {
-    bg: "bg-emerald-900/30",
-    text: "text-emerald-400",
-    border: "border-emerald-800",
+    bg: "bg-success/20",
+    text: "text-success",
+    border: "border-success/50",
   },
   girl: {
-    bg: "bg-purple-900/30",
-    text: "text-purple-400",
-    border: "border-purple-800",
+    bg: "bg-primary/20",
+    text: "text-primary-light",
+    border: "border-primary/50",
   },
   boy: {
-    bg: "bg-amber-900/30",
-    text: "text-amber-400",
-    border: "border-amber-800",
+    bg: "bg-warning/20",
+    text: "text-warning",
+    border: "border-warning/50",
   },
 };
 
@@ -70,14 +70,14 @@ export const PHASE_META: Record<
   string,
   { icon: string; color: string }
 > = {
-  cardDistribution: { icon: "🃏", color: "text-zinc-400" },
-  discussion: { icon: "💬", color: "text-sky-400" },
-  publicVoting: { icon: "🗳️", color: "text-amber-400" },
-  abilityPhase: { icon: "⚡", color: "text-purple-400" },
-  mafiaVoting: { icon: "🔪", color: "text-red-400" },
-  resolution: { icon: "⚖️", color: "text-emerald-400" },
-  endCheck: { icon: "🔍", color: "text-zinc-400" },
-  finished: { icon: "🏁", color: "text-zinc-300" },
+  cardDistribution: { icon: "style", color: "text-text-tertiary" },
+  discussion: { icon: "chat", color: "text-primary-light" },
+  publicVoting: { icon: "how_to_vote", color: "text-warning" },
+  abilityPhase: { icon: "bolt", color: "text-primary-light" },
+  mafiaVoting: { icon: "my_location", color: "text-danger" },
+  resolution: { icon: "wb_sunny", color: "text-success" },
+  endCheck: { icon: "visibility", color: "text-text-tertiary" },
+  finished: { icon: "emoji_events", color: "text-text-secondary" },
 };
 
 // ---------------------------------------------------------------------------
@@ -86,15 +86,15 @@ export const PHASE_META: Record<
 
 export const TYPOGRAPHY = {
   /** Headline on game-over / phase-transition screens */
-  hero: "text-3xl sm:text-4xl font-bold leading-tight",
+  hero: "text-3xl font-bold tracking-tight leading-tight",
   /** Section headings inside panels */
-  heading: "text-lg font-semibold",
+  heading: "text-lg font-bold tracking-tight",
   /** Card / list item labels */
-  label: "text-sm font-medium",
+  label: "text-sm font-medium text-text-secondary",
   /** Supporting text, descriptions */
-  body: "text-sm text-zinc-400",
+  body: "text-sm text-text-secondary",
   /** Tiny metadata (round counter, timestamps) */
-  caption: "text-xs text-zinc-500",
+  caption: "text-xs text-text-muted tracking-wider",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -103,11 +103,11 @@ export const TYPOGRAPHY = {
 
 export const SPACING = {
   /** Outer page padding */
-  page: "px-4 py-4",
+  page: "px-6 py-6",
   /** Section gap */
-  section: "gap-4",
+  section: "gap-6",
   /** Inner card padding */
-  card: "p-3",
+  card: "p-4",
   /** Tight inline gap */
   inline: "gap-2",
 } as const;
@@ -118,7 +118,7 @@ export const SPACING = {
 
 export const LAYOUT = {
   /** Max-width constraint for game area */
-  maxWidth: "max-w-2xl",
+  maxWidth: "max-w-sm",
   /** Breakpoint-aware player grid columns */
   playerGrid: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4",
 } as const;
