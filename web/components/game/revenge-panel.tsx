@@ -9,6 +9,7 @@ interface RevengePanelProps {
   onConfirm?: () => void;
   confirmLabel?: string;
   disabled?: boolean;
+  loading?: boolean;
   className?: string;
 }
 
@@ -19,6 +20,7 @@ export function RevengePanel({
   onConfirm,
   confirmLabel = "Use Revenge",
   disabled = false,
+  loading = false,
   className,
 }: RevengePanelProps) {
   return (
@@ -41,6 +43,7 @@ export function RevengePanel({
         variant="danger"
         icon="gavel"
         shimmer
+        loading={loading}
         disabled={disabled || !selectedId}
         onClick={onConfirm}
       >

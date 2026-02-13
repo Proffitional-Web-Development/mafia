@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 const inputVariants = cva(
-  "w-full rounded-xl border bg-surface/70 px-4 text-text-primary placeholder:text-text-disabled transition-all outline-none",
+  "w-full rounded-xl border bg-surface/70 px-4 text-text-primary placeholder:text-text-disabled transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       variant: {
@@ -89,6 +89,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
           <input
             ref={ref}
             id={inputId}
+            aria-invalid={hasError}
             value={value}
             onChange={(event) => {
               if (variant === "code") {

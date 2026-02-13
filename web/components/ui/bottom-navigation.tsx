@@ -32,7 +32,7 @@ export function BottomNavigation({ items, className }: BottomNavigationProps) {
             type="button"
             onClick={item.onClick}
             className={cn(
-              "flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold uppercase tracking-wide transition-colors",
+              "flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold uppercase tracking-wide transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               item.active
                 ? "bg-primary/20 text-primary-light"
                 : "text-text-tertiary hover:text-text-secondary",

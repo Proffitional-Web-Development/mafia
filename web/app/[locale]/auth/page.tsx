@@ -5,7 +5,11 @@ import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { Button } from "@/components/ui/button";
+import { Divider } from "@/components/ui/divider";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
+import { StatusBanner } from "@/components/ui/status-banner";
+import { TextInput } from "@/components/ui/text-input";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "@/i18n/navigation";
 
@@ -68,63 +72,78 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-6">
-      <section className="w-full space-y-4 rounded-xl border p-6">
-        <div className="w-full flex justify-end">
-          <LanguageSwitcher />
-        </div>
-        <h1 className="text-xl font-semibold">
-          {mode === "signIn" ? t("signIn") : t("createAccount")}
-        </h1>
-        <p className="text-sm text-zinc-500">{t("noGuestAccess")}</p>
+    <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-sm items-center justify-center overflow-hidden px-6 py-8">
+      <div className="pointer-events-none absolute -top-24 -end-20 h-72 w-72 rounded-full bg-primary/25 blur-3xl animate-pulse-slow" />
+      <div className="pointer-events-none absolute -bottom-24 -start-20 h-72 w-72 rounded-full bg-primary/15 blur-3xl animate-pulse-slow" />
+      <div className="pointer-events-none absolute inset-0 bg-scanlines opacity-25" />
 
-        <form className="space-y-3" onSubmit={submitEmailPasswordAuth}>
-          <input
+      <section className="relative z-10 w-full rounded-2xl border border-white/10 bg-surface/70 p-6 backdrop-blur-md">
+        <div className="mb-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold tracking-tight text-white">
+            {mode === "signIn" ? t("signIn") : t("createAccount")}
+          </h1>
+          <LanguageSwitcher variant="pill" />
+        </div>
+        <p className="mb-5 text-sm text-text-tertiary">{t("noGuestAccess")}</p>
+
+        <form className="space-y-4" onSubmit={submitEmailPasswordAuth}>
+          <TextInput
             type="email"
             required
+            icon="alternate_email"
+            label={t("email")}
             placeholder={t("email")}
-            className="w-full rounded-md border px-3 py-2"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          <input
+          <TextInput
             type="password"
             required
             minLength={8}
+            icon="vpn_key"
+            label={t("password")}
             placeholder={t("password")}
-            className="w-full rounded-md border px-3 py-2"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
-          <Button disabled={loading} className="w-full" type="submit">
+
+          <PrimaryButton disabled={loading} loading={loading} icon="login" type="submit">
             {loading
               ? common("pleaseWait")
               : mode === "signIn"
                 ? t("signIn")
                 : t("createAccount")}
-          </Button>
+          </PrimaryButton>
         </form>
 
-        <Button
+        <Divider className="my-4" label="OR" variant="gradient" />
+
+        <SecondaryButton
           type="button"
-          variant="outline"
-          className="w-full"
+          variant="oauth"
           disabled={loading}
           onClick={continueWithGoogle}
+          icon="g_mobiledata"
         >
           {t("continueWithGoogle")}
-        </Button>
+        </SecondaryButton>
 
-        <button
+        <SecondaryButton
           type="button"
-          className="text-sm text-zinc-600 underline"
+          variant="text-link"
+          fullWidth={false}
+          className="mt-4"
           onClick={() => setMode(mode === "signIn" ? "signUp" : "signIn")}
         >
           {mode === "signIn" ? t("needAccount") : t("haveAccount")}
-        </button>
+        </SecondaryButton>
 
         {errorMessage ? (
-          <p className="text-sm text-red-600">{errorMessage}</p>
+          <StatusBanner
+            message={errorMessage}
+            variant="error"
+            className="mt-3"
+          />
         ) : null}
       </section>
     </main>

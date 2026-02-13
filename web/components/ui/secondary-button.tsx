@@ -16,6 +16,7 @@ interface SecondaryButtonProps
   iconPosition?: "start" | "end";
   variant?: SecondaryButtonVariant;
   fullWidth?: boolean;
+  loading?: boolean;
 }
 
 export function SecondaryButton({
@@ -23,15 +24,20 @@ export function SecondaryButton({
   iconPosition = "start",
   variant = "outline",
   fullWidth = true,
+  loading = false,
   className,
   children,
+  disabled,
   ...props
 }: SecondaryButtonProps) {
+  const isDisabled = disabled || loading;
+
   return (
     <button
       type="button"
+      disabled={isDisabled}
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         fullWidth && "w-full",
         variant === "outline" &&
           "border border-white/15 bg-surface/50 text-text-secondary hover:border-primary/50 hover:bg-primary/10 hover:text-white",
@@ -49,9 +55,15 @@ export function SecondaryButton({
       )}
       {...props}
     >
-      {icon && iconPosition === "start" ? <Icon name={icon} variant="round" /> : null}
+      {icon && (iconPosition === "start" || loading) ? (
+        <Icon
+          name={loading ? "autorenew" : icon}
+          variant="round"
+          className={cn(loading && "animate-spin")}
+        />
+      ) : null}
       <span>{children}</span>
-      {icon && iconPosition === "end" ? <Icon name={icon} variant="round" /> : null}
+      {icon && iconPosition === "end" && !loading ? <Icon name={icon} variant="round" /> : null}
     </button>
   );
 }

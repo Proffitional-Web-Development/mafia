@@ -15,6 +15,7 @@ import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
 import { ResolutionPhase } from "@/components/game/resolution-phase";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
+import { LoadingState } from "@/components/ui/loading-state";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -30,7 +31,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
   if (!gameState) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">Loading game...</p>
+        <LoadingState label="Loading game..." compact className="max-w-xs" />
       </main>
     );
   }

@@ -3,10 +3,11 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { PhaseTimer } from "@/components/ui/phase-timer";
+import { LoadingState } from "@/components/ui/loading-state";
 import { PlayerGrid } from "@/components/ui/player-grid";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { TimerDisplay } from "@/components/ui/timer-display";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -34,7 +35,7 @@ export function DiscussionPhase({
   if (!discussionState) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">{ct("loading")}</p>
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </div>
     );
   }
@@ -66,7 +67,7 @@ export function DiscussionPhase({
   return (
     <div className="flex flex-1 flex-col items-center gap-6 py-4">
       {/* Timer */}
-      <PhaseTimer deadlineAt={effectiveDeadline} size="lg" />
+      <TimerDisplay deadlineAt={effectiveDeadline} variant="circle" />
 
       {/* Title + subtitle */}
       <div className="text-center space-y-1">
@@ -88,9 +89,9 @@ export function DiscussionPhase({
 
       {/* Owner skip button */}
       {isOwner && isAlive && (
-        <Button variant="outline" onClick={() => setShowConfirm(true)}>
+        <PrimaryButton onClick={() => setShowConfirm(true)} icon="gavel">
           {t("endEarly")}
-        </Button>
+        </PrimaryButton>
       )}
 
       {/* Skip confirm */}

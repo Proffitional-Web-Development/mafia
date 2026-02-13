@@ -65,7 +65,7 @@ export function TimerDisplay({
 
   if (variant === "progress-bar") {
     return (
-      <div className={cn("space-y-1", className)}>
+      <div className={cn("space-y-1", className)} role="timer" aria-live="assertive">
         <div className="flex items-center justify-between text-xs text-text-tertiary">
           <span>{t("timeRemaining")}</span>
           <span className={textClass}>{formatTime(remaining)}</span>
@@ -74,7 +74,11 @@ export function TimerDisplay({
           <div
             className={cn(
               "h-full transition-[width] duration-200",
-              isCritical ? "bg-danger" : isUrgent ? "bg-warning" : "bg-primary",
+              isCritical
+                ? "bg-danger motion-safe:animate-pulse"
+                : isUrgent
+                  ? "bg-warning"
+                  : "bg-primary",
             )}
             style={{ width: `${progress}%` }}
           />
@@ -85,7 +89,7 @@ export function TimerDisplay({
 
   if (variant === "ring") {
     return (
-      <div className={cn("relative inline-flex items-center justify-center", className)}>
+      <div className={cn("relative inline-flex items-center justify-center", className)} role="timer" aria-live="assertive">
         <svg className="h-20 w-20 -rotate-90" viewBox="0 0 80 80" aria-hidden>
           <circle cx="40" cy="40" r={ring.radius} className="fill-none stroke-white/10" strokeWidth="6" />
           <circle
@@ -112,9 +116,11 @@ export function TimerDisplay({
       <div
         className={cn(
           "inline-flex h-24 w-24 flex-col items-center justify-center rounded-full border border-white/15 bg-surface/60",
-          "animate-timer-ring",
+          "motion-safe:animate-timer-ring motion-reduce:animate-none",
           className,
         )}
+        role="timer"
+        aria-live="assertive"
       >
         <span className="text-[10px] uppercase tracking-wider text-text-tertiary">{t("timeRemaining")}</span>
         <span className={cn("text-xl", textClass)}>{formatTime(remaining)}</span>

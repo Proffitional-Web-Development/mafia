@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -41,26 +42,27 @@ export function ConfirmDialog({
         <h2 className="text-lg font-semibold">{title}</h2>
         <p className="text-sm text-zinc-500">{message}</p>
         <div className="flex items-center justify-end gap-3">
-          <Button
+          <SecondaryButton
             variant="outline"
-            size="sm"
+            fullWidth={false}
             onClick={onCancel}
             disabled={loading}
           >
             {cancelLabel ?? t("cancel")}
-          </Button>
-          <Button
-            size="sm"
+          </SecondaryButton>
+          <PrimaryButton
+            fullWidth={false}
             onClick={onConfirm}
             disabled={loading}
-            className={
+            variant={
               variant === "destructive"
-                ? "bg-red-600 hover:bg-red-700 text-white"
-                : undefined
+                ? "danger"
+                : "primary"
             }
+            className="min-h-10 px-4 py-2"
           >
             {loading ? t("loading") : (confirmLabel ?? t("confirm"))}
-          </Button>
+          </PrimaryButton>
         </div>
       </div>
     </div>

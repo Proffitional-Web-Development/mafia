@@ -3,12 +3,15 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { PhaseTimer } from "@/components/ui/phase-timer";
+import { EliminationCard } from "@/components/game/elimination-card";
+import { RevengePanel } from "@/components/game/revenge-panel";
+import { LoadingState } from "@/components/ui/loading-state";
 import { PlayerGrid } from "@/components/ui/player-grid";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { TimerDisplay } from "@/components/ui/timer-display";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { mapAppErrorKey } from "@/lib/error-message";
 
 interface ResolutionPhaseProps {
   gameId: Id<"games">;
@@ -23,6 +26,7 @@ export function ResolutionPhase({
 }: ResolutionPhaseProps) {
   const t = useTranslations("resolution");
   const ct = useTranslations("common");
+  const et = useTranslations("errors");
 
   const resolutionState = useQuery(api.resolution.getResolutionState, { gameId });
   const runBoyRevenge = useMutation(api.resolution.useBoyRevenge);
@@ -34,7 +38,7 @@ export function ResolutionPhase({
   if (!resolutionState) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">{ct("loading")}</p>
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </div>
     );
   }
@@ -67,7 +71,7 @@ export function ResolutionPhase({
       });
       setSelectedTargetId(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     } finally {
       setActing(false);
     }
@@ -80,9 +84,9 @@ export function ResolutionPhase({
 
   return (
     <div className="flex flex-1 flex-col gap-5 py-2">
-      <PhaseTimer
+      <TimerDisplay
         deadlineAt={resolutionState.phaseDeadlineAt ?? deadlineAt}
-        size="md"
+        variant="progress-bar"
       />
 
       <div className="text-center space-y-1">
@@ -93,63 +97,42 @@ export function ResolutionPhase({
       {!hasEliminations ? (
         <StatusBanner variant="info" message={t("noElimination")} />
       ) : (
-        <section className="rounded-xl border p-3 space-y-2">
+        <section className="space-y-3">
           <h3 className="text-sm font-semibold">{t("resultsTitle")}</h3>
-          <ul className="space-y-2">
-            {eliminatedByMainResolution.map((item) => (
-              <li
-                key={item.playerId}
-                className="rounded-lg border px-2 py-1.5 text-sm flex items-center justify-between gap-2"
-              >
-                <span>{t("eliminated", { name: item.username })}</span>
-                <span className="text-xs text-zinc-500">
-                  {item.causes.length > 0
-                    ? item.causes
-                        .map((cause) => t(`cause.${cause}`))
-                        .join(" • ")
-                    : t("cause.unknown")}
-                </span>
-              </li>
-            ))}
-
-            {revengeEliminated.map((player) => (
-              <li
-                key={String(player.playerId)}
-                className="rounded-lg border border-amber-300 bg-amber-50 px-2 py-1.5 text-sm dark:border-amber-800 dark:bg-amber-950"
-              >
-                {t("boyRevengeEliminated", { name: player.username })}
-              </li>
-            ))}
-          </ul>
+          {eliminatedByMainResolution.map((item) => (
+            <EliminationCard
+              key={item.playerId}
+              name={item.username}
+              cause={
+                item.causes.length > 0
+                  ? item.causes.map((cause) => t(`cause.${cause}`)).join(" • ")
+                  : t("cause.unknown")
+              }
+            />
+          ))}
+          {revengeEliminated.map((player) => (
+            <StatusBanner
+              key={String(player.playerId)}
+              variant="warning"
+              message={t("boyRevengeEliminated", { name: player.username })}
+            />
+          ))}
         </section>
       )}
 
       {canActAsBoy && (
-        <section className="rounded-xl border p-3 space-y-3">
-          <h3 className="text-sm font-semibold">{t("boyPrompt.title")}</h3>
-          <p className="text-xs text-zinc-500">{t("boyPrompt.subtitle")}</p>
-
-          <PlayerGrid
-            players={aliveTargets}
-            currentUserId={currentUserId}
-            selectedId={selectedTargetId}
-            onSelect={(playerId) => {
-              setSelectedTargetId(playerId);
-              setError(null);
-            }}
-            selectable
-            showOwnerBadge={false}
-          />
-
-          <div className="flex justify-center">
-            <Button
-              onClick={handleBoyRevenge}
-              disabled={!selectedTargetId || acting}
-            >
-              {acting ? ct("loading") : t("boyPrompt.confirm")}
-            </Button>
-          </div>
-        </section>
+        <RevengePanel
+          players={aliveTargets}
+          selectedId={selectedTargetId}
+          onSelect={(playerId) => {
+            setSelectedTargetId(playerId);
+            setError(null);
+          }}
+          onConfirm={handleBoyRevenge}
+          confirmLabel={acting ? ct("loading") : t("boyPrompt.confirm")}
+          loading={acting}
+          disabled={acting}
+        />
       )}
 
       {!canActAsBoy && pendingBoyCount > 0 && (
@@ -178,9 +161,7 @@ export function ResolutionPhase({
       </div>
 
       {error && (
-        <p className="text-sm text-red-500 text-center" role="alert">
-          {error}
-        </p>
+        <StatusBanner message={error} variant="error" className="text-center" />
       )}
     </div>
   );

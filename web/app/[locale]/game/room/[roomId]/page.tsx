@@ -5,12 +5,21 @@ import { useTranslations } from "next-intl";
 import { use, useState } from "react";
 import { GameRouter } from "@/components/game/game-router";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { Button } from "@/components/ui/button";
+import { SettingsPanel } from "@/components/game/settings-panel";
+import { Badge } from "@/components/ui/badge";
+import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { UserAvatar } from "@/components/user-avatar";
+import { LoadingState } from "@/components/ui/loading-state";
+import { PlayerCard } from "@/components/ui/player-card";
+import { PlayerGrid } from "@/components/ui/player-grid";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { RoomCodeCard } from "@/components/ui/room-code-card";
+import { SecondaryButton } from "@/components/ui/secondary-button";
+import { StatusBanner } from "@/components/ui/status-banner";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
+import { mapAppErrorKey } from "@/lib/error-message";
 
 export default function RoomPage({
   params,
@@ -26,7 +35,7 @@ export default function RoomPage({
   if (!roomState || !currentUser) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">Loading...</p>
+        <LoadingState label="Loading..." compact className="max-w-xs" />
       </main>
     );
   }
@@ -70,6 +79,7 @@ function LobbyView({
 }) {
   const t = useTranslations("room");
   const ct = useTranslations("common");
+  const et = useTranslations("errors");
   const router = useRouter();
 
   const updateSettings = useMutation(api.rooms.updateRoomSettings);
@@ -96,7 +106,7 @@ function LobbyView({
     try {
       await startGame({ roomId });
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     } finally {
       setStarting(false);
     }
@@ -108,7 +118,7 @@ function LobbyView({
       await leaveRoom({ roomId });
       router.replace("/game");
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     } finally {
       setLeaving(false);
     }
@@ -136,7 +146,7 @@ function LobbyView({
         targetUserId: kickTarget.userId,
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     }
     setKickTarget(null);
   }
@@ -169,211 +179,172 @@ function LobbyView({
         });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     }
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col items-center px-4 py-6 gap-6">
-      {/* Header */}
-      <div className="flex w-full items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">{t("settingsTitle")}</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="font-mono text-lg tracking-widest text-zinc-400">
-              {roomState.code}
-            </span>
-            <button
-              type="button"
-              onClick={handleCopyInvite}
-              className="text-xs text-blue-500 hover:text-blue-400 underline"
-            >
-              {copied ? ct("copied") : t("copyInviteLink")}
-            </button>
-          </div>
-        </div>
-        <LanguageSwitcher />
-      </div>
+    <main className="relative mx-auto min-h-[100dvh] w-full max-w-sm overflow-hidden px-4 pb-28 pt-6">
+      <div className="pointer-events-none absolute -top-24 -end-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl animate-pulse-slow" />
+      <div className="pointer-events-none absolute -bottom-24 -start-20 h-72 w-72 rounded-full bg-primary/15 blur-3xl animate-pulse-slow" />
 
-      {/* Players */}
-      <section className="w-full rounded-xl border p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase text-zinc-500">
-            {ct("players")}
-          </h2>
-          <span className="text-xs text-zinc-400">
-            {t("playersCount", {
-              current: memberCount,
-              max: roomState.settings.maxPlayers,
-            })}
-          </span>
+      {/* Header */}
+      <section className="relative z-10 space-y-5">
+        <div className="flex w-full items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-white">{t("settingsTitle")}</h1>
+            <p className="text-xs text-text-tertiary">{t("playersCount", { current: memberCount, max: roomState.settings.maxPlayers })}</p>
+          </div>
+          <LanguageSwitcher variant="icon" />
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {roomState.members.map((member) => {
-            const isMe = member.userId === currentUserId;
-            return (
-              <div
-                key={member.userId}
-                className="flex items-center gap-2 rounded-lg border p-2"
-              >
-                <UserAvatar
+
+        <RoomCodeCard code={roomState.code} label={t("roomCode")} className="w-full" />
+
+        <div className="-mt-2">
+          <SecondaryButton
+            variant="text-link"
+            fullWidth={false}
+            onClick={handleCopyInvite}
+            icon="content_copy"
+          >
+            {copied ? ct("copied") : t("copyInviteLink")}
+          </SecondaryButton>
+        </div>
+
+        {/* Players */}
+        <section className="w-full rounded-2xl border border-white/10 bg-surface/60 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary">
+              {ct("players")}
+            </h2>
+            <Badge variant="player-count">
+              {t("playersCount", {
+                current: memberCount,
+                max: roomState.settings.maxPlayers,
+              })}
+            </Badge>
+          </div>
+
+          <PlayerGrid players={[]} columns={4} gap="md" showOwnerBadge={false}>
+            {roomState.members.map((member) => {
+              const isMe = member.userId === currentUserId;
+              return (
+                <PlayerCard
+                  key={member.userId}
                   username={member.username}
                   avatarUrl={member.avatarUrl ?? undefined}
-                  size={36}
+                  isYou={isMe}
+                  isOwner={member.isOwner}
+                  variant="lobby"
+                  compact
+                  trailing={
+                    isOwner && !isMe ? (
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setKickTarget({
+                            userId: member.userId as Id<"users">,
+                            username: member.username,
+                          });
+                        }}
+                        className="mt-1 text-[10px] font-semibold text-danger hover:text-danger-dark"
+                      >
+                        {t("kickPlayer")}
+                      </button>
+                    ) : null
+                  }
                 />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">
-                    {member.username}
-                    {isMe && (
-                      <span className="text-zinc-400 ms-1">({ct("you")})</span>
-                    )}
-                  </p>
-                  {member.isOwner && (
-                    <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">
-                      {t("ownerBadge")}
-                    </span>
-                  )}
+              );
+            })}
+
+            {Array.from({ length: Math.max(0, roomState.settings.maxPlayers - memberCount) })
+              .slice(0, Math.max(0, 12 - memberCount))
+              .map((_, idx) => (
+                <div
+                  key={`slot-${idx}`}
+                  className="flex min-h-[94px] items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 text-xs text-text-muted"
+                >
+                  +
                 </div>
-                {isOwner && !isMe && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setKickTarget({
-                        userId: member.userId as Id<"users">,
-                        username: member.username,
+              ))}
+          </PlayerGrid>
+
+          {!canStart && (
+            <p className="text-xs text-text-muted text-center">
+              {t("minPlayersRequired", { count: 3 })}
+            </p>
+          )}
+        </section>
+
+        {/* Settings */}
+        <section className="space-y-3">
+          {!isOwner && (
+            <p className="text-xs text-text-tertiary">{t("readOnlySettings")}</p>
+          )}
+
+          <SettingsPanel
+            discussionDuration={roomState.settings.discussionDuration}
+            maxPlayers={roomState.settings.maxPlayers}
+            editable={isOwner}
+            onDiscussionDurationChange={(value) =>
+              handleSettingChange("discussionDuration", value)
+            }
+            onMaxPlayersChange={(value) => handleSettingChange("maxPlayers", value)}
+          />
+
+          <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
+            <p className="mb-2 text-sm font-medium text-white">{t("enabledRoles")}</p>
+            <div className="flex flex-wrap gap-3">
+              {(["sheikh", "girl", "boy"] as const).map((role) => (
+                <label key={role} className="flex items-center gap-1.5 text-sm text-text-secondary">
+                  <input
+                    type="checkbox"
+                    checked={roomState.settings.enabledRoles[role]}
+                    disabled={!isOwner}
+                    onChange={(e) =>
+                      handleSettingChange("enabledRoles", {
+                        ...roomState.settings.enabledRoles,
+                        [role]: e.target.checked,
                       })
                     }
-                    className="text-xs text-red-500 hover:text-red-400"
-                  >
-                    {t("kickPlayer")}
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        {!canStart && (
-          <p className="text-xs text-zinc-500 text-center">
-            {t("minPlayersRequired", { count: 3 })}
-          </p>
+                    className="accent-primary"
+                  />
+                  <RoleName role={role} />
+                </label>
+              ))}
+            </div>
+          </section>
+        </section>
+
+        {/* Error */}
+        {error && (
+          <StatusBanner message={error} variant="error" className="text-center" />
         )}
-      </section>
-
-      {/* Settings */}
-      <section className="w-full rounded-xl border p-4 space-y-4">
-        <h2 className="text-sm font-semibold uppercase text-zinc-500">
-          {ct("settings")}
-        </h2>
-        {!isOwner && (
-          <p className="text-xs text-zinc-400">{t("readOnlySettings")}</p>
-        )}
-
-        {/* Discussion Duration */}
-        <div className="space-y-1">
-          <label htmlFor="discussion-duration" className="text-sm font-medium">
-            {t("discussionDuration")}
-          </label>
-          <div className="flex items-center gap-3">
-            <input
-              id="discussion-duration"
-              type="range"
-              min={10}
-              max={600}
-              step={10}
-              value={roomState.settings.discussionDuration}
-              disabled={!isOwner}
-              onChange={(e) =>
-                handleSettingChange(
-                  "discussionDuration",
-                  Number(e.target.value),
-                )
-              }
-              className="flex-1 accent-blue-500"
-            />
-            <span className="text-sm font-mono w-14 text-end">
-              {t("seconds", { count: roomState.settings.discussionDuration })}
-            </span>
-          </div>
-        </div>
-
-        {/* Max Players */}
-        <div className="space-y-1">
-          <label htmlFor="max-players" className="text-sm font-medium">
-            {t("maxPlayers")}
-          </label>
-          <div className="flex items-center gap-3">
-            <input
-              id="max-players"
-              type="range"
-              min={3}
-              max={20}
-              step={1}
-              value={roomState.settings.maxPlayers}
-              disabled={!isOwner}
-              onChange={(e) =>
-                handleSettingChange("maxPlayers", Number(e.target.value))
-              }
-              className="flex-1 accent-blue-500"
-            />
-            <span className="text-sm font-mono w-8 text-end">
-              {roomState.settings.maxPlayers}
-            </span>
-          </div>
-        </div>
-
-        {/* Enabled Roles */}
-        <div className="space-y-2">
-          <p className="text-sm font-medium">{t("enabledRoles")}</p>
-          <div className="flex flex-wrap gap-3">
-            {(["sheikh", "girl", "boy"] as const).map((role) => (
-              <label key={role} className="flex items-center gap-1.5 text-sm">
-                <input
-                  type="checkbox"
-                  checked={roomState.settings.enabledRoles[role]}
-                  disabled={!isOwner}
-                  onChange={(e) =>
-                    handleSettingChange("enabledRoles", {
-                      ...roomState.settings.enabledRoles,
-                      [role]: e.target.checked,
-                    })
-                  }
-                  className="accent-blue-500"
-                />
-                <RoleName role={role} />
-              </label>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* Actions */}
-      <div className="flex w-full gap-3">
-        <Button
+      <BottomActionBar layout={isOwner ? "split" : "single"}>
+        <SecondaryButton
           variant="outline"
-          className="flex-1"
           onClick={handleLeave}
           disabled={leaving}
+          loading={leaving}
+          icon="logout"
         >
           {t("leaveRoom")}
-        </Button>
-        {isOwner && (
-          <Button
-            className="flex-1"
-            size="lg"
+        </SecondaryButton>
+        {isOwner ? (
+          <PrimaryButton
             onClick={handleStart}
             disabled={starting || !canStart}
+            loading={starting}
+            icon="play_arrow"
           >
             {starting ? ct("loading") : t("startGame")}
-          </Button>
-        )}
-      </div>
-
-      {/* Error */}
-      {error && (
-        <p className="text-sm text-red-500 text-center" role="alert">
-          {error}
-        </p>
-      )}
+          </PrimaryButton>
+        ) : null}
+      </BottomActionBar>
 
       {/* Kick Confirm Dialog */}
       <ConfirmDialog

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 interface StatusBannerProps {
   message: string;
-  variant?: "info" | "warning" | "dead";
+  variant?: "info" | "warning" | "dead" | "error";
   className?: string;
 }
 
@@ -16,14 +16,16 @@ export function StatusBanner({
   return (
     <output
       className={cn(
-        "w-full rounded-lg px-4 py-2 text-center text-sm font-medium",
-        variant === "dead" && "bg-zinc-800 text-zinc-300",
+        "w-full rounded-xl border px-4 py-2 text-center text-sm font-medium",
+        variant === "dead" && "border-white/10 bg-white/5 text-text-tertiary",
         variant === "warning" &&
-          "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
-        variant === "info" &&
-          "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+          "border-warning/40 bg-warning/15 text-warning",
+        variant === "info" && "border-primary/40 bg-primary/15 text-primary-light",
+        variant === "error" && "border-danger/40 bg-danger/15 text-danger",
         className,
       )}
+      role="status"
+      aria-live="polite"
     >
       {message}
     </output>

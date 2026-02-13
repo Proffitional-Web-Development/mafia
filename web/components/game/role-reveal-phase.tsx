@@ -3,11 +3,12 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { RoleCard } from "@/components/ui/role-card";
+import { RoleRevealCard } from "@/components/game/role-reveal-card";
+import { Badge } from "@/components/ui/badge";
+import { LoadingState } from "@/components/ui/loading-state";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
 
 interface RoleRevealPhaseProps {
   gameId: Id<"games">;
@@ -19,14 +20,6 @@ const ROLE_ICONS: Record<string, string> = {
   sheikh: "🛡️",
   girl: "🔍",
   boy: "💣",
-};
-
-const ROLE_BG: Record<string, string> = {
-  mafia: "from-red-950 to-red-900",
-  citizen: "from-blue-950 to-blue-900",
-  sheikh: "from-emerald-950 to-emerald-900",
-  girl: "from-purple-950 to-purple-900",
-  boy: "from-amber-950 to-amber-900",
 };
 
 export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
@@ -44,9 +37,7 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
   if (!myRole) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">
-          Distributing cards...
-        </p>
+        <LoadingState label="Distributing cards..." compact className="max-w-xs" />
       </div>
     );
   }
@@ -54,7 +45,6 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
   const role = myRole.role;
   const roleKey = role as string;
   const icon = ROLE_ICONS[role] ?? "🎭";
-  const bgGradient = ROLE_BG[role] ?? "from-zinc-950 to-zinc-900";
 
   async function handleReady() {
     setReady(true);
@@ -67,9 +57,13 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
+    <div className="relative flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6">
+      <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-25" />
+
+      <Badge variant="phase">Card Distribution</Badge>
+
       {/* Card */}
-      <RoleCard
+      <RoleRevealCard
         revealed={revealed}
         roleName={rt(roleKey)}
         roleIcon={icon}
@@ -77,7 +71,6 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
         onReveal={() => setRevealed(true)}
         revealLabel={rt(roleKey)}
         hiddenLabel={t("tapToReveal")}
-        className={cn(revealed && `bg-gradient-to-b ${bgGradient} border-white/10`)}
       />
 
       {/* Mafia teammates */}
@@ -102,9 +95,9 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
 
       {/* Ready button */}
       {revealed && !ready && (
-        <Button size="lg" onClick={handleReady}>
+        <PrimaryButton icon="check" onClick={handleReady}>
           {t("ready")}
-        </Button>
+        </PrimaryButton>
       )}
       {ready && (
         <p className="text-sm text-zinc-500">{t("waitingForOthers")}</p>

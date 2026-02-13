@@ -3,11 +3,16 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { PhaseTimer } from "@/components/ui/phase-timer";
+import { Badge } from "@/components/ui/badge";
+import { BottomActionBar } from "@/components/ui/bottom-action-bar";
+import { LoadingState } from "@/components/ui/loading-state";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { TimerDisplay } from "@/components/ui/timer-display";
+import { WaitingOverlay } from "@/components/ui/waiting-overlay";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { mapAppErrorKey } from "@/lib/error-message";
 import { cn } from "@/lib/utils";
 
 interface MafiaVotingPhaseProps {
@@ -22,6 +27,7 @@ export function MafiaVotingPhase({
 }: MafiaVotingPhaseProps) {
   const t = useTranslations("mafiaVoting");
   const ct = useTranslations("common");
+  const et = useTranslations("errors");
 
   const gameState = useQuery(api.stateMachine.getGameState, { gameId });
   const castMafiaVote = useMutation(api.mafiaVoting.castMafiaVote);
@@ -44,7 +50,7 @@ export function MafiaVotingPhase({
   if (!gameState) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">{ct("loading")}</p>
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </div>
     );
   }
@@ -53,15 +59,9 @@ export function MafiaVotingPhase({
 
   if (!canSeeMafiaVotes) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-5 py-8 text-center">
-        <PhaseTimer deadlineAt={effectiveDeadline} size="md" />
-        <div className="space-y-2">
-          <div className="text-5xl animate-pulse" aria-hidden>
-            🌘
-          </div>
-          <h2 className="text-lg font-semibold">{t("waiting.title")}</h2>
-          <p className="text-sm text-zinc-500">{t("waiting.subtitle")}</p>
-        </div>
+      <div className="relative flex flex-1 flex-col items-center justify-center gap-5 py-8 text-center">
+        <TimerDisplay deadlineAt={effectiveDeadline} variant="ring" />
+        <WaitingOverlay title={t("waiting.title")} subtitle={t("waiting.subtitle")} />
       </div>
     );
   }
@@ -69,7 +69,7 @@ export function MafiaVotingPhase({
   if (!mafiaVotes) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">{ct("loading")}</p>
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </div>
     );
   }
@@ -98,7 +98,7 @@ export function MafiaVotingPhase({
     try {
       await castMafiaVote({ gameId, targetPlayerId });
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     } finally {
       setActing(false);
     }
@@ -110,15 +110,18 @@ export function MafiaVotingPhase({
     try {
       await confirmMafiaVoting({ gameId });
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     } finally {
       setConfirming(false);
     }
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-5 py-2">
-      <PhaseTimer deadlineAt={mafiaVotes.phaseDeadlineAt ?? deadlineAt} size="md" />
+    <div className="flex flex-1 flex-col gap-5 pb-28 pt-2">
+      <TimerDisplay
+        deadlineAt={mafiaVotes.phaseDeadlineAt ?? deadlineAt}
+        variant="progress-bar"
+      />
 
       <div className="text-center space-y-1">
         <h2 className="text-lg font-semibold">{t("title")}</h2>
@@ -150,9 +153,9 @@ export function MafiaVotingPhase({
               <span className="text-xs text-zinc-500">{t("tapToVote")}</span>
 
               {tallyCount > 0 && (
-                <span className="absolute -top-1 -end-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+                <Badge variant="vote-count" className="absolute -top-1 -end-1">
                   {tallyCount}
-                </span>
+                </Badge>
               )}
 
               {voters.length > 0 && (
@@ -182,18 +185,16 @@ export function MafiaVotingPhase({
           : t("noVoteYet")}
       </p>
 
-      <div className="flex justify-center">
-        <Button onClick={handleConfirm} disabled={confirming}>
+      <BottomActionBar>
+        <PrimaryButton onClick={handleConfirm} disabled={confirming} icon="my_location" variant="danger" shimmer loading={confirming}>
           {confirming ? ct("loading") : t("confirm")}
-        </Button>
-      </div>
+        </PrimaryButton>
+      </BottomActionBar>
 
       <StatusBanner message={t("secrecyHint")} variant="warning" />
 
       {error && (
-        <p className="text-sm text-red-500 text-center" role="alert">
-          {error}
-        </p>
+        <StatusBanner message={error} variant="error" className="text-center" />
       )}
     </div>
   );

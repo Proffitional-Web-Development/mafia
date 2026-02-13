@@ -2,7 +2,12 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { GameReportRow } from "@/components/game/game-report-row";
+import { Badge } from "@/components/ui/badge";
+import { BottomActionBar } from "@/components/ui/bottom-action-bar";
+import { LoadingState } from "@/components/ui/loading-state";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
@@ -28,7 +33,7 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
   if (!gameState) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">{ct("loading")}</p>
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </div>
     );
   }
@@ -47,7 +52,7 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-5 py-2">
+    <div className="flex flex-1 flex-col gap-5 pb-28 pt-2">
       <div className="rounded-2xl border p-5 text-center space-y-2 bg-gradient-to-b from-zinc-900 to-zinc-800">
         <div className="text-4xl" aria-hidden>
           {winner === "mafia" ? "🔪" : "🛡️"}
@@ -56,6 +61,9 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
         <p className="text-sm text-zinc-300">
           {winner ? t("winner", { faction: winner === "mafia" ? t("mafia") : t("citizens") }) : t("unknownWinner")}
         </p>
+        <div className="flex justify-center">
+          <Badge variant="phase">{winner === "mafia" ? t("mafia") : t("citizens")}</Badge>
+        </div>
       </div>
 
       <section className="rounded-xl border p-3 space-y-2">
@@ -70,29 +78,22 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
 
       <section className="rounded-xl border p-3 space-y-2">
         <h3 className="text-sm font-semibold">{t("rolesTitle")}</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-zinc-500 border-b">
-                <th className="text-start py-2">{ct("players")}</th>
-                <th className="text-start py-2">{t("role")}</th>
-                <th className="text-start py-2">{t("status")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {gameState.players.map((player) => (
-                <tr key={player.playerId} className="border-b border-zinc-800/60">
-                  <td className="py-2">{player.username}</td>
-                  <td className="py-2">
-                    {player.role
-                      ? rt(player.role as "citizen" | "mafia" | "sheikh" | "girl" | "boy")
-                      : t("roleHidden")}
-                  </td>
-                  <td className="py-2">{player.isAlive ? ct("alive") : ct("dead")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-2">
+          {gameState.players.map((player) => (
+            <GameReportRow
+              key={player.playerId}
+              username={player.username}
+              avatarUrl={player.avatarUrl ?? undefined}
+              role={
+                player.role
+                  ? rt(player.role as "citizen" | "mafia" | "sheikh" | "girl" | "boy")
+                  : t("roleHidden")
+              }
+              alive={player.isAlive}
+              isYou={player.userId === currentUserId}
+              isMafia={player.role === "mafia"}
+            />
+          ))}
         </div>
       </section>
 
@@ -100,18 +101,14 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
         <p className="text-xs text-zinc-500 text-center">{t("revealPending")}</p>
       )}
 
-      <div className="flex gap-3">
-        <Button className="flex-1" onClick={handlePlayAgain} disabled={!isOwner}>
+      <BottomActionBar layout="split">
+        <PrimaryButton onClick={handlePlayAgain} disabled={!isOwner} icon="refresh">
           {t("playAgain")}
-        </Button>
-        <Button
-          className="flex-1"
-          variant="outline"
-          onClick={() => router.push("/")}
-        >
+        </PrimaryButton>
+        <SecondaryButton variant="outline" onClick={() => router.push("/")} icon="logout">
           {t("leave")}
-        </Button>
-      </div>
+        </SecondaryButton>
+      </BottomActionBar>
 
       {!isOwner && (
         <p className="text-xs text-zinc-500 text-center">{t("waitingOwner")}</p>

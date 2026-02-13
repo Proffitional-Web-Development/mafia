@@ -3,12 +3,17 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { PhaseTimer } from "@/components/ui/phase-timer";
+import { AvatarCircle } from "@/components/ui/avatar-circle";
+import { Badge } from "@/components/ui/badge";
+import { BottomActionBar } from "@/components/ui/bottom-action-bar";
+import { LoadingState } from "@/components/ui/loading-state";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { SecondaryButton } from "@/components/ui/secondary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
-import { UserAvatar } from "@/components/user-avatar";
+import { TimerDisplay } from "@/components/ui/timer-display";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { mapAppErrorKey } from "@/lib/error-message";
 import { cn } from "@/lib/utils";
 
 interface PublicVotingPhaseProps {
@@ -24,6 +29,7 @@ export function PublicVotingPhase({
 }: PublicVotingPhaseProps) {
   const t = useTranslations("voting");
   const ct = useTranslations("common");
+  const et = useTranslations("errors");
 
   const gameState = useQuery(api.stateMachine.getGameState, { gameId });
   const votesData = useQuery(api.publicVoting.getPublicVotes, { gameId });
@@ -39,7 +45,7 @@ export function PublicVotingPhase({
   if (!gameState || !votesData) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500 animate-pulse">{ct("loading")}</p>
+        <LoadingState label={ct("loading")} compact className="max-w-xs" />
       </div>
     );
   }
@@ -78,7 +84,7 @@ export function PublicVotingPhase({
         });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     }
   }
 
@@ -88,16 +94,16 @@ export function PublicVotingPhase({
     try {
       await confirmVoting({ gameId });
     } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
+      setError(et(mapAppErrorKey(e)));
     } finally {
       setConfirming(false);
     }
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-5 py-2">
+    <div className="flex flex-1 flex-col gap-5 pb-28 pt-2">
       {/* Timer */}
-      <PhaseTimer deadlineAt={deadlineAt} size="md" />
+      <TimerDisplay deadlineAt={deadlineAt} variant="progress-bar" />
 
       {/* Title */}
       <div className="text-center space-y-1">
@@ -153,7 +159,7 @@ export function PublicVotingPhase({
                 !isAlive && "opacity-50 cursor-default",
               )}
             >
-              <UserAvatar
+              <AvatarCircle
                 username={player.username}
                 avatarUrl={player.avatarUrl ?? undefined}
                 size={48}
@@ -164,9 +170,9 @@ export function PublicVotingPhase({
 
               {/* Vote count badge */}
               {voteCount > 0 && (
-                <span className="absolute -top-1 -end-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                <Badge variant="vote-count" className="absolute -top-1 -end-1">
                   {voteCount}
-                </span>
+                </Badge>
               )}
 
               {/* Voter names */}
@@ -201,9 +207,9 @@ export function PublicVotingPhase({
             <span className="text-3xl">🚫</span>
             <span className="text-xs font-medium">{t("skipVote")}</span>
             {votesData.skipCount > 0 && (
-              <span className="absolute -top-1 -end-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+              <Badge variant="vote-count" className="absolute -top-1 -end-1 bg-warning text-black">
                 {votesData.skipCount}
-              </span>
+              </Badge>
             )}
           </button>
         )}
@@ -223,18 +229,22 @@ export function PublicVotingPhase({
 
       {/* Owner confirm button */}
       {isOwner && isAlive && (
-        <div className="flex justify-center">
-          <Button size="lg" onClick={handleConfirm} disabled={confirming}>
+        <BottomActionBar>
+          <PrimaryButton onClick={handleConfirm} disabled={confirming} icon="gavel" loading={confirming}>
             {confirming ? ct("loading") : t("confirmResults")}
-          </Button>
-        </div>
+          </PrimaryButton>
+        </BottomActionBar>
       )}
+
+      {isAlive ? (
+        <SecondaryButton variant="dashed" icon="block" onClick={() => handleVoteFor("skip") }>
+          {t("skipVote")}
+        </SecondaryButton>
+      ) : null}
 
       {/* Error */}
       {error && (
-        <p className="text-sm text-red-500 text-center" role="alert">
-          {error}
-        </p>
+        <StatusBanner message={error} variant="error" className="text-center" />
       )}
     </div>
   );

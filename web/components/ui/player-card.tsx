@@ -8,7 +8,7 @@ import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 const playerCardVariants = cva(
-  "relative flex w-full flex-col items-center gap-2 rounded-xl border p-3 transition-all",
+  "relative flex w-full flex-col items-center gap-2 rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
   {
     variants: {
       variant: {

@@ -7,7 +7,7 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        "vote-count": "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5",
+        "vote-count": "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5 motion-safe:animate-bounce motion-reduce:animate-none",
         you: "bg-warning/20 text-warning border border-warning/50 text-[10px] px-2 py-1 uppercase tracking-wider",
         host: "bg-warning/20 text-warning border border-warning/50 text-[10px] px-2 py-1",
         phase:
@@ -18,7 +18,7 @@ const badgeVariants = cva(
           "bg-white/10 text-text-secondary border border-white/15 text-[10px] px-2 py-1",
         "investigation-result":
           "bg-white/10 text-text-secondary border border-white/15 text-[10px] px-2 py-1",
-        notification: "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5",
+        notification: "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5 motion-safe:animate-pulse motion-reduce:animate-none",
       },
       size: {
         sm: "text-[10px]",
