@@ -345,15 +345,27 @@ async function transitionCore(
   );
 
   if (phaseDeadlineAt !== undefined && isTimedPhase(nextPhase)) {
-    await ctx.scheduler.runAfter(
-      deadlineDurationMs!,
-      internal.stateMachine.handlePhaseTimer,
-      {
-        gameId: game._id,
-        expectedPhase: nextPhase,
-        expectedToken: nextPhaseToken,
-      }
-    );
+    if (nextPhase === "publicVoting") {
+      // Route through publicVoting auto-resolve so votes are tallied
+      await ctx.scheduler.runAfter(
+        deadlineDurationMs!,
+        internal.publicVoting.autoResolvePublicVoting,
+        {
+          gameId: game._id,
+          expectedToken: nextPhaseToken,
+        }
+      );
+    } else {
+      await ctx.scheduler.runAfter(
+        deadlineDurationMs!,
+        internal.stateMachine.handlePhaseTimer,
+        {
+          gameId: game._id,
+          expectedPhase: nextPhase,
+          expectedToken: nextPhaseToken,
+        }
+      );
+    }
   }
 
   return {

@@ -30,6 +30,7 @@ export function UserAvatar({
     <div
       className="relative flex items-center justify-center overflow-hidden rounded-full bg-zinc-200 text-sm font-semibold text-zinc-700"
       style={{ width: size, height: size }}
+      role="img"
       aria-label={avatarLabel}
     >
       {avatarUrl ? (

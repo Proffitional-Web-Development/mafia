@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
 import "./globals.css";

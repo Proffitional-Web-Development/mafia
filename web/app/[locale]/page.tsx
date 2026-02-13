@@ -1,19 +1,17 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { useQuery } from "convex/react";
-
-import { api } from "@/convex/_generated/api";
-import { Button } from "@/components/ui/button";
-import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
+import { Link } from "@/i18n/navigation";
 
 export default function HomePage() {
   const t = useTranslations("home");
   const currentUser = useQuery(api.users.getCurrentUser);
 
-  const destination =
-    currentUser && currentUser.hasCompletedProfile ? "/game" : "/auth";
+  const destination = currentUser?.hasCompletedProfile ? "/game" : "/auth";
 
   return (
     <main className="flex min-h-screen items-center justify-center p-8">

@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-
-import { api } from "@/convex/_generated/api";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "@/i18n/navigation";
+import { useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
+import { useRouter } from "@/i18n/navigation";
 
 type AuthMode = "signIn" | "signUp";
 
@@ -30,7 +29,7 @@ export default function AuthPage() {
   }
 
   async function submitEmailPasswordAuth(
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
     setLoading(true);

@@ -6,7 +6,21 @@
     "loading": "Loading...",
     "pleaseWait": "Please wait...",
     "userAvatar": "User avatar",
-    "userAvatarFor": "{username} avatar"
+    "userAvatarFor": "{username} avatar",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "back": "Back",
+    "close": "Close",
+    "you": "You",
+    "owner": "Owner",
+    "spectating": "Spectating",
+    "dead": "Dead",
+    "alive": "Alive",
+    "round": "Round {number}",
+    "players": "Players",
+    "settings": "Settings"
   },
   "home": {
     "title": "Mafia Game",
@@ -38,25 +52,98 @@
   },
   "game": {
     "loadingSession": "Loading your session...",
-    "lobbyTitle": "Game Lobby (Protected)",
+    "lobbyTitle": "Game Lobby",
     "fallbackPlayer": "Player",
     "noEmail": "No email",
     "logout": "Log out",
     "currentTime": "Current time: {value}"
   },
+  "room": {
+    "createRoom": "Create Room",
+    "joinRoom": "Join Room",
+    "enterCode": "Enter room code",
+    "creating": "Creating...",
+    "joining": "Joining...",
+    "orJoinExisting": "Or join an existing room",
+    "roomCode": "Room Code",
+    "copyInviteLink": "Copy Invite Link",
+    "inviteLinkCopied": "Invite link copied!",
+    "leaveRoom": "Leave Room",
+    "startGame": "Start Game",
+    "waitingForPlayers": "Waiting for players...",
+    "minPlayersRequired": "At least {count} players required",
+    "playersCount": "{current}/{max} players",
+    "settingsTitle": "Room Settings",
+    "discussionDuration": "Discussion Duration",
+    "seconds": "{count}s",
+    "maxPlayers": "Max Players",
+    "enabledRoles": "Enabled Roles",
+    "kickPlayer": "Kick",
+    "kickConfirm": "Remove {username} from the room?",
+    "ownerBadge": "Owner",
+    "readOnlySettings": "Only the room owner can change settings"
+  },
+  "roleReveal": {
+    "yourRole": "Your Role",
+    "tapToReveal": "Tap to reveal your role",
+    "mafiaTeammates": "Your Teammates",
+    "ready": "I'm Ready",
+    "waitingForOthers": "Waiting for others...",
+    "abilityDescription": {
+      "mafia": "Vote each night to eliminate a citizen.",
+      "citizen": "Discuss and vote to find the mafia.",
+      "sheikh": "Protect one player each night from elimination.",
+      "girl": "Investigate one player each night to learn their alignment.",
+      "boy": "Choose one player — if they are mafia, both die. If not, only you die."
+    }
+  },
+  "discussion": {
+    "title": "Discussion Phase",
+    "subtitle": "Discuss with other players who might be the mafia",
+    "timeRemaining": "Time remaining",
+    "endEarly": "End Discussion Early",
+    "endEarlyConfirm": "End the discussion phase now?",
+    "deadSpectating": "You are eliminated — Spectating"
+  },
+  "voting": {
+    "title": "Public Voting",
+    "subtitle": "Vote to eliminate a suspect",
+    "selectTarget": "Select a player to vote for",
+    "skipVote": "Skip Vote",
+    "changeVote": "Change Vote",
+    "yourVote": "Your vote",
+    "votesFor": "{count} vote(s)",
+    "noVotesYet": "No votes yet",
+    "voted": "Voted",
+    "notVoted": "Not voted",
+    "confirmResults": "Confirm Results",
+    "allVoted": "All players have voted",
+    "waitingForVotes": "{voted}/{total} voted",
+    "resultTitle": "Voting Result",
+    "eliminated": "{username} has been eliminated!",
+    "noElimination": "No one was eliminated",
+    "tieResult": "It's a tie — no elimination",
+    "deadCannotVote": "Dead players cannot vote"
+  },
   "phases": {
     "lobby": "Lobby",
+    "cardDistribution": "Card Distribution",
     "roleReveal": "Role Reveal",
     "discussion": "Discussion",
     "publicVoting": "Public Voting",
-    "ability": "Ability Phase",
+    "abilityPhase": "Ability Phase",
     "mafiaVoting": "Mafia Voting",
     "resolution": "Resolution",
+    "endCheck": "End Check",
+    "finished": "Finished",
     "endgame": "Endgame"
   },
   "roles": {
     "citizen": "Citizen",
     "mafia": "Mafia",
+    "sheikh": "Sheikh",
+    "girl": "Girl",
+    "boy": "Boy",
     "doctor": "Doctor",
     "detective": "Detective",
     "moderator": "Moderator"
@@ -64,6 +151,9 @@
   "errors": {
     "sessionExpired": "Your session has expired. Please sign in again.",
     "network": "Network error. Please try again.",
-    "unknown": "Something went wrong."
+    "unknown": "Something went wrong.",
+    "roomNotFound": "Room not found.",
+    "roomFull": "Room is full.",
+    "gameAlreadyStarted": "Game has already started."
   }
 }

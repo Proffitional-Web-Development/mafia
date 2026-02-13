@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import type { Id } from "@/convex/_generated/dataModel";
-
-import { api } from "@/convex/_generated/api";
+import { useState } from "react";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/user-avatar";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
-import { LanguageSwitcher } from "@/components/language-switcher";
 
 export default function OnboardingPage() {
   const t = useTranslations("onboarding");
@@ -17,13 +16,13 @@ export default function OnboardingPage() {
   const currentUser = useQuery(api.users.getCurrentUser);
   const completeProfile = useMutation(api.users.completeProfile);
   const generateAvatarUploadUrl = useMutation(
-    api.users.generateAvatarUploadUrl
+    api.users.generateAvatarUploadUrl,
   );
   const setAvatarFromStorage = useMutation(api.users.setAvatarFromStorage);
 
   const [username, setUsername] = useState("");
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
-    null
+    null,
   );
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

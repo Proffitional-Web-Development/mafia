@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import { useLocale } from "next-intl";
+import { useEffect } from "react";
 
 import { useDirection } from "@/hooks/use-direction";
 

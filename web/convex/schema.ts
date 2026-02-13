@@ -82,12 +82,23 @@ export default defineSchema({
       v.literal("in-game"),
       v.literal("finished")
     ),
+    currentGameId: v.optional(v.id("games")),
     createdAt: v.number(),
     lastActivityAt: v.number(),
   })
     .index("by_code", ["code"])
     .index("by_ownerId", ["ownerId"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_lastActivityAt", ["lastActivityAt"]),
+
+  roomMembers: defineTable({
+    roomId: v.id("rooms"),
+    userId: v.id("users"),
+    joinedAt: v.number(),
+  })
+    .index("by_roomId", ["roomId"])
+    .index("by_userId", ["userId"])
+    .index("by_roomId_userId", ["roomId", "userId"]),
 
   games: defineTable({
     roomId: v.id("rooms"),

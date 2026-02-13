@@ -6,7 +6,21 @@
     "loading": "جارٍ التحميل...",
     "pleaseWait": "يرجى الانتظار...",
     "userAvatar": "صورة المستخدم",
-    "userAvatarFor": "صورة {username}"
+    "userAvatarFor": "صورة {username}",
+    "copy": "نسخ",
+    "copied": "تم النسخ!",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "back": "رجوع",
+    "close": "إغلاق",
+    "you": "أنت",
+    "owner": "المالك",
+    "spectating": "مشاهدة",
+    "dead": "ميت",
+    "alive": "حي",
+    "round": "الجولة {number}",
+    "players": "اللاعبون",
+    "settings": "الإعدادات"
   },
   "home": {
     "title": "لعبة المافيا",
@@ -38,25 +52,98 @@
   },
   "game": {
     "loadingSession": "جارٍ تحميل جلستك...",
-    "lobbyTitle": "ردهة اللعبة (محمية)",
+    "lobbyTitle": "ردهة اللعبة",
     "fallbackPlayer": "لاعب",
     "noEmail": "لا يوجد بريد إلكتروني",
     "logout": "تسجيل الخروج",
     "currentTime": "الوقت الحالي: {value}"
   },
+  "room": {
+    "createRoom": "إنشاء غرفة",
+    "joinRoom": "الانضمام لغرفة",
+    "enterCode": "أدخل رمز الغرفة",
+    "creating": "جارٍ الإنشاء...",
+    "joining": "جارٍ الانضمام...",
+    "orJoinExisting": "أو انضم لغرفة موجودة",
+    "roomCode": "رمز الغرفة",
+    "copyInviteLink": "نسخ رابط الدعوة",
+    "inviteLinkCopied": "تم نسخ رابط الدعوة!",
+    "leaveRoom": "مغادرة الغرفة",
+    "startGame": "بدء اللعبة",
+    "waitingForPlayers": "في انتظار اللاعبين...",
+    "minPlayersRequired": "مطلوب {count} لاعبين على الأقل",
+    "playersCount": "{current}/{max} لاعبين",
+    "settingsTitle": "إعدادات الغرفة",
+    "discussionDuration": "مدة النقاش",
+    "seconds": "{count} ثانية",
+    "maxPlayers": "الحد الأقصى للاعبين",
+    "enabledRoles": "الأدوار المفعّلة",
+    "kickPlayer": "طرد",
+    "kickConfirm": "إزالة {username} من الغرفة؟",
+    "ownerBadge": "المالك",
+    "readOnlySettings": "فقط مالك الغرفة يمكنه تغيير الإعدادات"
+  },
+  "roleReveal": {
+    "yourRole": "دورك",
+    "tapToReveal": "اضغط لكشف دورك",
+    "mafiaTeammates": "زملاؤك",
+    "ready": "أنا جاهز",
+    "waitingForOthers": "في انتظار الآخرين...",
+    "abilityDescription": {
+      "mafia": "صوّت كل ليلة لإقصاء مواطن.",
+      "citizen": "ناقش وصوّت للعثور على المافيا.",
+      "sheikh": "احمِ لاعبًا واحدًا كل ليلة من الإقصاء.",
+      "girl": "تحقق من لاعب واحد كل ليلة لمعرفة انتمائه.",
+      "boy": "اختر لاعبًا — إذا كان مافيا يموت كلاكما. وإلا تموت أنت فقط."
+    }
+  },
+  "discussion": {
+    "title": "مرحلة النقاش",
+    "subtitle": "ناقش مع اللاعبين الآخرين من قد يكون المافيا",
+    "timeRemaining": "الوقت المتبقي",
+    "endEarly": "إنهاء النقاش مبكرًا",
+    "endEarlyConfirm": "إنهاء مرحلة النقاش الآن؟",
+    "deadSpectating": "تم إقصاؤك — مشاهدة"
+  },
+  "voting": {
+    "title": "التصويت العلني",
+    "subtitle": "صوّت لإقصاء مشتبه به",
+    "selectTarget": "اختر لاعبًا للتصويت ضده",
+    "skipVote": "تخطي التصويت",
+    "changeVote": "تغيير التصويت",
+    "yourVote": "تصويتك",
+    "votesFor": "{count} صوت/أصوات",
+    "noVotesYet": "لا أصوات بعد",
+    "voted": "صوّت",
+    "notVoted": "لم يصوّت",
+    "confirmResults": "تأكيد النتائج",
+    "allVoted": "جميع اللاعبين صوّتوا",
+    "waitingForVotes": "{voted}/{total} صوّتوا",
+    "resultTitle": "نتيجة التصويت",
+    "eliminated": "تم إقصاء {username}!",
+    "noElimination": "لم يتم إقصاء أحد",
+    "tieResult": "تعادل — لا إقصاء",
+    "deadCannotVote": "اللاعبون الميتون لا يمكنهم التصويت"
+  },
   "phases": {
     "lobby": "الردهة",
+    "cardDistribution": "توزيع البطاقات",
     "roleReveal": "كشف الأدوار",
     "discussion": "النقاش",
     "publicVoting": "التصويت العلني",
-    "ability": "مرحلة القدرات",
+    "abilityPhase": "مرحلة القدرات",
     "mafiaVoting": "تصويت المافيا",
     "resolution": "الحسم",
+    "endCheck": "فحص النهاية",
+    "finished": "انتهت",
     "endgame": "نهاية اللعبة"
   },
   "roles": {
     "citizen": "مواطن",
     "mafia": "مافيا",
+    "sheikh": "شيخ",
+    "girl": "فتاة",
+    "boy": "ولد",
     "doctor": "طبيب",
     "detective": "محقق",
     "moderator": "المنظّم"
@@ -64,6 +151,9 @@
   "errors": {
     "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مجددًا.",
     "network": "خطأ في الشبكة. حاول مرة أخرى.",
-    "unknown": "حدث خطأ ما."
+    "unknown": "حدث خطأ ما.",
+    "roomNotFound": "الغرفة غير موجودة.",
+    "roomFull": "الغرفة ممتلئة.",
+    "gameAlreadyStarted": "اللعبة بدأت بالفعل."
   }
 }
