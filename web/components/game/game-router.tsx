@@ -2,9 +2,18 @@
 
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
+import {
+  AbilityPhase,
+  AbilityPhaseNightTransition,
+} from "@/components/game/ability-phase";
 import { DiscussionPhase } from "@/components/game/discussion-phase";
+import { FinishedPhase } from "@/components/game/finished-phase";
+import { PhaseTransitionController } from "@/components/game/phase-transition-controller";
+import { MafiaVotingPhase } from "@/components/game/mafia-voting-phase";
 import { PhaseHeader } from "@/components/game/phase-header";
+import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
+import { ResolutionPhase } from "@/components/game/resolution-phase";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -28,8 +37,11 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
 
   const { game, me } = gameState;
 
+  const deadPlayers = gameState.players.filter((player) => !player.isAlive);
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-4 gap-4">
+      <PhaseTransitionController phase={game.phase} />
       <PhaseHeader
         phase={game.phase}
         round={game.round}
@@ -56,10 +68,34 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
         />
       )}
 
-      {(game.phase === "abilityPhase" ||
-        game.phase === "mafiaVoting" ||
-        game.phase === "resolution" ||
-        game.phase === "endCheck") && (
+      {game.phase === "abilityPhase" && (
+        <>
+          <AbilityPhase
+            gameId={gameId}
+            currentUserId={currentUserId}
+            deadlineAt={game.phaseDeadlineAt ?? undefined}
+          />
+          <AbilityPhaseNightTransition />
+        </>
+      )}
+
+      {game.phase === "mafiaVoting" && (
+        <MafiaVotingPhase
+          gameId={gameId}
+          currentUserId={currentUserId}
+          deadlineAt={game.phaseDeadlineAt ?? undefined}
+        />
+      )}
+
+      {game.phase === "resolution" && (
+        <ResolutionPhase
+          gameId={gameId}
+          currentUserId={currentUserId}
+          deadlineAt={game.phaseDeadlineAt ?? undefined}
+        />
+      )}
+
+      {game.phase === "endCheck" && (
         <div className="flex flex-1 items-center justify-center">
           <p className="text-zinc-500 text-sm">
             {pt(
@@ -75,14 +111,17 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
       )}
 
       {game.phase === "finished" && (
-        <div className="flex flex-1 items-center justify-center flex-col gap-4">
-          <h2 className="text-2xl font-bold">{pt("finished")}</h2>
-          {game.winnerFaction && (
-            <p className="text-lg">
-              🏆 {game.winnerFaction === "mafia" ? "Mafia" : "Citizens"} win!
-            </p>
-          )}
-        </div>
+        <FinishedPhase gameId={gameId} currentUserId={currentUserId} />
+      )}
+
+      {game.phase !== "finished" && (
+        <PlayerGraveyard
+          players={deadPlayers.map((player) => ({
+            playerId: String(player.playerId),
+            username: player.username,
+            avatarUrl: player.avatarUrl ?? undefined,
+          }))}
+        />
       )}
     </main>
   );

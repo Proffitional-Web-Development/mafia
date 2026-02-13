@@ -45,3 +45,25 @@ Implement the private mafia voting phase where mafia members collectively choose
 - [ ] Protection blocks elimination silently
 - [ ] Non-mafia players see no vote details
 - [ ] Timeout auto-resolves voting
+
+---
+
+## A8 Review — 2026-02-13 (Backend)
+
+✅ Review: PASSED
+
+### Evaluation Checklist
+
+| Criterion | Verdict | Notes |
+|-----------|---------|-------|
+| Functional correctness | ✅ | `castMafiaVote`, `getMafiaVotes`, confirm/timeout resolution, and elimination/protection outcomes are correctly implemented. |
+| Acceptance criteria | ✅ | Alive-mafia-only voting, mafia-target prohibition, mafia-only vote visibility, silent protection block, and timeout resolution are all present. |
+| Error handling quality | ✅ | Clear guards for phase, membership, alive checks, target rules, and stale timer token mismatches. |
+| Security posture | ✅ | Vote visibility is properly restricted to alive mafia users; non-mafia access is denied. |
+| Edge-case coverage | ✅ | Tie/no-vote → no elimination; duplicate timer execution is prevented via prior-result and token checks. |
+| Performance risks | ✅ | Vote tallying is linear and bounded by small mafia voter set. |
+| Code convention alignment | ✅ | Resolution helper reuse and internal auto-resolve pattern align with T09 implementation style. |
+| Type safety | ✅ | Strong Convex validators and typed payload parsing fallback behavior. |
+| Cross-task compatibility | ✅ | Reads girl protection from T10 action records and transitions into T12 resolution. |
+| Deliverable completeness | ✅ | Backend mafia voting deliverables are complete. |
+

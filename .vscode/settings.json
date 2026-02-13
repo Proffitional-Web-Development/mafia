@@ -3,6 +3,8 @@
         "/^cd /c/Users/user/Downloads/game-project-plan/game-plan/web && node --input-type=module -e \"import \\* as m from '@convex-dev/auth/providers/Google'; console\\.log\\(Object\\.keys\\(m\\)\\);\"$/": {
             "approve": true,
             "matchCommandLine": true
-        }
+        },
+        "npx convex": true,
+        "npm run typecheck": true
     }
 }

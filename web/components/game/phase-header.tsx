@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { PHASE_META, ROLE_COLORS } from "@/lib/design-tokens";
 import { cn } from "@/lib/utils";
 
 interface PhaseHeaderProps {
@@ -11,25 +12,6 @@ interface PhaseHeaderProps {
   role: string;
 }
 
-const PHASE_ICONS: Record<string, string> = {
-  cardDistribution: "🃏",
-  discussion: "💬",
-  publicVoting: "🗳️",
-  abilityPhase: "⚡",
-  mafiaVoting: "🔪",
-  resolution: "⚖️",
-  endCheck: "🔍",
-  finished: "🏁",
-};
-
-const ROLE_COLORS: Record<string, string> = {
-  mafia: "bg-red-900/30 text-red-400 border-red-800",
-  citizen: "bg-blue-900/30 text-blue-400 border-blue-800",
-  sheikh: "bg-emerald-900/30 text-emerald-400 border-emerald-800",
-  girl: "bg-purple-900/30 text-purple-400 border-purple-800",
-  boy: "bg-amber-900/30 text-amber-400 border-amber-800",
-};
-
 export function PhaseHeader({ phase, round, isAlive, role }: PhaseHeaderProps) {
   const pt = useTranslations("phases");
   const ct = useTranslations("common");
@@ -38,13 +20,15 @@ export function PhaseHeader({ phase, round, isAlive, role }: PhaseHeaderProps) {
 
   const phaseKey = phase as string;
   const roleKey = role as string;
+  const phaseMeta = PHASE_META[phase];
+  const roleColor = ROLE_COLORS[role];
 
   return (
     <div className="space-y-2">
       {/* Top bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-lg">{PHASE_ICONS[phase] ?? "🎮"}</span>
+          <span className="text-lg">{phaseMeta?.icon ?? "🎮"}</span>
           <h1 className="text-lg font-semibold">{pt(phaseKey)}</h1>
         </div>
         <div className="flex items-center gap-3">
@@ -54,7 +38,9 @@ export function PhaseHeader({ phase, round, isAlive, role }: PhaseHeaderProps) {
           <span
             className={cn(
               "text-xs font-medium px-2 py-0.5 rounded-full border",
-              ROLE_COLORS[role] ?? "bg-zinc-800 text-zinc-400 border-zinc-700",
+              roleColor
+                ? `${roleColor.bg} ${roleColor.text} ${roleColor.border}`
+                : "bg-zinc-800 text-zinc-400 border-zinc-700",
             )}
           >
             {rt(roleKey)}

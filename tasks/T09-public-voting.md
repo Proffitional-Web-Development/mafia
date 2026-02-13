@@ -38,10 +38,32 @@ Implement the public voting system where all alive players vote to eliminate a s
 
 ## Acceptance Criteria
 
-- [ ] All alive players can cast exactly one vote
-- [ ] Votes are changeable before confirmation
-- [ ] Vote tallies update in real-time for all players
-- [ ] Owner confirms and resolves voting
-- [ ] Tie results in no elimination
-- [ ] Dead players cannot vote
-- [ ] Elimination recorded and player marked as dead
+- [x] All alive players can cast exactly one vote
+- [x] Votes are changeable before confirmation
+- [x] Vote tallies update in real-time for all players
+- [x] Owner confirms and resolves voting
+- [x] Tie results in no elimination
+- [x] Dead players cannot vote
+- [x] Elimination recorded and player marked as dead
+
+---
+
+## A8 Review — 2026-02-13 (Backend)
+
+✅ Review: PASSED
+
+### Evaluation Checklist
+
+| Criterion | Verdict | Notes |
+|-----------|---------|-------|
+| Functional correctness | ✅ | Vote cast/update, skip vote, tally query, owner confirmation, and timeout auto-resolve all function as specified. |
+| Acceptance criteria | ✅ | One active vote per alive voter, changeable pre-resolution, live tally visibility, tie/no-elimination handling, and dead-player blocking are implemented. |
+| Error handling quality | ✅ | Robust validation for phase, membership, alive status, target validity, and owner authorization. |
+| Security posture | ✅ | Only authenticated game participants can query/cast; privileged confirm path is owner-guarded. |
+| Edge-case coverage | ✅ | No-vote, tie, and skip-dominant outcomes are explicitly handled and event-logged. |
+| Performance risks | ✅ | Tally computation is linear in vote count and bounded by room size. |
+| Code convention alignment | ✅ | Shared resolver helper and internal timeout resolver follow established backend style. |
+| Type safety | ✅ | Proper Convex arg validators and typed IDs across mutation/query paths. |
+| Cross-task compatibility | ✅ | Transition handoff to state machine and downstream resolution event consumption are aligned with T10–T12. |
+| Deliverable completeness | ✅ | All backend sub-tasks for public voting are implemented. |
+

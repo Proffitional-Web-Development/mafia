@@ -26,9 +26,9 @@ Set up the bilingual infrastructure for Arabic (RTL) and English (LTR) from day 
 
 ## Acceptance Criteria
 
-- [ ] Language switcher toggles between Arabic and English
-- [ ] All static text uses translation keys (no hardcoded strings)
-- [ ] RTL layout renders correctly for Arabic
-- [ ] LTR layout renders correctly for English
-- [ ] Page direction (`dir`) updates dynamically
-- [ ] Font loads correctly for Arabic script
+- [x] Language switcher toggles between Arabic and English
+- [x] All static text uses translation keys (no hardcoded strings)
+- [x] RTL layout renders correctly for Arabic
+- [x] LTR layout renders correctly for English
+- [x] Page direction (`dir`) updates dynamically
+- [x] Font loads correctly for Arabic script

@@ -125,6 +125,92 @@
     "tieResult": "It's a tie — no elimination",
     "deadCannotVote": "Dead players cannot vote"
   },
+  "ability": {
+    "waiting": {
+      "title": "Night phase — abilities in progress",
+      "subtitle": "Special roles are taking their actions. Please wait."
+    },
+    "sheikh": {
+      "title": "Sheikh Ability",
+      "selectTarget": "Choose a player to investigate",
+      "alreadyUsed": "You already used your ability this round",
+      "investigate": "Investigate"
+    },
+    "girl": {
+      "title": "Girl Ability",
+      "selectTarget": "Choose a player to protect",
+      "alreadyUsed": "You already used your ability this round",
+      "protect": "Protect",
+      "confirmed": "Protection submitted",
+      "confirmedWithName": "Protection submitted for {name}"
+    },
+    "result": {
+      "mafia": "Mafia",
+      "citizens": "Citizen",
+      "reveal": "Investigation result: {faction}"
+    },
+    "history": {
+      "title": "Investigation History",
+      "empty": "No investigations yet",
+      "round": "Round {round}"
+    },
+    "transition": "Night ending... moving to mafia voting"
+  },
+  "mafiaVoting": {
+    "title": "Mafia Voting",
+    "subtitle": "Choose one target together",
+    "tapToVote": "Tap to vote",
+    "yourVote": "Your vote: {name}",
+    "noVoteYet": "You haven't voted yet",
+    "confirm": "Confirm",
+    "secrecyHint": "Keep this decision private until morning.",
+    "waiting": {
+      "title": "The mafia is deciding...",
+      "subtitle": "Please wait for the night action to finish."
+    }
+  },
+  "resolution": {
+    "title": "Round Resolution",
+    "subtitle": "Applying the outcomes of this round",
+    "resultsTitle": "Elimination Results",
+    "eliminated": "{name} was eliminated",
+    "boyRevengeEliminated": "{name} was also eliminated by Boy's revenge",
+    "noElimination": "No one was eliminated this round",
+    "transition": "Preparing next phase...",
+    "cause": {
+      "publicVote": "Public vote",
+      "mafiaVote": "Mafia vote",
+      "unknown": "Unknown cause"
+    },
+    "boyPrompt": {
+      "title": "Boy Revenge",
+      "subtitle": "You were eliminated. Choose one player to eliminate before time runs out.",
+      "confirm": "Use Revenge",
+      "waiting": "Waiting for Boy revenge decision..."
+    }
+  },
+  "gameOver": {
+    "title": "Game Over",
+    "winner": "Winner: {faction}",
+    "unknownWinner": "Winner not available",
+    "mafia": "Mafia",
+    "citizens": "Citizens",
+    "personalTitle": "Your Result",
+    "personalSummary": "You were {role} — your team {result}",
+    "resultWin": "won",
+    "resultLose": "lost",
+    "rolesTitle": "Roles & Status",
+    "role": "Role",
+    "status": "Status",
+    "roleHidden": "Hidden",
+    "revealPending": "Full role reveal is not available from the current game state payload yet.",
+    "playAgain": "Play Again",
+    "leave": "Leave",
+    "waitingOwner": "Waiting for room owner to start a new game"
+  },
+  "graveyard": {
+    "title": "Graveyard"
+  },
   "phases": {
     "lobby": "Lobby",
     "cardDistribution": "Card Distribution",

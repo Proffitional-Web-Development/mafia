@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { RoleCard } from "@/components/ui/role-card";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -68,32 +69,16 @@ export function RoleRevealPhase({ gameId }: RoleRevealPhaseProps) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4">
       {/* Card */}
-      <button
-        type="button"
-        onClick={() => setRevealed(true)}
-        className={cn(
-          "relative flex h-72 w-52 flex-col items-center justify-center rounded-2xl border-2 shadow-xl transition-all duration-500",
-          revealed
-            ? `bg-gradient-to-b ${bgGradient} border-white/10`
-            : "bg-zinc-900 border-zinc-700 hover:border-zinc-500 cursor-pointer",
-        )}
-        aria-label={revealed ? rt(roleKey) : t("tapToReveal")}
-      >
-        {revealed ? (
-          <div className="flex flex-col items-center gap-3 animate-in fade-in zoom-in-95 duration-300">
-            <span className="text-5xl">{icon}</span>
-            <span className="text-xl font-bold text-white">{rt(roleKey)}</span>
-            <p className="text-xs text-white/60 text-center px-4 leading-relaxed">
-              {t(`abilityDescription.${role}`)}
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-4xl">🃏</span>
-            <span className="text-sm text-zinc-400">{t("tapToReveal")}</span>
-          </div>
-        )}
-      </button>
+      <RoleCard
+        revealed={revealed}
+        roleName={rt(roleKey)}
+        roleIcon={icon}
+        description={t(`abilityDescription.${role}`)}
+        onReveal={() => setRevealed(true)}
+        revealLabel={rt(roleKey)}
+        hiddenLabel={t("tapToReveal")}
+        className={cn(revealed && `bg-gradient-to-b ${bgGradient} border-white/10`)}
+      />
 
       {/* Mafia teammates */}
       {revealed && mafiaTeammates && mafiaTeammates.length > 0 && (

@@ -43,3 +43,25 @@ Apply all eliminations from the round and handle the Boy's revenge ability.
 - [ ] Forfeited revenge results in no extra elimination
 - [ ] Multiple eliminations in one round handled correctly
 - [ ] All eliminations logged with correct cause
+
+---
+
+## A8 Review — 2026-02-13 (Backend)
+
+✅ Review: PASSED
+
+### Evaluation Checklist
+
+| Criterion | Verdict | Notes |
+|-----------|---------|-------|
+| Functional correctness | ✅ | `resolveRound`, `useBoyRevenge`, and `autoForfeitBoyRevenge` correctly apply eliminations and revenge flow. |
+| Acceptance criteria | ✅ | Dead marking, conditional boy trigger, time-limited revenge window, forfeiture path, multi-elimination handling, and event logging are implemented. |
+| Error handling quality | ✅ | Strong guards for phase/round/token mismatch, actor eligibility, target validity, and duplicate revenge attempts. |
+| Security posture | ✅ | Only the eliminated current-round boy can invoke revenge; internal mutations protect scheduler paths. |
+| Edge-case coverage | ✅ | Idempotency checks (`already_applied`), timeout forfeits, and finalize-only-when-pending-cleared behavior are present. |
+| Performance risks | ✅ | Round-scoped event/action queries are bounded and indexed. |
+| Code convention alignment | ✅ | Clear separation between internal resolver logic and public mutation/query access. |
+| Type safety | ✅ | Convex validators + typed ID narrowing are consistently used. |
+| Cross-task compatibility | ✅ | Consumes T09/T11 events and defers progression through T03 transition engine. |
+| Deliverable completeness | ✅ | Backend T12 functionality is complete for MVP scope. |
+

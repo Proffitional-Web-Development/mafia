@@ -345,6 +345,36 @@ export const startGame = mutation({
   },
 });
 
+export const playAgain = mutation({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+    const room = await requireRoomOwner(ctx, args.roomId, userId);
+
+    if (!room.currentGameId) {
+      throw new ConvexError("No game has been started in this room.");
+    }
+
+    const game = await ctx.db.get(room.currentGameId);
+    if (!game) {
+      throw new ConvexError("Current game not found.");
+    }
+    if (game.phase !== "finished") {
+      throw new ConvexError("Current game is not finished yet.");
+    }
+
+    await ctx.db.patch(args.roomId, {
+      status: "waiting",
+      currentGameId: undefined,
+      lastActivityAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
 // ---------------------------------------------------------------------------
 // Queries
 // ---------------------------------------------------------------------------

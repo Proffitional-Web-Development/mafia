@@ -125,6 +125,92 @@
     "tieResult": "تعادل — لا إقصاء",
     "deadCannotVote": "اللاعبون الميتون لا يمكنهم التصويت"
   },
+  "ability": {
+    "waiting": {
+      "title": "المرحلة الليلية — تنفيذ القدرات",
+      "subtitle": "الأدوار الخاصة تنفّذ قدراتها الآن. يرجى الانتظار."
+    },
+    "sheikh": {
+      "title": "قدرة الشيخ",
+      "selectTarget": "اختر لاعبًا للتحقق منه",
+      "alreadyUsed": "لقد استخدمت قدرتك في هذه الجولة",
+      "investigate": "تحقق"
+    },
+    "girl": {
+      "title": "قدرة الفتاة",
+      "selectTarget": "اختر لاعبًا لحمايته",
+      "alreadyUsed": "لقد استخدمت قدرتك في هذه الجولة",
+      "protect": "حماية",
+      "confirmed": "تم إرسال الحماية",
+      "confirmedWithName": "تم إرسال الحماية إلى {name}"
+    },
+    "result": {
+      "mafia": "مافيا",
+      "citizens": "مواطن",
+      "reveal": "نتيجة التحقق: {faction}"
+    },
+    "history": {
+      "title": "سجل التحققات",
+      "empty": "لا توجد تحققات بعد",
+      "round": "الجولة {round}"
+    },
+    "transition": "انتهى الليل... الانتقال إلى تصويت المافيا"
+  },
+  "mafiaVoting": {
+    "title": "تصويت المافيا",
+    "subtitle": "اختاروا هدفًا واحدًا معًا",
+    "tapToVote": "اضغط للتصويت",
+    "yourVote": "تصويتك: {name}",
+    "noVoteYet": "لم تصوّت بعد",
+    "confirm": "تأكيد",
+    "secrecyHint": "حافظوا على سرية هذا القرار حتى الصباح.",
+    "waiting": {
+      "title": "المافيا تقرر الآن...",
+      "subtitle": "يرجى الانتظار حتى تنتهي حركة الليل."
+    }
+  },
+  "resolution": {
+    "title": "حسم الجولة",
+    "subtitle": "تطبيق نتائج هذه الجولة",
+    "resultsTitle": "نتائج الإقصاء",
+    "eliminated": "تم إقصاء {name}",
+    "boyRevengeEliminated": "تم إقصاء {name} أيضًا بقدرة انتقام الولد",
+    "noElimination": "لم يتم إقصاء أحد في هذه الجولة",
+    "transition": "جارٍ التحضير للمرحلة التالية...",
+    "cause": {
+      "publicVote": "تصويت علني",
+      "mafiaVote": "تصويت المافيا",
+      "unknown": "سبب غير معروف"
+    },
+    "boyPrompt": {
+      "title": "انتقام الولد",
+      "subtitle": "تم إقصاؤك. اختر لاعبًا لإقصائه قبل انتهاء الوقت.",
+      "confirm": "تنفيذ الانتقام",
+      "waiting": "في انتظار قرار انتقام الولد..."
+    }
+  },
+  "gameOver": {
+    "title": "انتهت اللعبة",
+    "winner": "الفائز: {faction}",
+    "unknownWinner": "الفائز غير متاح",
+    "mafia": "المافيا",
+    "citizens": "المواطنون",
+    "personalTitle": "نتيجتك",
+    "personalSummary": "كان دورك {role} — فريقك {result}",
+    "resultWin": "فاز",
+    "resultLose": "خسر",
+    "rolesTitle": "الأدوار والحالة",
+    "role": "الدور",
+    "status": "الحالة",
+    "roleHidden": "مخفي",
+    "revealPending": "كشف جميع الأدوار غير متاح بعد من بيانات حالة اللعبة الحالية.",
+    "playAgain": "العب مرة أخرى",
+    "leave": "مغادرة",
+    "waitingOwner": "في انتظار مالك الغرفة لبدء لعبة جديدة"
+  },
+  "graveyard": {
+    "title": "المقبرة"
+  },
   "phases": {
     "lobby": "الردهة",
     "cardDistribution": "توزيع البطاقات",

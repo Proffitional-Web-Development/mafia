@@ -48,3 +48,25 @@ Implement the night ability phase where Sheikh investigates and Girl protects.
 - [ ] Non-ability players see a waiting screen with no info leakage
 - [ ] Phase auto-skips if relevant role holders are dead
 - [ ] Timeout auto-advances to next phase
+
+---
+
+## A8 Review — 2026-02-13 (Backend)
+
+✅ Review: PASSED
+
+### Evaluation Checklist
+
+| Criterion | Verdict | Notes |
+|-----------|---------|-------|
+| Functional correctness | ✅ | `useSheikhAbility`, `useGirlAbility`, and `getAbilityPhaseState` satisfy role-restricted action flow and per-round limits. |
+| Acceptance criteria | ✅ | One action per role holder per round, correct sheikh faction result, private protection behavior, waiting state for others, dead-role skip logic, and timeout progression are implemented. |
+| Error handling quality | ✅ | Strong checks for phase, role, alive status, target validity, and duplicate-use prevention. |
+| Security posture | ✅ | Ability execution is strictly tied to authenticated player identity and role; non-ability players receive no sensitive action details. |
+| Edge-case coverage | ✅ | Handles missing/dead sheikh/girl and completes phase when required actions are done or timer expires. |
+| Performance risks | 🟢 | `getAbilityPhaseState` performs full-round action/history scans; acceptable for room sizes in scope. |
+| Code convention alignment | ✅ | Helper-driven structure and event logging are consistent with backend architecture. |
+| Type safety | ✅ | Typed IDs and explicit Convex validators are applied across all handlers. |
+| Cross-task compatibility | ✅ | Uses T03 timer/token guards and hands off correctly into T11 mafia voting. |
+| Deliverable completeness | ✅ | Backend requirements for ability phase are complete. |
+

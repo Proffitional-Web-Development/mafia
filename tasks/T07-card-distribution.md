@@ -36,12 +36,12 @@ Implement secure, server-side role assignment based on room settings and player 
 
 ## Acceptance Criteria
 
-- [ ] Roles distributed correctly per player count
-- [ ] No player sees another player's role (except mafia seeing mafia)
-- [ ] Room setting toggles respected (disabled roles not assigned)
-- [ ] Card reveal animation works on mobile
-- [ ] Distribution is random and non-deterministic across games
-- [ ] Edge case: 3-player game assigns valid factions
+- [x] Roles distributed correctly per player count
+- [x] No player sees another player's role (except mafia seeing mafia)
+- [x] Room setting toggles respected (disabled roles not assigned)
+- [x] Card reveal animation works on mobile
+- [x] Distribution is random and non-deterministic across games
+- [x] Edge case: 3-player game assigns valid factions
 
 ---
 
@@ -124,3 +124,22 @@ Implement secure, server-side role assignment based on room settings and player 
 
 - Interpreted “Fill remaining citizen slots with Boy or plain Citizen” as: assign at most one `boy` if enabled, then fill remainder with `citizen`.
 - If product intends multiple `boy` cards, algorithm and schema constraints should be updated explicitly in a follow-up task.
+
+---
+
+## A8 Review — 2026-02-13 (Backend)
+
+❌ Review: REVISION REQUIRED
+
+### Findings
+
+- 🟡 Major: `getGameState` in `convex/stateMachine.ts` can expose `mafiaTeammates` to mafia players without an explicit phase/distribution-complete guard. T07 visibility rules require teammate visibility to be blocked before reveal eligibility and guarded by distribution completion.
+
+## Revision Required
+
+1. Gate `mafiaTeammates` exposure in `getGameState` behind:
+   - non-lobby phase visibility rules,
+   - and a distribution-complete signal (e.g., `cards_distributed` event) consistent with `getMyRole`/`getMafiaTeammates`.
+2. Ensure no role-adjacent response path leaks teammate identity before reveal eligibility.
+3. Add/extend backend tests for pre-distribution and post-distribution teammate visibility.
+

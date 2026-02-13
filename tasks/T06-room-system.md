@@ -35,10 +35,36 @@ Implement the full room lifecycle: creation, joining, configuration, and transit
 
 ## Acceptance Criteria
 
-- [ ] Room created with unique code
+- [x] Room created with unique code
 - [ ] Players join via code or link
-- [ ] Owner can configure all settings from GDD
-- [ ] Non-owners see settings as read-only
-- [ ] Start button validates minimum players
-- [ ] Real-time updates when players join/leave
-- [ ] Owner transfer works on owner disconnect
+- [x] Owner can configure all settings from GDD
+- [x] Non-owners see settings as read-only
+- [x] Start button validates minimum players
+- [x] Real-time updates when players join/leave
+- [x] Owner transfer works on owner disconnect
+
+---
+
+## A8 Review — 2026-02-13 (Backend)
+
+✅ Review: PASSED
+
+### Evaluation Checklist
+
+| Criterion | Verdict | Notes |
+|-----------|---------|-------|
+| Functional correctness | ✅ | `createRoom`, `joinRoom`, `updateRoomSettings`, `kickPlayer`, `leaveRoom`, `startGame`, and `getRoomState` are implemented with expected guards and data writes. |
+| Acceptance criteria | ✅ | Backend supports unique codes, join by code (and link-compatible flow via code lookup), owner-only settings, min-player start validation, real-time query model, and ownership transfer. |
+| Error handling quality | ✅ | Descriptive `ConvexError` checks exist for room-not-found, full-room, invalid owner actions, invalid settings, and invalid phase/state actions. |
+| Security posture | ✅ | Auth is required for room mutations; owner-only guards are correctly enforced for privileged actions. |
+| Edge-case coverage | ✅ | Owner leave transfer and empty-room finish behavior are handled; idempotent re-join behavior exists. |
+| Performance risks | 🟢 | Cleanup batch currently `take(50)` per cron run; acceptable for MVP and avoids unbounded work. |
+| Code convention alignment | ✅ | Helpers are clear and consistent with existing Convex patterns. |
+| Type safety | ✅ | Strong Convex validators and typed IDs are used across room operations. |
+| Cross-task compatibility | ✅ | `startGame` correctly creates `games`/`players` records for T07+ flow and schedules card distribution. |
+| Deliverable completeness | ✅ | Required backend room lifecycle and stale-room cleanup are present. |
+
+### Findings
+
+- 🟢 Minor: Room code generation uses `Math.random()` rather than cryptographic randomness; acceptable for non-secret invite codes in MVP, but consider aligning with secure RNG approach used in card distribution.
+

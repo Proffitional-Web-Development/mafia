@@ -40,10 +40,35 @@ Evaluate win conditions after every resolution and handle game-end flow.
 
 ## Acceptance Criteria
 
-- [ ] Citizens win correctly when all mafia are dead
-- [ ] Mafia win correctly when mafia ≥ citizens
-- [ ] Win check runs after EVERY elimination (including Boy revenge)
-- [ ] All roles revealed on game end
-- [ ] Player stats updated
-- [ ] "Play Again" resets room to lobby state
-- [ ] Game cannot continue after win condition met
+- [x] Citizens win correctly when all mafia are dead
+- [x] Mafia win correctly when mafia ≥ citizens
+- [x] Win check runs after EVERY elimination (including Boy revenge)
+- [x] All roles revealed on game end
+- [x] Player stats updated
+- [x] "Play Again" resets room to lobby state
+- [x] Game cannot continue after win condition met
+
+---
+
+## A8 Review — 2026-02-13 (Backend)
+
+✅ Review: PASSED (after revision)
+
+### Original Finding (RESOLVED)
+
+- 🟡 Major: Win evaluation was primarily executed on transition out of `resolution`, not after every elimination event as required.
+
+### Resolution Applied (2026-02-13)
+
+Added immediate win condition checks after each elimination source:
+1. `resolveRound` now checks win condition after applying all eliminations and before boy revenge setup
+2. `useBoyRevenge` now checks win condition immediately after revenge elimination
+3. Both paths trigger `checkWinCondition` via scheduler when winner is detected, ensuring immediate game-end processing
+
+### Verification
+
+All acceptance criteria now met:
+- Win checks execute after every elimination path (public vote via resolution, mafia vote application, boy revenge)
+- Winner detection short-circuits further phase progression
+- Citizens/mafia win conditions evaluated correctly after each elimination event
+
