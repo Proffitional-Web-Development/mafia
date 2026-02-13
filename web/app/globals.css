@@ -22,5 +22,24 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  text-align: start;
+}
+
+html[lang="ar"] body {
+  font-family:
+    var(--font-noto-sans-arabic), var(--font-geist-sans), Arial, Helvetica,
+    sans-serif;
+}
+
+input,
+textarea,
+button,
+select {
+  text-align: start;
+}
+
+html[dir="rtl"] input[type="email"],
+html[dir="rtl"] input[type="password"] {
+  direction: ltr;
 }

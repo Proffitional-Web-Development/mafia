@@ -22,7 +22,9 @@
       "@/*": ["./*"],
       "@/components/*": ["./components/*"],
       "@/lib/*": ["./lib/*"],
-      "@/convex/*": ["./convex/*"]
+      "@/convex/*": ["./convex/*"],
+      "@/i18n/*": ["./i18n/*"],
+      "@/hooks/*": ["./hooks/*"]
     }
   },
   "include": [

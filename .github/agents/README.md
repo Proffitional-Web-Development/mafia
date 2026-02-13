@@ -11,6 +11,7 @@ This folder contains reusable custom-agent definitions based on `agents/AGENTS.m
 - `A5-game-logic-designer.md`
 - `A6-qa-security-agent.md`
 - `A7-devops-infra-agent.md`
+- `A8-reviewer-agent.md`
 
 ## How to use in GitHub Copilot
 

@@ -1,0 +1,69 @@
+{
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "loading": "Loading...",
+    "pleaseWait": "Please wait...",
+    "userAvatar": "User avatar",
+    "userAvatarFor": "{username} avatar"
+  },
+  "home": {
+    "title": "Mafia Game",
+    "description": "Authentication is required to access gameplay features.",
+    "goToGame": "Go to Game",
+    "completeProfile": "Complete Profile",
+    "signInOrSignUp": "Sign In / Sign Up"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "createAccount": "Create account",
+    "noGuestAccess": "No guest access is allowed.",
+    "email": "Email",
+    "password": "Password",
+    "continueWithGoogle": "Continue with Google",
+    "needAccount": "Need an account? Create one",
+    "haveAccount": "Already have an account? Sign in",
+    "authenticationFailed": "Authentication failed.",
+    "googleSignInFailed": "Google sign in failed."
+  },
+  "onboarding": {
+    "title": "Complete your profile",
+    "description": "Choose a unique username and optional avatar.",
+    "username": "Username",
+    "saving": "Saving...",
+    "saveProfile": "Save Profile",
+    "avatarUploadFailed": "Avatar upload failed.",
+    "profileSetupFailed": "Profile setup failed."
+  },
+  "game": {
+    "loadingSession": "Loading your session...",
+    "lobbyTitle": "Game Lobby (Protected)",
+    "fallbackPlayer": "Player",
+    "noEmail": "No email",
+    "logout": "Log out",
+    "currentTime": "Current time: {value}"
+  },
+  "phases": {
+    "lobby": "Lobby",
+    "roleReveal": "Role Reveal",
+    "discussion": "Discussion",
+    "publicVoting": "Public Voting",
+    "ability": "Ability Phase",
+    "mafiaVoting": "Mafia Voting",
+    "resolution": "Resolution",
+    "endgame": "Endgame"
+  },
+  "roles": {
+    "citizen": "Citizen",
+    "mafia": "Mafia",
+    "doctor": "Doctor",
+    "detective": "Detective",
+    "moderator": "Moderator"
+  },
+  "errors": {
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "network": "Network error. Please try again.",
+    "unknown": "Something went wrong."
+  }
+}

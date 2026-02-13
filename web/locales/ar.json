@@ -1,0 +1,69 @@
+{
+  "common": {
+    "language": "اللغة",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "loading": "جارٍ التحميل...",
+    "pleaseWait": "يرجى الانتظار...",
+    "userAvatar": "صورة المستخدم",
+    "userAvatarFor": "صورة {username}"
+  },
+  "home": {
+    "title": "لعبة المافيا",
+    "description": "يلزم تسجيل الدخول للوصول إلى ميزات اللعب.",
+    "goToGame": "اذهب إلى اللعبة",
+    "completeProfile": "أكمل الملف الشخصي",
+    "signInOrSignUp": "تسجيل الدخول / إنشاء حساب"
+  },
+  "auth": {
+    "signIn": "تسجيل الدخول",
+    "createAccount": "إنشاء حساب",
+    "noGuestAccess": "لا يُسمح بالدخول كضيف.",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "continueWithGoogle": "المتابعة باستخدام Google",
+    "needAccount": "ليس لديك حساب؟ أنشئ حسابًا",
+    "haveAccount": "لديك حساب بالفعل؟ سجّل الدخول",
+    "authenticationFailed": "فشلت عملية تسجيل الدخول.",
+    "googleSignInFailed": "فشل تسجيل الدخول عبر Google."
+  },
+  "onboarding": {
+    "title": "أكمل ملفك الشخصي",
+    "description": "اختر اسم مستخدم فريدًا وصورة اختيارية.",
+    "username": "اسم المستخدم",
+    "saving": "جارٍ الحفظ...",
+    "saveProfile": "حفظ الملف الشخصي",
+    "avatarUploadFailed": "فشل رفع الصورة الرمزية.",
+    "profileSetupFailed": "فشل إعداد الملف الشخصي."
+  },
+  "game": {
+    "loadingSession": "جارٍ تحميل جلستك...",
+    "lobbyTitle": "ردهة اللعبة (محمية)",
+    "fallbackPlayer": "لاعب",
+    "noEmail": "لا يوجد بريد إلكتروني",
+    "logout": "تسجيل الخروج",
+    "currentTime": "الوقت الحالي: {value}"
+  },
+  "phases": {
+    "lobby": "الردهة",
+    "roleReveal": "كشف الأدوار",
+    "discussion": "النقاش",
+    "publicVoting": "التصويت العلني",
+    "ability": "مرحلة القدرات",
+    "mafiaVoting": "تصويت المافيا",
+    "resolution": "الحسم",
+    "endgame": "نهاية اللعبة"
+  },
+  "roles": {
+    "citizen": "مواطن",
+    "mafia": "مافيا",
+    "doctor": "طبيب",
+    "detective": "محقق",
+    "moderator": "المنظّم"
+  },
+  "errors": {
+    "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مجددًا.",
+    "network": "خطأ في الشبكة. حاول مرة أخرى.",
+    "unknown": "حدث خطأ ما."
+  }
+}

@@ -67,3 +67,20 @@
 **Skills Required:** Vercel, Convex Cloud, GitHub Actions, Sentry, monitoring tools, DNS/SSL, environment management.
 
 **Owns Tasks:** T01, T20
+
+---
+
+## A8 — Reviewer Agent
+
+**Role:** Receives completed task outputs, audits them against acceptance criteria, project standards, and cross-task compatibility, then either approves work or returns it with specific revision instructions.
+
+**Skills Required:** Deep code review, secure coding analysis, performance profiling, TypeScript/React/Convex architecture review, cross-module dependency validation, technical QA writing.
+
+**Owns Tasks:** All task reviews (T01–T20), final acceptance gating, recurring issue tracking.
+
+**Constraints:**
+- Never writes implementation code directly.
+- Never changes architecture or introduces new design decisions.
+- Never approves tasks with unresolved 🔴 Critical issues.
+- Must use a top-tier model for deep review reasoning.
+
