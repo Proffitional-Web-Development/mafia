@@ -25,17 +25,17 @@ export default function HomePage() {
   }, [setTheme]);
 
   return (
-    <main className="relative mx-auto min-h-[100dvh] w-full max-w-md overflow-hidden font-display-alt px-6 pb-28 pt-6">
+    <main className="relative mx-auto min-h-[100dvh] w-full max-w-md overflow-hidden font-display-alt px-6 pb-28 pt-6 md:max-w-3xl md:px-8 lg:max-w-5xl lg:px-10">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(242,13,51,0.2),transparent_55%)]" />
       <div className="pointer-events-none absolute -top-32 -end-20 h-80 w-80 rounded-full bg-danger/25 blur-3xl animate-pulse-slow" />
 
-      <section className="relative z-10 flex min-h-[70dvh] flex-col gap-6">
+      <section className="relative z-10 mx-auto flex min-h-[70dvh] w-full max-w-md flex-col gap-6 lg:max-w-3xl">
         <div className="flex items-center justify-end">
           <LanguageSwitcher variant="pill" />
         </div>
 
         <div className="space-y-2 text-center">
-          <h1 className="text-5xl font-black uppercase tracking-tight text-white">
+          <h1 className="text-5xl font-black uppercase tracking-tight text-white lg:text-6xl">
             {t("title")}
           </h1>
           <p className="text-xs uppercase tracking-[0.25em] text-text-tertiary">
@@ -43,7 +43,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="relative mx-auto mt-2 h-64 w-64 overflow-hidden rounded-2xl border border-white/10 bg-surface-red/70">
+        <div className="relative mx-auto mt-2 h-64 w-64 overflow-hidden rounded-2xl border border-white/10 bg-surface-red/70 lg:h-72 lg:w-72">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1),transparent_60%)]" />
           <div className="absolute inset-0 flex items-center justify-center text-7xl">
             🎭

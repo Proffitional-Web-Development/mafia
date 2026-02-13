@@ -25,7 +25,7 @@ export function BottomActionBar({
       >
         <div
           className={cn(
-            "mx-auto w-full max-w-sm",
+            "mx-auto w-full max-w-sm md:max-w-3xl lg:max-w-5xl",
             layout === "single" && "flex items-center",
             layout === "split" && "grid grid-cols-2 gap-3",
             layout === "stacked" && "flex flex-col gap-3",

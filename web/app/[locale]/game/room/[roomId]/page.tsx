@@ -185,12 +185,12 @@ function LobbyView({
   }
 
   return (
-    <main className="relative mx-auto min-h-[100dvh] w-full max-w-sm overflow-hidden px-4 pb-28 pt-6">
+    <main className="relative mx-auto min-h-[100dvh] w-full max-w-sm overflow-hidden px-4 pb-28 pt-6 md:max-w-3xl md:px-6 lg:max-w-5xl lg:px-8">
       <div className="pointer-events-none absolute -top-24 -end-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl animate-pulse-slow" />
       <div className="pointer-events-none absolute -bottom-24 -start-20 h-72 w-72 rounded-full bg-primary/15 blur-3xl animate-pulse-slow" />
 
       {/* Header */}
-      <section className="relative z-10 space-y-5">
+      <section className="relative z-10 mx-auto w-full max-w-sm space-y-5 md:max-w-2xl lg:max-w-5xl">
         <div className="flex w-full items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-white">
@@ -223,125 +223,127 @@ function LobbyView({
           </SecondaryButton>
         </div>
 
-        {/* Players */}
-        <section className="w-full rounded-2xl border border-white/10 bg-surface/60 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary">
-              {ct("players")}
-            </h2>
-            <Badge variant="player-count">
-              {t("playersCount", {
-                current: memberCount,
-                max: roomState.settings.maxPlayers,
-              })}
-            </Badge>
-          </div>
+        <div className="space-y-5 lg:grid lg:grid-cols-12 lg:gap-6 lg:space-y-0">
+          {/* Players */}
+          <section className="w-full space-y-3 rounded-2xl border border-white/10 bg-surface/60 p-4 lg:col-span-7">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary">
+                {ct("players")}
+              </h2>
+              <Badge variant="player-count">
+                {t("playersCount", {
+                  current: memberCount,
+                  max: roomState.settings.maxPlayers,
+                })}
+              </Badge>
+            </div>
 
-          <PlayerGrid players={[]} columns={4} gap="md" showOwnerBadge={false}>
-            {roomState.members.map((member) => {
-              const isMe = member.userId === currentUserId;
-              return (
-                <PlayerCard
-                  key={member.userId}
-                  username={member.username}
-                  avatarUrl={member.avatarUrl ?? undefined}
-                  isYou={isMe}
-                  isOwner={member.isOwner}
-                  variant="lobby"
-                  compact
-                  trailing={
-                    isOwner && !isMe ? (
-                      <button
-                        type="button"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setKickTarget({
-                            userId: member.userId as Id<"users">,
-                            username: member.username,
-                          });
-                        }}
-                        className="mt-1 text-[10px] font-semibold text-danger hover:text-danger-dark"
-                      >
-                        {t("kickPlayer")}
-                      </button>
-                    ) : null
-                  }
-                />
-              );
-            })}
-
-            {Array.from({
-              length: Math.max(0, roomState.settings.maxPlayers - memberCount),
-            })
-              .slice(0, Math.max(0, 12 - memberCount))
-              .map((_, slotOffset) => {
-                const slotNumber = memberCount + slotOffset + 1;
+            <PlayerGrid players={[]} columns={4} gap="md" showOwnerBadge={false}>
+              {roomState.members.map((member) => {
+                const isMe = member.userId === currentUserId;
                 return (
-                  <div
-                    key={`slot-${slotNumber}`}
-                    className="flex min-h-[94px] items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 text-xs text-text-muted"
-                  >
-                    +
-                  </div>
+                  <PlayerCard
+                    key={member.userId}
+                    username={member.username}
+                    avatarUrl={member.avatarUrl ?? undefined}
+                    isYou={isMe}
+                    isOwner={member.isOwner}
+                    variant="lobby"
+                    compact
+                    trailing={
+                      isOwner && !isMe ? (
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setKickTarget({
+                              userId: member.userId as Id<"users">,
+                              username: member.username,
+                            });
+                          }}
+                          className="mt-1 text-[10px] font-semibold text-danger hover:text-danger-dark"
+                        >
+                          {t("kickPlayer")}
+                        </button>
+                      ) : null
+                    }
+                  />
                 );
               })}
-          </PlayerGrid>
 
-          {!canStart && (
-            <p className="text-xs text-text-muted text-center">
-              {t("minPlayersRequired", { count: 3 })}
-            </p>
-          )}
-        </section>
+              {Array.from({
+                length: Math.max(0, roomState.settings.maxPlayers - memberCount),
+              })
+                .slice(0, Math.max(0, 12 - memberCount))
+                .map((_, slotOffset) => {
+                  const slotNumber = memberCount + slotOffset + 1;
+                  return (
+                    <div
+                      key={`slot-${slotNumber}`}
+                      className="flex min-h-[94px] items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 text-xs text-text-muted"
+                    >
+                      +
+                    </div>
+                  );
+                })}
+            </PlayerGrid>
 
-        {/* Settings */}
-        <section className="space-y-3">
-          {!isOwner && (
-            <p className="text-xs text-text-tertiary">
-              {t("readOnlySettings")}
-            </p>
-          )}
-
-          <SettingsPanel
-            discussionDuration={roomState.settings.discussionDuration}
-            maxPlayers={roomState.settings.maxPlayers}
-            editable={isOwner}
-            onDiscussionDurationChange={(value) =>
-              handleSettingChange("discussionDuration", value)
-            }
-            onMaxPlayersChange={(value) =>
-              handleSettingChange("maxPlayers", value)
-            }
-          />
-
-          <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
-            <p className="mb-2 text-sm font-medium text-white">
-              {t("enabledRoles")}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              {(["sheikh", "girl", "boy"] as const).map((role) => (
-                <label
-                  key={role}
-                  className="flex items-center gap-1.5 text-sm text-text-secondary"
-                >
-                  <input
-                    type="checkbox"
-                    checked={roomState.settings.enabledRoles[role]}
-                    disabled={!isOwner}
-                    onChange={(e) =>
-                      handleSettingChange("enabledRoles", {
-                        ...roomState.settings.enabledRoles,
-                        [role]: e.target.checked,
-                      })
-                    }
-                    className="accent-primary"
-                  />
-                  <RoleName role={role} />
-                </label>
-              ))}
-            </div>
+            {!canStart && (
+              <p className="text-center text-xs text-text-muted">
+                {t("minPlayersRequired", { count: 3 })}
+              </p>
+            )}
           </section>
-        </section>
+
+          {/* Settings */}
+          <section className="space-y-3 lg:col-span-5">
+            {!isOwner && (
+              <p className="text-xs text-text-tertiary">
+                {t("readOnlySettings")}
+              </p>
+            )}
+
+            <SettingsPanel
+              discussionDuration={roomState.settings.discussionDuration}
+              maxPlayers={roomState.settings.maxPlayers}
+              editable={isOwner}
+              onDiscussionDurationChange={(value) =>
+                handleSettingChange("discussionDuration", value)
+              }
+              onMaxPlayersChange={(value) =>
+                handleSettingChange("maxPlayers", value)
+              }
+            />
+
+            <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
+              <p className="mb-2 text-sm font-medium text-white">
+                {t("enabledRoles")}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {(["sheikh", "girl", "boy"] as const).map((role) => (
+                  <label
+                    key={role}
+                    className="flex items-center gap-1.5 text-sm text-text-secondary"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={roomState.settings.enabledRoles[role]}
+                      disabled={!isOwner}
+                      onChange={(e) =>
+                        handleSettingChange("enabledRoles", {
+                          ...roomState.settings.enabledRoles,
+                          [role]: e.target.checked,
+                        })
+                      }
+                      className="accent-primary"
+                    />
+                    <RoleName role={role} />
+                  </label>
+                ))}
+              </div>
+            </section>
+          </section>
+        </div>
 
         {/* Error */}
         {error && (

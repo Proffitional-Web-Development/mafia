@@ -30,7 +30,7 @@ export function BottomNavigation({ items, className }: BottomNavigationProps) {
     >
       <div
         className={cn(
-          "mx-auto flex w-full max-w-sm items-center justify-between gap-2",
+          "mx-auto flex w-full max-w-sm items-center justify-between gap-2 md:max-w-3xl lg:max-w-5xl",
           direction === "rtl" && "flex-row-reverse",
         )}
       >

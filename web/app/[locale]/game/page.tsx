@@ -72,11 +72,11 @@ export default function GamePage() {
   }
 
   return (
-    <main className="relative mx-auto min-h-[100dvh] w-full max-w-sm overflow-hidden px-6 pb-28 pt-6">
+    <main className="relative mx-auto min-h-[100dvh] w-full max-w-sm overflow-hidden px-6 pb-28 pt-6 md:max-w-3xl md:px-8 lg:max-w-5xl lg:px-10">
       <div className="pointer-events-none absolute -top-24 -end-20 h-72 w-72 rounded-full bg-primary/25 blur-3xl animate-pulse-slow" />
       <div className="pointer-events-none absolute -bottom-24 -start-20 h-72 w-72 rounded-full bg-primary/15 blur-3xl animate-pulse-slow" />
 
-      <section className="relative z-10 space-y-6">
+      <section className="relative z-10 mx-auto w-full max-w-sm space-y-6 md:max-w-2xl lg:max-w-4xl">
         <div className="flex items-center justify-between gap-3">
           <UserStatusCard
             username={
@@ -89,53 +89,61 @@ export default function GamePage() {
           <LanguageSwitcher variant="icon" />
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-surface/60 p-5">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            {gt("lobbyTitle")}
-          </p>
-          <h1 className="mb-4 text-2xl font-bold tracking-tight text-white">
-            {t("createRoom")}
-          </h1>
+        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
+          <div className="rounded-2xl border border-white/10 bg-surface/60 p-5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              {gt("lobbyTitle")}
+            </p>
+            <h1 className="mb-4 text-2xl font-bold tracking-tight text-white">
+              {t("createRoom")}
+            </h1>
 
-          <PrimaryButton
-            icon="add"
-            onClick={handleCreate}
-            disabled={creating}
-            loading={creating}
-            shimmer
-          >
-            {creating ? t("creating") : t("createRoom")}
-          </PrimaryButton>
-        </div>
+            <PrimaryButton
+              icon="add"
+              onClick={handleCreate}
+              disabled={creating}
+              loading={creating}
+              shimmer
+            >
+              {creating ? t("creating") : t("createRoom")}
+            </PrimaryButton>
+          </div>
 
-        <Divider label={t("orJoinExisting")} variant="gradient" />
-
-        <form
-          onSubmit={handleJoin}
-          className="space-y-3 rounded-2xl border border-white/10 bg-surface/60 p-5"
-        >
-          <TextInput
-            type="text"
-            value={joinCode}
-            onChange={(event) => setJoinCode(event.target.value.toUpperCase())}
-            placeholder={t("enterCode")}
-            maxLength={6}
-            variant="code"
-            icon="vpn_key"
-            aria-label={t("roomCode")}
+          <Divider
+            label={t("orJoinExisting")}
+            variant="gradient"
+            className="lg:hidden"
           />
 
-          <SecondaryButton
-            type="submit"
-            variant="outline"
-            disabled={joining || !joinCode.trim()}
-            loading={joining}
-            icon="login"
-            iconPosition="end"
+          <form
+            onSubmit={handleJoin}
+            className="space-y-3 rounded-2xl border border-white/10 bg-surface/60 p-5"
           >
-            {joining ? t("joining") : t("joinRoom")}
-          </SecondaryButton>
-        </form>
+            <TextInput
+              type="text"
+              value={joinCode}
+              onChange={(event) =>
+                setJoinCode(event.target.value.toUpperCase())
+              }
+              placeholder={t("enterCode")}
+              maxLength={6}
+              variant="code"
+              icon="vpn_key"
+              aria-label={t("roomCode")}
+            />
+
+            <SecondaryButton
+              type="submit"
+              variant="outline"
+              disabled={joining || !joinCode.trim()}
+              loading={joining}
+              icon="login"
+              iconPosition="end"
+            >
+              {joining ? t("joining") : t("joinRoom")}
+            </SecondaryButton>
+          </form>
+        </div>
 
         {error ? (
           <StatusBanner

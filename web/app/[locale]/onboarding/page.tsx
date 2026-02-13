@@ -88,12 +88,12 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-sm items-center justify-center overflow-hidden px-6 py-8">
+    <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-sm items-center justify-center overflow-hidden px-6 py-8 md:max-w-3xl md:px-8 lg:max-w-5xl lg:px-10">
       <div className="pointer-events-none absolute -top-24 -end-20 h-72 w-72 rounded-full bg-primary/25 blur-3xl animate-pulse-slow" />
       <div className="pointer-events-none absolute -bottom-24 -start-20 h-72 w-72 rounded-full bg-primary/15 blur-3xl animate-pulse-slow" />
       <div className="pointer-events-none absolute inset-0 bg-scanlines opacity-25" />
 
-      <section className="relative z-10 w-full rounded-2xl border border-white/10 bg-surface/70 p-6 backdrop-blur-md">
+      <section className="relative z-10 w-full rounded-2xl border border-white/10 bg-surface/70 p-6 backdrop-blur-md md:max-w-xl md:p-7 lg:max-w-2xl lg:p-8">
         <div className="mb-5 flex items-center justify-between gap-3">
           <StepIndicator currentStep={step} totalSteps={3} className="flex-1" />
           <LanguageSwitcher variant="icon" />
