@@ -34,9 +34,11 @@ export function AbilityPhase({
   });
   const runSheikhAbility = useMutation(api.abilityPhase.useSheikhAbility);
   const runGirlAbility = useMutation(api.abilityPhase.useGirlAbility);
+  const confirmAbilityAction = useMutation(api.abilityPhase.confirmAbilityAction);
 
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
   const [acting, setActing] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [girlProtectedMessage, setGirlProtectedMessage] = useState<string | null>(
     null,
@@ -89,6 +91,18 @@ export function AbilityPhase({
     }
   }
 
+  async function handleConfirmAbility() {
+    setConfirming(true);
+    setError(null);
+    try {
+      await confirmAbilityAction({ gameId });
+    } catch (e) {
+      setError(et(mapAppErrorKey(e)));
+    } finally {
+      setConfirming(false);
+    }
+  }
+
   if (abilityState.roleView === "waiting") {
     return (
       <div className="relative flex flex-1 flex-col items-center justify-center gap-5 py-8 text-center">
@@ -111,6 +125,7 @@ export function AbilityPhase({
           : null;
 
     const canSubmit = abilityState.canAct && Boolean(selectedTargetId) && !acting;
+    const canConfirm = abilityState.canConfirm && !confirming;
 
     return (
       <div className="flex flex-1 flex-col gap-5 py-2">
@@ -141,6 +156,19 @@ export function AbilityPhase({
           </PrimaryButton>
         </div>
 
+        {abilityState.canConfirm ? (
+          <div className="flex justify-center">
+            <PrimaryButton
+              onClick={handleConfirmAbility}
+              disabled={!canConfirm}
+              icon="check_circle"
+              loading={confirming}
+            >
+              {confirming ? ct("loading") : ct("confirm")}
+            </PrimaryButton>
+          </div>
+        ) : null}
+
         {lastResultLabel && (
           <StatusBanner
             variant={abilityState.lastResult === "mafia" ? "warning" : "info"}
@@ -167,6 +195,7 @@ export function AbilityPhase({
   }
 
   const canProtect = abilityState.canAct && Boolean(selectedTargetId) && !acting;
+  const canConfirm = abilityState.canConfirm && !confirming;
 
   return (
     <div className="flex flex-1 flex-col gap-5 py-2">
@@ -197,6 +226,19 @@ export function AbilityPhase({
           {acting ? ct("loading") : t("girl.protect")}
         </PrimaryButton>
       </div>
+
+      {abilityState.canConfirm ? (
+        <div className="flex justify-center">
+          <PrimaryButton
+            onClick={handleConfirmAbility}
+            disabled={!canConfirm}
+            icon="check_circle"
+            loading={confirming}
+          >
+            {confirming ? ct("loading") : ct("confirm")}
+          </PrimaryButton>
+        </div>
+      ) : null}
 
       {girlProtectedMessage && (
         <StatusBanner variant="info" message={girlProtectedMessage} />

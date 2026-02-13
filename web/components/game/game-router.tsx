@@ -14,6 +14,7 @@ import { PhaseTransitionController } from "@/components/game/phase-transition-co
 import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
 import { ResolutionPhase } from "@/components/game/resolution-phase";
+import { RoleLogsPanel } from "@/components/game/role-logs-panel";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
 import { LoadingState } from "@/components/ui/loading-state";
 import { api } from "@/convex/_generated/api";
@@ -50,6 +51,8 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
         isAlive={me.isAlive}
         role={me.role}
       />
+
+      {game.phase !== "finished" ? <RoleLogsPanel gameId={gameId} role={me.role} /> : null}
 
       {/* Phase-specific content */}
       {game.phase === "cardDistribution" && <RoleRevealPhase gameId={gameId} />}

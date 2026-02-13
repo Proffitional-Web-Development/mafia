@@ -72,6 +72,14 @@
     "creating": "جارٍ الإنشاء...",
     "joining": "جارٍ الانضمام...",
     "orJoinExisting": "أو انضم لغرفة موجودة",
+    "publicRoom": "غرفة عامة",
+    "privateRoom": "غرفة خاصة",
+    "optionalRoomPassword": "كلمة مرور الغرفة (اختياري)",
+    "roomPasswordOptional": "كلمة مرور الغرفة (اختياري)",
+    "activeRooms": "الغرف النشطة",
+    "searchRooms": "ابحث باسم المالك أو رمز الغرفة",
+    "noActiveRooms": "لا توجد غرف نشطة — أنشئ غرفة!",
+    "enterPrivateRoomPassword": "أدخل كلمة مرور الغرفة",
     "roomCode": "رمز الغرفة",
     "copyInviteLink": "نسخ رابط الدعوة",
     "inviteLinkCopied": "تم نسخ رابط الدعوة!",
@@ -126,11 +134,14 @@
     "confirmResults": "تأكيد النتائج",
     "allVoted": "جميع اللاعبين صوّتوا",
     "waitingForVotes": "{voted}/{total} صوّتوا",
+    "runoffBanner": "تصويت إعادة الحسم (الجولة {round}) — اختر من بين المتعادلين",
     "resultTitle": "نتيجة التصويت",
     "eliminated": "تم إقصاء {username}!",
     "noElimination": "لم يتم إقصاء أحد",
     "tieResult": "تعادل — لا إقصاء",
-    "deadCannotVote": "اللاعبون الميتون لا يمكنهم التصويت"
+    "deadCannotVote": "اللاعبون الميتون لا يمكنهم التصويت",
+    "votesAgainstYou": "الأصوات ضدك: {count}",
+    "noVotesAgainstYou": "لا أحد يصوّت ضدك الآن"
   },
   "ability": {
     "waiting": {
@@ -160,6 +171,17 @@
       "title": "سجل التحققات",
       "empty": "لا توجد تحققات بعد",
       "round": "الجولة {round}"
+    },
+    "logs": {
+      "investigationTitle": "سجل التحقيق",
+      "protectionTitle": "سجل الحماية",
+      "show": "إظهار",
+      "hide": "إخفاء",
+      "loading": "جارٍ تحميل السجل...",
+      "empty": "لا يوجد سجل بعد",
+      "round": "الجولة {round}",
+      "successful": "نجحت",
+      "notUsed": "غير مستخدمة"
     },
     "transition": "انتهى الليل... الانتقال إلى تصويت المافيا"
   },

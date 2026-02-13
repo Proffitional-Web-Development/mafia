@@ -33,6 +33,14 @@ const DEFAULT_MAX_PLAYERS = 12;
 const ABSOLUTE_MAX_PLAYERS = 20;
 const DEFAULT_DISCUSSION_DURATION = 120; // seconds
 
+function hashRoomPassword(password: string) {
+  let hash = 5381;
+  for (let index = 0; index < password.length; index += 1) {
+    hash = (hash * 33) ^ password.charCodeAt(index);
+  }
+  return `room_${(hash >>> 0).toString(16)}`;
+}
+
 async function getRoomMembers(
   ctx: QueryCtx | MutationCtx,
   roomId: Id<"rooms">,
@@ -74,8 +82,11 @@ async function requireRoomOwner(
 // ---------------------------------------------------------------------------
 
 export const createRoom = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
+    password: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
     const now = Date.now();
 
@@ -95,9 +106,14 @@ export const createRoom = mutation({
       throw new ConvexError("Failed to generate unique room code.");
     }
 
+    const visibility = args.visibility ?? "private";
+    const password = args.password?.trim();
+
     const roomId = await ctx.db.insert("rooms", {
       code,
       ownerId: userId,
+      visibility,
+      password: password ? hashRoomPassword(password) : undefined,
       settings: {
         discussionDuration: DEFAULT_DISCUSSION_DURATION,
         maxPlayers: DEFAULT_MAX_PLAYERS,
@@ -121,20 +137,37 @@ export const createRoom = mutation({
 
 export const joinRoom = mutation({
   args: {
-    code: v.string(),
+    code: v.optional(v.string()),
+    roomId: v.optional(v.id("rooms")),
+    password: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
-    const code = args.code.trim().toUpperCase();
+    let room = args.roomId ? await ctx.db.get(args.roomId) : null;
+    const normalizedCode = args.code?.trim().toUpperCase();
 
-    const room = await ctx.db
-      .query("rooms")
-      .withIndex("by_code", (q) => q.eq("code", code))
-      .first();
+    if (!room && normalizedCode) {
+      room = await ctx.db
+        .query("rooms")
+        .withIndex("by_code", (q) => q.eq("code", normalizedCode))
+        .first();
+    }
 
     if (!room) throw new ConvexError("Room not found.");
     if (room.status !== "waiting") {
       throw new ConvexError("Room is not accepting new players.");
+    }
+
+    const visibility = room.visibility ?? "private";
+
+    if (visibility === "private" && room.password) {
+      const password = args.password?.trim();
+      if (!password) {
+        throw new ConvexError("Password is required for this private room.");
+      }
+      if (hashRoomPassword(password) !== room.password) {
+        throw new ConvexError("Invalid room password.");
+      }
     }
 
     const existing = await getMembership(ctx, room._id, userId);
@@ -313,6 +346,7 @@ export const startGame = mutation({
       roomId: args.roomId,
       phase: "cardDistribution",
       round: 1,
+      votingSubRound: 0,
       startedAt: now,
       phaseStartedAt: now,
     });
@@ -389,7 +423,13 @@ export const getRoomByCode = query({
       .withIndex("by_code", (q) => q.eq("code", args.code.trim().toUpperCase()))
       .first();
     if (!room) return null;
-    return { roomId: room._id, code: room.code, status: room.status };
+    return {
+      roomId: room._id,
+      code: room.code,
+      status: room.status,
+      visibility: room.visibility ?? "private",
+      hasPassword: Boolean(room.password),
+    };
   },
 });
 
@@ -426,12 +466,85 @@ export const getRoomState = query({
       roomId: room._id,
       code: room.code,
       ownerId: room.ownerId,
+      visibility: room.visibility ?? "private",
+      hasPassword: Boolean(room.password),
       status: room.status,
       settings: room.settings,
       currentGameId: room.currentGameId,
       members: memberViews,
       createdAt: room.createdAt,
     };
+  },
+});
+
+export const updateRoomVisibility = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    visibility: v.union(v.literal("public"), v.literal("private")),
+    password: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+    const room = await requireRoomOwner(ctx, args.roomId, userId);
+
+    if (room.status !== "waiting") {
+      throw new ConvexError("Cannot change room visibility after game start.");
+    }
+
+    const password = args.password?.trim();
+    await ctx.db.patch(args.roomId, {
+      visibility: args.visibility,
+      password: password ? hashRoomPassword(password) : undefined,
+      lastActivityAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+export const listActiveRooms = query({
+  args: {
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    await requireAuthUserId(ctx);
+
+    const limit = Math.min(Math.max(args.limit ?? 50, 1), 100);
+
+    const rooms = await ctx.db
+      .query("rooms")
+      .withIndex("by_status", (q) => q.eq("status", "waiting"))
+      .take(limit);
+
+    const memberSets = await Promise.all(
+      rooms.map((room) =>
+        ctx.db
+          .query("roomMembers")
+          .withIndex("by_roomId", (q) => q.eq("roomId", room._id))
+          .collect(),
+      ),
+    );
+
+    const ownerDocs = await Promise.all(rooms.map((room) => ctx.db.get(room.ownerId)));
+    const ownerById = new Map(
+      ownerDocs
+        .filter((owner): owner is NonNullable<typeof owner> => owner !== null)
+        .map((owner) => [owner._id, owner]),
+    );
+
+    return rooms.map((room, index) => ({
+      roomId: room._id,
+      code: room.code,
+      ownerUserId: room.ownerId,
+      ownerUsername: ownerById.get(room.ownerId)?.username ?? "Unknown",
+      ownerAvatarUrl: ownerById.get(room.ownerId)?.image,
+      playerCount: memberSets[index]?.length ?? 0,
+      maxPlayers: room.settings.maxPlayers,
+      visibility: room.visibility ?? "private",
+      hasPassword: Boolean(room.password),
+      createdAt: room.createdAt,
+      lastActivityAt: room.lastActivityAt,
+    }));
   },
 });
 

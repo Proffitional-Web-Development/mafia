@@ -332,6 +332,23 @@ async function transitionCore(
       args.reason !== "manual",
       "Cannot manually advance from publicVoting. Use confirmVoting or wait for timeout.",
     );
+
+    const roundEvents = await ctx.db
+      .query("gameEvents")
+      .withIndex("by_gameId_round", (queryBuilder) =>
+        queryBuilder.eq("gameId", game._id).eq("round", game.round),
+      )
+      .collect();
+
+    const hasVotingResolution = roundEvents.some(
+      (event) =>
+        event.type === "public_elimination" || event.type === "no_elimination",
+    );
+
+    assertOrThrow(
+      hasVotingResolution,
+      "Cannot enter abilityPhase before public voting resolution is recorded.",
+    );
   }
 
   if (currentPhase === "mafiaVoting" && nextPhase === "resolution") {
@@ -389,6 +406,8 @@ async function transitionCore(
     phaseStartedAt: now,
     phaseDeadlineAt,
     phaseToken: nextPhaseToken,
+    votingSubRound: nextPhase === "publicVoting" ? 0 : game.votingSubRound,
+    tiedCandidates: nextPhase === "publicVoting" ? undefined : game.tiedCandidates,
   });
 
   await appendTransitionEvent(

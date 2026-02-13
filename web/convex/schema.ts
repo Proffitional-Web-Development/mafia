@@ -68,6 +68,10 @@ export default defineSchema({
   rooms: defineTable({
     code: v.string(),
     ownerId: v.id("users"),
+    visibility: v.optional(
+      v.union(v.literal("public"), v.literal("private")),
+    ),
+    password: v.optional(v.string()),
     settings: v.object({
       discussionDuration: v.number(),
       maxPlayers: v.number(),
@@ -89,6 +93,7 @@ export default defineSchema({
     .index("by_code", ["code"])
     .index("by_ownerId", ["ownerId"])
     .index("by_status", ["status"])
+    .index("by_status_visibility", ["status", "visibility"])
     .index("by_lastActivityAt", ["lastActivityAt"]),
 
   roomMembers: defineTable({
@@ -118,6 +123,8 @@ export default defineSchema({
     phaseStartedAt: v.optional(v.number()),
     phaseDeadlineAt: v.optional(v.number()),
     phaseToken: v.optional(v.number()),
+    votingSubRound: v.optional(v.number()),
+    tiedCandidates: v.optional(v.array(v.id("players"))),
     endedAt: v.optional(v.number()),
     winnerFaction: v.optional(
       v.union(v.literal("mafia"), v.literal("citizens"))
@@ -172,6 +179,7 @@ export default defineSchema({
     actorId: v.id("players"),
     targetId: v.optional(v.id("players")),
     result: v.optional(v.string()),
+    confirmed: v.optional(v.boolean()),
     timestamp: v.number(),
   })
     .index("by_gameId", ["gameId"])

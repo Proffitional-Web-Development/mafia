@@ -72,6 +72,14 @@
     "creating": "Creating...",
     "joining": "Joining...",
     "orJoinExisting": "Or join an existing room",
+    "publicRoom": "Public Room",
+    "privateRoom": "Private Room",
+    "optionalRoomPassword": "Optional room password",
+    "roomPasswordOptional": "Room password (optional)",
+    "activeRooms": "Active Rooms",
+    "searchRooms": "Search by owner or code",
+    "noActiveRooms": "No active rooms — create one!",
+    "enterPrivateRoomPassword": "Enter room password",
     "roomCode": "Room Code",
     "copyInviteLink": "Copy Invite Link",
     "inviteLinkCopied": "Invite link copied!",
@@ -126,11 +134,14 @@
     "confirmResults": "Confirm Results",
     "allVoted": "All players have voted",
     "waitingForVotes": "{voted}/{total} voted",
+    "runoffBanner": "Runoff vote (round {round}) — choose among tied players",
     "resultTitle": "Voting Result",
     "eliminated": "{username} has been eliminated!",
     "noElimination": "No one was eliminated",
     "tieResult": "It's a tie — no elimination",
-    "deadCannotVote": "Dead players cannot vote"
+    "deadCannotVote": "Dead players cannot vote",
+    "votesAgainstYou": "Votes against you: {count}",
+    "noVotesAgainstYou": "No one is voting for you right now"
   },
   "ability": {
     "waiting": {
@@ -160,6 +171,17 @@
       "title": "Investigation History",
       "empty": "No investigations yet",
       "round": "Round {round}"
+    },
+    "logs": {
+      "investigationTitle": "Investigation Log",
+      "protectionTitle": "Protection Log",
+      "show": "Show",
+      "hide": "Hide",
+      "loading": "Loading logs...",
+      "empty": "No logs yet",
+      "round": "Round {round}",
+      "successful": "Successful",
+      "notUsed": "Not used"
     },
     "transition": "Night ending... moving to mafia voting"
   },

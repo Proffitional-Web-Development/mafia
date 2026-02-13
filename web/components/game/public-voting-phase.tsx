@@ -33,6 +33,9 @@ export function PublicVotingPhase({
 
   const gameState = useQuery(api.stateMachine.getGameState, { gameId });
   const votesData = useQuery(api.publicVoting.getPublicVotes, { gameId });
+  const runoffState = useQuery(api.publicVoting.getPublicVotingRunoffState, {
+    gameId,
+  });
   const roomState = useQuery(api.rooms.getRoomState, {
     roomId: gameState?.game.roomId as Id<"rooms">,
   });
@@ -67,10 +70,18 @@ export function PublicVotingPhase({
     ? "skip"
     : (myVote?.targetId ?? null);
 
+  const tiedCandidateIds = new Set(
+    (runoffState?.tiedCandidates ?? []).map((candidate) => candidate.playerId),
+  );
+  const isRunoff = Boolean(runoffState?.isRunoff);
+
   // Filter alive players (excluding self) as vote targets
   const alivePlayers = players.filter(
     (p) => p.isAlive && p.playerId !== me.playerId,
   );
+  const voteTargets = isRunoff
+    ? alivePlayers.filter((player) => tiedCandidateIds.has(player.playerId))
+    : alivePlayers;
 
   async function handleVoteFor(targetPlayerId: string) {
     setError(null);
@@ -125,6 +136,15 @@ export function PublicVotingPhase({
         </span>
       </div>
 
+      {isRunoff ? (
+        <StatusBanner
+          message={t("runoffBanner", {
+            round: (runoffState?.subRound ?? 0) + 1,
+          })}
+          variant="warning"
+        />
+      ) : null}
+
       {/* Dead banner */}
       {!isAlive && (
         <StatusBanner message={t("deadCannotVote")} variant="dead" />
@@ -132,7 +152,7 @@ export function PublicVotingPhase({
 
       {/* Voting grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {alivePlayers.map((player) => {
+        {voteTargets.map((player) => {
           const voteCount = votesData.tally[player.playerId] ?? 0;
           const isSelected = mySelectedTargetId === player.playerId;
 
@@ -193,7 +213,7 @@ export function PublicVotingPhase({
         })}
 
         {/* Skip vote option */}
-        {isAlive && (
+        {isAlive && !isRunoff && (
           <button
             type="button"
             onClick={() => handleVoteFor("skip")}
@@ -236,10 +256,38 @@ export function PublicVotingPhase({
         </BottomActionBar>
       )}
 
-      {isAlive ? (
+      {isAlive && !isRunoff ? (
         <SecondaryButton variant="dashed" icon="block" onClick={() => handleVoteFor("skip") }>
           {t("skipVote")}
         </SecondaryButton>
+      ) : null}
+
+      {isAlive ? (
+        <section className="space-y-2 rounded-2xl border border-white/10 bg-surface/50 p-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+            {t("votesAgainstYou", { count: votesData.votesAgainstMe.length })}
+          </h3>
+
+          {votesData.votesAgainstMe.length === 0 ? (
+            <p className="text-xs text-text-muted">{t("noVotesAgainstYou")}</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {votesData.votesAgainstMe.map((vote) => (
+                <div
+                  key={vote.voterId}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-danger/40 bg-danger/10 px-2 py-1 text-xs text-danger motion-safe:animate-pulse"
+                >
+                  <AvatarCircle
+                    username={vote.voterUsername}
+                    avatarUrl={vote.voterAvatarUrl ?? undefined}
+                    size={20}
+                  />
+                  <span>{vote.voterUsername}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       ) : null}
 
       {/* Error */}

@@ -73,6 +73,9 @@ async function resolveMafiaVoting(
         eliminatedPlayerId: string | null;
         noElimination: boolean;
         protectionBlocked: boolean;
+        intendedEliminatedPlayerId?: string | null;
+        wasRandomTieBreak?: boolean;
+        tiedPlayerIds?: string[];
         tally: Record<string, number>;
       }>(existingResult.payload) ?? null;
 
@@ -83,6 +86,9 @@ async function resolveMafiaVoting(
         eliminatedPlayerId: payload?.eliminatedPlayerId ?? null,
         noElimination: payload?.noElimination ?? true,
         protectionBlocked: payload?.protectionBlocked ?? false,
+        intendedEliminatedPlayerId: payload?.intendedEliminatedPlayerId ?? null,
+        wasRandomTieBreak: payload?.wasRandomTieBreak ?? false,
+        tiedPlayerIds: payload?.tiedPlayerIds ?? [],
         tally: payload?.tally ?? {},
       },
     };
@@ -104,6 +110,8 @@ async function resolveMafiaVoting(
   const entries = Object.entries(tally);
   let eliminatedPlayerId: string | null = null;
   let noElimination = false;
+  let wasRandomTieBreak = false;
+  let tiedPlayerIds: string[] = [];
 
   if (entries.length === 0) {
     noElimination = true;
@@ -112,13 +120,17 @@ async function resolveMafiaVoting(
     const top = entries.filter(([, count]) => count === maxVotes);
 
     if (top.length > 1) {
-      noElimination = true;
+      wasRandomTieBreak = true;
+      tiedPlayerIds = top.map(([playerId]) => playerId);
+      const randomIndex = Math.floor(Math.random() * top.length);
+      eliminatedPlayerId = top[randomIndex][0];
     } else {
       eliminatedPlayerId = top[0][0];
     }
   }
 
   let protectionBlocked = false;
+  const intendedEliminatedPlayerId = eliminatedPlayerId;
   if (eliminatedPlayerId) {
     const girlAction = await ctx.db
       .query("actions")
@@ -142,6 +154,9 @@ async function resolveMafiaVoting(
       eliminatedPlayerId,
       noElimination,
       protectionBlocked,
+      intendedEliminatedPlayerId,
+      wasRandomTieBreak,
+      tiedPlayerIds,
       tally,
       totalVotes: votes.length,
     }),
@@ -154,6 +169,9 @@ async function resolveMafiaVoting(
       eliminatedPlayerId,
       noElimination,
       protectionBlocked,
+      intendedEliminatedPlayerId,
+      wasRandomTieBreak,
+      tiedPlayerIds,
       tally,
     },
   };

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { UserStatusCard } from "@/components/game/user-status-card";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Badge } from "@/components/ui/badge";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { Divider } from "@/components/ui/divider";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -13,6 +14,7 @@ import { SecondaryButton } from "@/components/ui/secondary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { TextInput } from "@/components/ui/text-input";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
 import { mapAppErrorKey } from "@/lib/error-message";
 
@@ -23,12 +25,20 @@ export default function GamePage() {
   const et = useTranslations("errors");
   const router = useRouter();
   const currentUser = useQuery(api.users.getCurrentUser);
+  const activeRooms = useQuery(api.rooms.listActiveRooms, { limit: 50 });
   const createRoom = useMutation(api.rooms.createRoom);
   const joinRoom = useMutation(api.rooms.joinRoom);
 
   const [joinCode, setJoinCode] = useState("");
+  const [joinPassword, setJoinPassword] = useState("");
+  const [roomVisibility, setRoomVisibility] = useState<"public" | "private">(
+    "private",
+  );
+  const [createPassword, setCreatePassword] = useState("");
+  const [roomSearch, setRoomSearch] = useState("");
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
+  const [joiningRoomId, setJoiningRoomId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   if (!currentUser) {
@@ -47,7 +57,13 @@ export default function GamePage() {
     setCreating(true);
     setError(null);
     try {
-      const result = await createRoom();
+      const result = await createRoom({
+        visibility: roomVisibility,
+        password:
+          roomVisibility === "private" && createPassword.trim()
+            ? createPassword.trim()
+            : undefined,
+      });
       router.push(`/game/room/${result.roomId}`);
     } catch (e) {
       setError(et(mapAppErrorKey(e)));
@@ -62,7 +78,10 @@ export default function GamePage() {
     setJoining(true);
     setError(null);
     try {
-      const result = await joinRoom({ code: joinCode.trim() });
+      const result = await joinRoom({
+        code: joinCode.trim(),
+        password: joinPassword.trim() ? joinPassword.trim() : undefined,
+      });
       router.push(`/game/room/${result.roomId}`);
     } catch (err) {
       setError(et(mapAppErrorKey(err)));
@@ -70,6 +89,41 @@ export default function GamePage() {
       setJoining(false);
     }
   }
+
+  async function handleJoinActiveRoom(roomId: string, requiresPassword: boolean) {
+    setJoiningRoomId(roomId);
+    setError(null);
+    try {
+      let password: string | undefined;
+      if (requiresPassword) {
+        const prompted = window.prompt(t("enterPrivateRoomPassword"))?.trim();
+        if (!prompted) {
+          setJoiningRoomId(null);
+          return;
+        }
+        password = prompted;
+      }
+
+      const result = await joinRoom({
+        roomId: roomId as Id<"rooms">,
+        password,
+      });
+      router.push(`/game/room/${result.roomId}`);
+    } catch (err) {
+      setError(et(mapAppErrorKey(err)));
+    } finally {
+      setJoiningRoomId(null);
+    }
+  }
+
+  const filteredRooms = (activeRooms ?? []).filter((room) => {
+    const query = roomSearch.trim().toLowerCase();
+    if (!query) return true;
+    return (
+      room.code.toLowerCase().includes(query) ||
+      room.ownerUsername.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <main className="relative mx-auto min-h-[100dvh] w-full max-w-sm overflow-hidden px-6 pb-28 pt-6 md:max-w-3xl md:px-8 lg:max-w-5xl lg:px-10">
@@ -97,6 +151,38 @@ export default function GamePage() {
             <h1 className="mb-4 text-2xl font-bold tracking-tight text-white">
               {t("createRoom")}
             </h1>
+
+            <div className="mb-4 flex items-center gap-2">
+              <SecondaryButton
+                variant={roomVisibility === "public" ? "outline" : "ghost"}
+                fullWidth={false}
+                onClick={() => setRoomVisibility("public")}
+                icon="public"
+              >
+                {t("publicRoom")}
+              </SecondaryButton>
+              <SecondaryButton
+                variant={roomVisibility === "private" ? "outline" : "ghost"}
+                fullWidth={false}
+                onClick={() => setRoomVisibility("private")}
+                icon="lock"
+              >
+                {t("privateRoom")}
+              </SecondaryButton>
+            </div>
+
+            {roomVisibility === "private" ? (
+              <div className="mb-4">
+                <TextInput
+                  type="password"
+                  value={createPassword}
+                  onChange={(event) => setCreatePassword(event.target.value)}
+                  placeholder={t("optionalRoomPassword")}
+                  icon="password"
+                  aria-label={t("optionalRoomPassword")}
+                />
+              </div>
+            ) : null}
 
             <PrimaryButton
               icon="add"
@@ -132,6 +218,15 @@ export default function GamePage() {
               aria-label={t("roomCode")}
             />
 
+            <TextInput
+              type="password"
+              value={joinPassword}
+              onChange={(event) => setJoinPassword(event.target.value)}
+              placeholder={t("roomPasswordOptional")}
+              icon="password"
+              aria-label={t("roomPasswordOptional")}
+            />
+
             <SecondaryButton
               type="submit"
               variant="outline"
@@ -144,6 +239,63 @@ export default function GamePage() {
             </SecondaryButton>
           </form>
         </div>
+
+        <section className="space-y-3 rounded-2xl border border-white/10 bg-surface/60 p-5">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-lg font-semibold text-white">{t("activeRooms")}</h2>
+            <Badge variant="player-count">{filteredRooms.length}</Badge>
+          </div>
+
+          <TextInput
+            type="text"
+            value={roomSearch}
+            onChange={(event) => setRoomSearch(event.target.value)}
+            placeholder={t("searchRooms")}
+            icon="search"
+            aria-label={t("searchRooms")}
+          />
+
+          {activeRooms === undefined ? (
+            <LoadingState label={ct("loading")} compact className="max-w-xs" />
+          ) : filteredRooms.length === 0 ? (
+            <p className="text-sm text-text-muted">{t("noActiveRooms")}</p>
+          ) : (
+            <div className="space-y-2">
+              {filteredRooms.map((room) => (
+                <div
+                  key={room.roomId}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/5 p-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-white">
+                      {room.ownerUsername}
+                    </p>
+                    <p className="text-xs text-text-tertiary">
+                      {room.code} · {room.playerCount}/{room.maxPlayers}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Badge variant="status" className="capitalize">
+                      {room.visibility === "public" ? t("publicRoom") : t("privateRoom")}
+                    </Badge>
+                    <PrimaryButton
+                      icon={room.visibility === "private" ? "lock_open" : "login"}
+                      fullWidth={false}
+                      loading={joiningRoomId === room.roomId}
+                      disabled={joiningRoomId === room.roomId}
+                      onClick={() =>
+                        handleJoinActiveRoom(room.roomId, room.visibility === "private" && room.hasPassword)
+                      }
+                    >
+                      {t("joinRoom")}
+                    </PrimaryButton>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {error ? (
           <StatusBanner

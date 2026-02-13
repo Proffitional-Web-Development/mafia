@@ -9,6 +9,14 @@ function toFaction(role: Doc<"players">["role"]): "mafia" | "citizens" {
   return role === "mafia" ? "mafia" : "citizens";
 }
 
+function parseJson<T>(value: string): T | null {
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
+}
+
 async function getGameInAbilityPhaseOrThrow(
   ctx: MutationCtx,
   gameId: Id<"games">,
@@ -81,10 +89,11 @@ async function maybeCompleteAbilityPhase(
     )
     .collect();
 
-  const sheikhDone =
-    !hasAliveSheikh || actionsThisRound.some((a) => a.role === "sheikh");
-  const girlDone =
-    !hasAliveGirl || actionsThisRound.some((a) => a.role === "girl");
+  const sheikhAction = actionsThisRound.find((a) => a.role === "sheikh");
+  const girlAction = actionsThisRound.find((a) => a.role === "girl");
+
+  const sheikhDone = !hasAliveSheikh || Boolean(sheikhAction?.confirmed);
+  const girlDone = !hasAliveGirl || Boolean(girlAction?.confirmed);
 
   if (!sheikhDone || !girlDone) {
     return;
@@ -147,6 +156,7 @@ export const useSheikhAbility = mutation({
       actorId: actor._id,
       targetId: target._id,
       result: faction,
+      confirmed: false,
       timestamp: now,
     });
 
@@ -157,8 +167,6 @@ export const useSheikhAbility = mutation({
       payload: JSON.stringify({ actorId: actor._id }),
       timestamp: now,
     });
-
-    await maybeCompleteAbilityPhase(ctx, args.gameId);
 
     return { success: true, faction };
   },
@@ -204,6 +212,7 @@ export const useGirlAbility = mutation({
       role: "girl",
       actorId: actor._id,
       targetId: target._id,
+      confirmed: false,
       timestamp: now,
     });
 
@@ -214,6 +223,48 @@ export const useGirlAbility = mutation({
       payload: JSON.stringify({ actorId: actor._id }),
       timestamp: now,
     });
+
+    return { success: true };
+  },
+});
+
+export const confirmAbilityAction = mutation({
+  args: {
+    gameId: v.id("games"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+    const game = await getGameInAbilityPhaseOrThrow(ctx, args.gameId);
+    const actor = await getPlayerOrThrow(ctx, args.gameId, userId);
+
+    if (!actor.isAlive || (actor.role !== "sheikh" && actor.role !== "girl")) {
+      throw new ConvexError(
+        "Only alive Sheikh or Girl players can confirm an ability action.",
+      );
+    }
+
+    const action = await getActionForActorThisRound(
+      ctx,
+      args.gameId,
+      game.round,
+      actor._id,
+    );
+
+    if (!action || action.role !== actor.role) {
+      throw new ConvexError("You must use your ability before confirming.");
+    }
+
+    if (!action.confirmed) {
+      await ctx.db.patch(action._id, { confirmed: true });
+
+      await ctx.db.insert("gameEvents", {
+        gameId: args.gameId,
+        round: game.round,
+        type: "ability_action_confirmed",
+        payload: JSON.stringify({ role: actor.role, actorId: actor._id }),
+        timestamp: Date.now(),
+      });
+    }
 
     await maybeCompleteAbilityPhase(ctx, args.gameId);
 
@@ -271,6 +322,7 @@ export const getAbilityPhaseState = query({
 
     const sheikhAction = actionsThisRound.find((a) => a.role === "sheikh");
     const girlAction = actionsThisRound.find((a) => a.role === "girl");
+    const myAction = actionsThisRound.find((a) => a.actorId === me._id);
 
     const base = {
       phase: game.phase,
@@ -286,6 +338,7 @@ export const getAbilityPhaseState = query({
         ...base,
         roleView: "waiting" as const,
         canAct: false,
+        canConfirm: false,
       };
     }
 
@@ -317,6 +370,7 @@ export const getAbilityPhaseState = query({
         ...base,
         roleView: "sheikh" as const,
         canAct: hasAliveSheikh && !sheikhAction,
+        canConfirm: Boolean(myAction && !myAction.confirmed),
         players: alivePlayers
           .filter((p) => p._id !== me._id)
           .map((p) => ({
@@ -327,8 +381,8 @@ export const getAbilityPhaseState = query({
             isAlive: p.isAlive,
           })),
         lastResult:
-          sheikhAction?.actorId === me._id
-            ? sheikhAction.result === "mafia"
+          myAction?.role === "sheikh"
+            ? myAction.result === "mafia"
               ? "mafia"
               : "citizens"
             : null,
@@ -340,6 +394,7 @@ export const getAbilityPhaseState = query({
       ...base,
       roleView: "girl" as const,
       canAct: hasAliveGirl && !girlAction,
+      canConfirm: Boolean(myAction && !myAction.confirmed),
       players: alivePlayers.map((p) => ({
         playerId: p._id,
         userId: p.userId,
@@ -348,5 +403,150 @@ export const getAbilityPhaseState = query({
         isAlive: p.isAlive,
       })),
     };
+  },
+});
+
+export const getSheikhInvestigationLog = query({
+  args: {
+    gameId: v.id("games"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+
+    const me = await ctx.db
+      .query("players")
+      .withIndex("by_gameId_userId", (q) =>
+        q.eq("gameId", args.gameId).eq("userId", userId),
+      )
+      .first();
+
+    if (!me) {
+      throw new ConvexError("You are not a player in this game.");
+    }
+    if (me.role !== "sheikh") {
+      throw new ConvexError("Only Sheikh can access investigation logs.");
+    }
+
+    const allPlayers = await ctx.db
+      .query("players")
+      .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
+      .collect();
+
+    const userDocs = await Promise.all(
+      allPlayers.map((player) => ctx.db.get(player.userId)),
+    );
+    const userById = new Map(
+      userDocs
+        .filter((user): user is NonNullable<typeof user> => user !== null)
+        .map((user) => [user._id, user]),
+    );
+
+    const actions = (
+      await ctx.db
+        .query("actions")
+        .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
+        .collect()
+    )
+      .filter((action) => action.role === "sheikh" && action.actorId === me._id)
+      .sort((a, b) => b.round - a.round);
+
+    return actions.map((action) => {
+      const target = action.targetId
+        ? allPlayers.find((player) => player._id === action.targetId)
+        : null;
+      const targetUser = target ? userById.get(target.userId) : null;
+
+      return {
+        round: action.round,
+        targetPlayerId: action.targetId,
+        targetUsername: targetUser?.username ?? targetUser?.name ?? "Unknown",
+        targetAvatarUrl: targetUser?.image,
+        faction: action.result === "mafia" ? "mafia" : "citizens",
+        timestamp: action.timestamp,
+      };
+    });
+  },
+});
+
+export const getGirlProtectionLog = query({
+  args: {
+    gameId: v.id("games"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+
+    const me = await ctx.db
+      .query("players")
+      .withIndex("by_gameId_userId", (q) =>
+        q.eq("gameId", args.gameId).eq("userId", userId),
+      )
+      .first();
+
+    if (!me) {
+      throw new ConvexError("You are not a player in this game.");
+    }
+    if (me.role !== "girl") {
+      throw new ConvexError("Only Girl can access protection logs.");
+    }
+
+    const allPlayers = await ctx.db
+      .query("players")
+      .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
+      .collect();
+
+    const userDocs = await Promise.all(
+      allPlayers.map((player) => ctx.db.get(player.userId)),
+    );
+    const userById = new Map(
+      userDocs
+        .filter((user): user is NonNullable<typeof user> => user !== null)
+        .map((user) => [user._id, user]),
+    );
+
+    const actions = (
+      await ctx.db
+        .query("actions")
+        .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
+        .collect()
+    )
+      .filter((action) => action.role === "girl" && action.actorId === me._id)
+      .sort((a, b) => b.round - a.round);
+
+    const mafiaVoteResults = (
+      await ctx.db
+        .query("gameEvents")
+        .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
+        .collect()
+    )
+      .filter((event) => event.type === "mafia_vote_result")
+      .map((event) => {
+        const payload =
+          parseJson<{ protectionBlocked?: boolean }>(event.payload) ?? {};
+        return {
+          round: event.round,
+          protectionBlocked: Boolean(payload.protectionBlocked),
+        };
+      });
+
+    const mafiaResultByRound = new Map(
+      mafiaVoteResults.map((result) => [result.round, result]),
+    );
+
+    return actions.map((action) => {
+      const target = action.targetId
+        ? allPlayers.find((player) => player._id === action.targetId)
+        : null;
+      const targetUser = target ? userById.get(target.userId) : null;
+      const mafiaResult = mafiaResultByRound.get(action.round);
+
+      return {
+        round: action.round,
+        targetPlayerId: action.targetId,
+        targetUsername: targetUser?.username ?? targetUser?.name ?? "Unknown",
+        targetAvatarUrl: targetUser?.image,
+        outcome: mafiaResult?.protectionBlocked ? "successful" : "not_used",
+        timestamp: action.timestamp,
+      };
+    });
   },
 });
