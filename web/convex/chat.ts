@@ -70,6 +70,19 @@ async function checkRateLimit(
 // sendChatMessage — send a chat message (text or template)
 // ---------------------------------------------------------------------------
 
+const VALID_VOICE_KEYS = new Set([
+  "ya_patl",
+  "7hl_3ne",
+  "lh_lh_lh",
+  "lk_mbsoot",
+  "lk_3la_meen",
+  "laaa",
+]);
+
+// ---------------------------------------------------------------------------
+// sendChatMessage — send a chat message (text, template, or voice)
+// ---------------------------------------------------------------------------
+
 export const sendChatMessage = mutation({
   args: {
     gameId: v.id("games"),
@@ -81,6 +94,8 @@ export const sendChatMessage = mutation({
     templateParams: v.optional(v.any()),
     // Anonymous mode
     anonymous: v.optional(v.boolean()),
+    // Voice Message
+    voiceClipKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
@@ -141,8 +156,18 @@ export const sendChatMessage = mutation({
     let isTemplate = false;
     let templateKey: string | undefined;
     let templateParams: Record<string, string> | undefined;
+    let isVoice = false;
+    let voiceClipKey: string | undefined;
 
-    if (args.templateKey) {
+    if (args.voiceClipKey) {
+      // Voice Message
+      if (!VALID_VOICE_KEYS.has(args.voiceClipKey)) {
+        throw new ConvexError("INVALID_VOICE_CLIP");
+      }
+      isVoice = true;
+      voiceClipKey = args.voiceClipKey;
+      content = "🔊 Voice message"; // Fallback text
+    } else if (args.templateKey) {
       // Template message
       if (!TEMPLATE_KEY_SET.has(args.templateKey)) {
         throw new ConvexError("Invalid template key.");
@@ -172,7 +197,9 @@ export const sendChatMessage = mutation({
         );
       }
     } else {
-      throw new ConvexError("Either content or templateKey must be provided.");
+      throw new ConvexError(
+        "One of content, templateKey, or voiceClipKey must be provided.",
+      );
     }
 
     // ── Resolve Sender Info ─────────────────────────────────────────────
@@ -202,6 +229,8 @@ export const sendChatMessage = mutation({
       templateParams,
       isAnonymous: isAnonymous || undefined,
       anonymousAlias,
+      isVoice: isVoice || undefined,
+      voiceClipKey,
       timestamp: Date.now(),
     });
 
@@ -259,6 +288,8 @@ export const getChatMessages = query({
           channel: msg.channel,
           isAnonymous: true,
           anonymousAlias: msg.anonymousAlias,
+          isVoice: msg.isVoice,
+          voiceClipKey: msg.voiceClipKey,
         };
       }
 
@@ -274,6 +305,8 @@ export const getChatMessages = query({
         channel: msg.channel,
         isAnonymous: msg.isAnonymous, // Just validation, likely undefined or false
         anonymousAlias: msg.anonymousAlias,
+        isVoice: msg.isVoice,
+        voiceClipKey: msg.voiceClipKey,
       };
     });
   },

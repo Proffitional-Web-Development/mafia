@@ -519,6 +519,21 @@
       "sendAsMafia": "MAFIA",
       "active": "Sending as MAFIA",
       "notAllowed": "Only Mafia members can send anonymous messages"
+    },
+    "voice": {
+      "ya_patl": "Ya Batl",
+      "7hl_3ne": "Leave me alone",
+      "lh_lh_lh": "Lh Lh Lh",
+      "lk_mbsoot": "I am haaappy",
+      "lk_3la_meen": "Lk 3la meen",
+      "laaa": "Nooooo",
+      "picker": {
+        "title": "Voice Messages",
+        "preview": "Preview",
+        "send": "Send"
+      },
+      "fallback": "Voice message",
+      "autoplayBlocked": "Tap anywhere to enable sound"
     }
   }
 }

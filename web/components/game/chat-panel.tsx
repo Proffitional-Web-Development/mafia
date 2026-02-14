@@ -5,11 +5,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChatInput } from "@/components/game/chat-input";
 import { TemplatePickerPopover } from "@/components/game/template-picker-popover";
+import { VoicePickerPopover } from "@/components/game/voice-picker-popover";
 import { AvatarCircle } from "@/components/ui/avatar-circle";
 import { Icon } from "@/components/ui/icon";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
+import { VOICE_CLIPS } from "@/lib/voice-clips";
 
 type Channel = "public" | "mafia";
 
@@ -55,13 +57,16 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const t = useTranslations("chat");
   const tt = useTranslations("chat.template");
+  const tVoice = useTranslations("chat.voice");
   const locale = useLocale();
 
   // ── State ─────────────────────────────────────────────────────────────
   const [channel, setChannel] = useState<Channel>("public");
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [voicePickerOpen, setVoicePickerOpen] = useState(false);
   const [rateLimited, setRateLimited] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [playingClip, setPlayingClip] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // ── Queries ───────────────────────────────────────────────────────────
@@ -159,6 +164,19 @@ export function ChatPanel({
       // silently ignore
     }
   }, [gameId, chatMuted, muteAll]);
+
+  const playVoiceClip = useCallback((key: string) => {
+    const clip = VOICE_CLIPS.find((c) => c.key === key);
+    if (!clip) return;
+
+    const audio = new Audio(clip.file);
+    audio.volume = 0.5;
+    
+    setPlayingClip(key);
+    
+    audio.onended = () => setPlayingClip(null);
+    audio.play().catch(() => setPlayingClip(null));
+  }, []);
 
   // Resolve template messages via i18n
   function resolveContent(msg: {
@@ -277,6 +295,18 @@ export function ChatPanel({
             // Note: server sends isAnonymous=true effectively, but we check prop here too
             // If anonymous, render with mafia style
             const isAnon = msg.isAnonymous; 
+            const isVoice = msg.isVoice;
+            const voiceKey = msg.voiceClipKey;
+
+            // Resolve voice label
+            let voiceLabel = null;
+            if (isVoice && voiceKey) {
+               try {
+                 voiceLabel = tVoice(voiceKey);
+               } catch {
+                 voiceLabel = tVoice("fallback");
+               }
+            }
             
             return (
               <div
@@ -297,14 +327,16 @@ export function ChatPanel({
                 
                 <div
                   className={cn(
-                    "max-w-[75%] rounded-xl px-3 py-1.5",
+                    "max-w-[75%] rounded-xl px-3 py-1.5 transition-colors", // Added transition
                     isAnon
                       ? "bg-danger/20 text-danger-light border border-danger/30"
                       : isMe
                         ? "bg-primary/20 text-white"
                         : "bg-white/5 text-text-secondary",
                     msg.isTemplate && !isAnon && "border border-white/10",
+                    isVoice && "cursor-pointer hover:bg-white/10" // Add cursor pointer for voice
                   )}
+                  onClick={isVoice && voiceKey ? () => playVoiceClip(voiceKey) : undefined}
                 >
                   <p className={cn(
                     "text-[10px] font-semibold mb-0.5",
@@ -312,17 +344,36 @@ export function ChatPanel({
                   )}>
                     {isAnon ? t("anonymous.alias") : msg.senderUsername}
                   </p>
-                  <p className="text-xs leading-relaxed break-words" dir="auto">
-                    {msg.isTemplate && (
-                      <Icon
-                        name="bolt"
-                        variant="round"
-                        size="sm"
-                        className="inline-block me-1 text-warning align-text-bottom"
-                      />
-                    )}
-                    {resolveContent(msg)}
-                  </p>
+                  
+                  {isVoice ? (
+                    <div className="flex items-center gap-2">
+                       <button 
+                         type="button"
+                         className={cn(
+                           "flex h-6 w-6 items-center justify-center rounded-full transition-colors",
+                           playingClip === voiceKey 
+                             ? "bg-primary text-white" 
+                             : "bg-white/10 text-white group-hover:bg-white/20"
+                         )}
+                       >
+                         <Icon name={playingClip === voiceKey ? "stop" : "play_arrow"} size="sm" />
+                       </button>
+                       <span className="text-xs italic select-none">{voiceLabel}</span>
+                    </div>
+                  ) : (
+                    <p className="text-xs leading-relaxed break-words" dir="auto">
+                      {msg.isTemplate && (
+                        <Icon
+                          name="bolt"
+                          variant="round"
+                          size="sm"
+                          className="inline-block me-1 text-warning align-text-bottom"
+                        />
+                      )}
+                      {resolveContent(msg)}
+                    </p>
+                  )}
+                  
                   <p className={cn(
                     "mt-0.5 text-end text-[9px]",
                     isAnon ? "text-danger/60" : "text-text-muted"
@@ -347,13 +398,29 @@ export function ChatPanel({
             anonymous={isAnonymous} 
           />
         )}
+        
+        {voicePickerOpen && (
+          <VoicePickerPopover
+            gameId={gameId}
+            channel={channel}
+            onClose={() => setVoicePickerOpen(false)}
+            anonymous={isAnonymous}
+          />
+        )}
 
         <ChatInput
           onSend={handleSend}
           disabled={!canSend}
           disabledReason={disabledReason}
           onOpenTemplates={
-            canSend ? () => setTemplatePickerOpen((o) => !o) : undefined
+            canSend 
+              ? () => { setTemplatePickerOpen((o) => !o); setVoicePickerOpen(false); } 
+              : undefined
+          }
+           onOpenVoice={
+             canSend 
+               ? () => { setVoicePickerOpen((o) => !o); setTemplatePickerOpen(false); }
+               : undefined
           }
           anonymous={showAnonymousToggle ? isAnonymous : undefined}
           onToggleAnonymous={showAnonymousToggle ? setIsAnonymous : undefined}

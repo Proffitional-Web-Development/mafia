@@ -236,6 +236,8 @@ export default defineSchema({
     isAnonymous: v.optional(v.boolean()),
     anonymousAlias: v.optional(v.string()),
     realSenderId: v.optional(v.id("users")),
+    isVoice: v.optional(v.boolean()),
+    voiceClipKey: v.optional(v.string()),
     timestamp: v.number(),
   })
     .index("by_gameId_channel", ["gameId", "channel"])

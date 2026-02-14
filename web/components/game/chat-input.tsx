@@ -12,6 +12,7 @@ interface ChatInputProps {
   disabled?: boolean;
   disabledReason?: "muted" | "disabled" | "eliminated" | "rateLimited";
   onOpenTemplates?: () => void;
+  onOpenVoice?: () => void;
   anonymous?: boolean;
   onToggleAnonymous?: (value: boolean) => void;
   className?: string;
@@ -22,6 +23,7 @@ export function ChatInput({
   disabled = false,
   disabledReason,
   onOpenTemplates,
+  onOpenVoice,
   anonymous,
   onToggleAnonymous,
   className,
@@ -132,6 +134,19 @@ export function ChatInput({
             aria-label="Templates"
           >
             <Icon name="bolt" variant="round" size="sm" />
+          </button>
+        )}
+
+        {/* Voice picker trigger */}
+        {onOpenVoice && (
+          <button
+            type="button"
+            onClick={onOpenVoice}
+            disabled={disabled}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-text-secondary transition-colors hover:bg-white/10 hover:text-white disabled:opacity-40"
+            aria-label="Voice Messages"
+          >
+            <Icon name="mic" variant="round" size="sm" />
           </button>
         )}
 

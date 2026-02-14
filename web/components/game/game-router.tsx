@@ -7,6 +7,7 @@ import { ChatPanel } from "@/components/game/chat-panel";
 import { DiscussionPhase } from "@/components/game/discussion-phase";
 import { GameEventTimeline } from "@/components/game/game-event-timeline";
 import { PhaseHeader } from "@/components/game/phase-header";
+import { VoiceMessagePlayer } from "@/components/providers/voice-message-player";
 import {
   AbilityPhase,
   AbilityPhaseNightTransition,
@@ -217,6 +218,8 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
           onClose={() => setIsChatOpen(false)}
         />
       )}
+
+      <VoiceMessagePlayer gameId={gameId} />
     </main>
   );
 }
