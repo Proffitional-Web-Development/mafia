@@ -20,6 +20,8 @@ jobs:
     defaults:
       run:
         working-directory: web
+    env:
+      CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
     steps:
       - uses: actions/checkout@v4
 
