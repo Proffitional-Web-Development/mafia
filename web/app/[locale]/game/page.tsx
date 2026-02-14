@@ -45,7 +45,7 @@ export default function GamePage() {
   const [joinCode, setJoinCode] = useState("");
   const [joinPassword, setJoinPassword] = useState("");
   const [roomVisibility, setRoomVisibility] = useState<"public" | "private">(
-    "private",
+    "private"
   );
   const [createPassword, setCreatePassword] = useState("");
   const [memeLevel, setMemeLevel] = useState<"NORMAL" | "FUN" | "CHAOS">("FUN");
@@ -84,7 +84,10 @@ export default function GamePage() {
     setCreating(true);
     setError(null);
     try {
-      const settings = createMafiaCount === null ? undefined : { mafiaCount: createMafiaCount };
+      const settings =
+        createMafiaCount === null
+          ? undefined
+          : { mafiaCount: createMafiaCount };
       const result = await createRoom({
         visibility: roomVisibility,
         password:
@@ -120,7 +123,10 @@ export default function GamePage() {
     }
   }
 
-  async function handleJoinActiveRoom(roomId: string, requiresPassword: boolean) {
+  async function handleJoinActiveRoom(
+    roomId: string,
+    requiresPassword: boolean
+  ) {
     setJoiningRoomId(roomId);
     setError(null);
     try {
@@ -226,23 +232,25 @@ export default function GamePage() {
                 {t("memeLevel.title")}
               </p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {([
-                  {
-                    value: "NORMAL",
-                    label: t("memeLevel.normal"),
-                    description: t("memeLevel.normalDesc"),
-                  },
-                  {
-                    value: "FUN",
-                    label: t("memeLevel.fun"),
-                    description: t("memeLevel.funDesc"),
-                  },
-                  {
-                    value: "CHAOS",
-                    label: t("memeLevel.chaos"),
-                    description: t("memeLevel.chaosDesc"),
-                  },
-                ] as const).map((option) => {
+                {(
+                  [
+                    {
+                      value: "NORMAL",
+                      label: t("memeLevel.normal"),
+                      description: t("memeLevel.normalDesc"),
+                    },
+                    {
+                      value: "FUN",
+                      label: t("memeLevel.fun"),
+                      description: t("memeLevel.funDesc"),
+                    },
+                    {
+                      value: "CHAOS",
+                      label: t("memeLevel.chaos"),
+                      description: t("memeLevel.chaosDesc"),
+                    },
+                  ] as const
+                ).map((option) => {
                   const selected = memeLevel === option.value;
                   return (
                     <button
@@ -257,7 +265,9 @@ export default function GamePage() {
                       ].join(" ")}
                     >
                       <p className="text-xs font-semibold">{option.label}</p>
-                      <p className="text-[11px] text-text-tertiary">{option.description}</p>
+                      <p className="text-[11px] text-text-tertiary">
+                        {option.description}
+                      </p>
                     </button>
                   );
                 })}
@@ -269,7 +279,9 @@ export default function GamePage() {
                 {t("settings.mafiaCount")}
               </p>
               <select
-                value={createMafiaCount === null ? "auto" : String(createMafiaCount)}
+                value={
+                  createMafiaCount === null ? "auto" : String(createMafiaCount)
+                }
                 onChange={(event) => {
                   const value = event.target.value;
                   setCreateMafiaCount(value === "auto" ? null : Number(value));
@@ -280,15 +292,22 @@ export default function GamePage() {
                 <option value="auto" className="bg-surface text-white">
                   {t("settings.mafiaCountAuto", { count: creationAutoMafia })}
                 </option>
-                {Array.from({ length: creationMaxAllowedMafia }, (_, index) => index + 1).map(
-                  (count) => (
-                    <option key={count} value={count} className="bg-surface text-white">
-                      {count} ({t("settings.mafiaCountCustom")})
-                    </option>
-                  ),
-                )}
+                {Array.from(
+                  { length: creationMaxAllowedMafia },
+                  (_, index) => index + 1
+                ).map((count) => (
+                  <option
+                    key={count}
+                    value={count}
+                    className="bg-surface text-white"
+                  >
+                    {count} ({t("settings.mafiaCountCustom")})
+                  </option>
+                ))}
               </select>
-              <p className="text-[11px] text-text-tertiary">{t("settings.mafiaCountHelper")}</p>
+              <p className="text-[11px] text-text-tertiary">
+                {t("settings.mafiaCountHelper")}
+              </p>
             </div>
 
             <PrimaryButton
@@ -349,7 +368,9 @@ export default function GamePage() {
 
         <section className="space-y-3 rounded-2xl border border-white/10 bg-surface/60 p-5">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-lg font-semibold text-white">{t("activeRooms")}</h2>
+            <h2 className="text-lg font-semibold text-white">
+              {t("activeRooms")}
+            </h2>
             <Badge variant="player-count">{filteredRooms.length}</Badge>
           </div>
 
@@ -384,15 +405,22 @@ export default function GamePage() {
 
                   <div className="flex items-center gap-2">
                     <Badge variant="status" className="capitalize">
-                      {room.visibility === "public" ? t("publicRoom") : t("privateRoom")}
+                      {room.visibility === "public"
+                        ? t("publicRoom")
+                        : t("privateRoom")}
                     </Badge>
                     <PrimaryButton
-                      icon={room.visibility === "private" ? "lock_open" : "login"}
+                      icon={
+                        room.visibility === "private" ? "lock_open" : "login"
+                      }
                       fullWidth={false}
                       loading={joiningRoomId === room.roomId}
                       disabled={joiningRoomId === room.roomId}
                       onClick={() =>
-                        handleJoinActiveRoom(room.roomId, room.visibility === "private" && room.hasPassword)
+                        handleJoinActiveRoom(
+                          room.roomId,
+                          room.visibility === "private" && room.hasPassword
+                        )
                       }
                     >
                       {t("joinRoom")}

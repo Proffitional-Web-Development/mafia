@@ -52,7 +52,9 @@ export function AbilityPanel({
   return (
     <>
       <div className="text-center space-y-1">
-        <h2 className="text-lg font-semibold text-white glow-effect">{title}</h2>
+        <h2 className="text-lg font-semibold text-white glow-effect">
+          {title}
+        </h2>
         <p className="text-sm text-white/60">{subtitle}</p>
       </div>
 

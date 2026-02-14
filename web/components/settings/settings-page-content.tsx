@@ -99,7 +99,7 @@ export function SettingsPageContent() {
   const handleToggleMusic = async (enabled: boolean) => {
     try {
       await toggleMusic({ enabled });
-    } catch (error) {
+    } catch {
       console.error("Failed to toggle music");
     }
   };
@@ -122,7 +122,7 @@ export function SettingsPageContent() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (error) {
+    } catch {
       alert("Failed to change password");
     } finally {
       setIsChangingPassword(false);
@@ -152,24 +152,28 @@ export function SettingsPageContent() {
       {/* Profile Section */}
       <section className="space-y-6 rounded-2xl border border-white/10 bg-surface/40 p-6">
         <div>
-          <h2 className="text-xl font-semibold text-white">{t("profile.title")}</h2>
-          <p className="text-sm text-text-tertiary">Manage your public profile</p>
+          <h2 className="text-xl font-semibold text-white">
+            {t("profile.title")}
+          </h2>
+          <p className="text-sm text-text-tertiary">
+            Manage your public profile
+          </p>
         </div>
 
         <div className="flex items-center gap-6">
           <div className="relative">
-             <AvatarCircle
-               avatarUrl={user.avatarUrl}
-               username={user.displayName ?? user.username ?? "?"}
-               size={80}
-             />
-             {isUploading && (
-               <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-                 <Icon name="refresh" className="animate-spin text-white" />
-               </div>
-             )}
+            <AvatarCircle
+              avatarUrl={user.avatarUrl}
+              username={user.displayName ?? user.username ?? "?"}
+              size={80}
+            />
+            {isUploading && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+                <Icon name="refresh" className="animate-spin text-white" />
+              </div>
+            )}
           </div>
-          
+
           <div className="flex flex-col gap-2">
             <label className="cursor-pointer rounded-lg bg-surface-lighter px-4 py-2 text-sm font-medium text-text-primary hover:bg-surface-lighter/80 transition-colors">
               {t("profile.changeAvatar")}
@@ -191,7 +195,7 @@ export function SettingsPageContent() {
             value={displayName}
             onChange={(e) => {
               setDisplayName(e.target.value);
-              setHasUnsavedChanges(true); 
+              setHasUnsavedChanges(true);
             }}
             maxLength={32}
             showCounter
@@ -199,7 +203,9 @@ export function SettingsPageContent() {
           <div className="flex justify-end">
             <PrimaryButton
               onClick={handleUpdateDisplayName}
-              disabled={isSavingProfile || !hasUnsavedChanges || displayName.length < 3}
+              disabled={
+                isSavingProfile || !hasUnsavedChanges || displayName.length < 3
+              }
               loading={isSavingProfile}
               className="w-auto px-8"
             >
@@ -212,12 +218,18 @@ export function SettingsPageContent() {
 
       {/* Preferences Section */}
       <section className="space-y-6 rounded-2xl border border-white/10 bg-surface/40 p-6">
-        <h2 className="text-xl font-semibold text-white">{t("preferences.title")}</h2>
+        <h2 className="text-xl font-semibold text-white">
+          {t("preferences.title")}
+        </h2>
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <div className="text-base text-text-primary">{t("preferences.music")}</div>
+            <div className="text-base text-text-primary">
+              {t("preferences.music")}
+            </div>
             <p className="text-sm text-text-tertiary">
-              {user.musicEnabled ? t("preferences.musicEnabled") : t("preferences.musicDisabled")}
+              {user.musicEnabled
+                ? t("preferences.musicEnabled")
+                : t("preferences.musicDisabled")}
             </p>
           </div>
           <button
@@ -244,7 +256,9 @@ export function SettingsPageContent() {
       {/* Security Section (Conditional) */}
       {authMethod?.method === "password" && (
         <section className="space-y-6 rounded-2xl border border-white/10 bg-surface/40 p-6">
-          <h2 className="text-xl font-semibold text-white">{t("security.title")}</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {t("security.title")}
+          </h2>
           <form onSubmit={handleChangePassword} className="space-y-4">
             <TextInput
               label={t("security.currentPassword")}
@@ -269,7 +283,9 @@ export function SettingsPageContent() {
                 required
               />
             </div>
-            <p className="text-xs text-text-tertiary">{t("security.passwordHelp")}</p>
+            <p className="text-xs text-text-tertiary">
+              {t("security.passwordHelp")}
+            </p>
             <div className="flex justify-end">
               <PrimaryButton
                 type="submit"

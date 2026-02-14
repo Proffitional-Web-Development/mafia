@@ -14,12 +14,7 @@ export function PhaseTransitionController({
 }: PhaseTransitionControllerProps) {
   const t = useTranslations("phases");
   // We force a remount when phase changes by using the key prop.
-  return (
-    <PhaseFlash
-      key={phase}
-      title={t(phase as unknown as "lobby")}
-    />
-  );
+  return <PhaseFlash key={phase} title={t(phase as unknown as "lobby")} />;
 }
 
 function PhaseFlash({ title }: { title: string }) {
@@ -37,7 +32,7 @@ function PhaseFlash({ title }: { title: string }) {
   return (
     <div
       className={cn(
-        "pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200",
+        "pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
       )}
       aria-live="polite"
     >

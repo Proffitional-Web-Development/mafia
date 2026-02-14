@@ -3,7 +3,6 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { PlayerCard } from "@/components/ui/player-card";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -14,7 +13,6 @@ import { WaitingOverlay } from "@/components/ui/waiting-overlay";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { mapAppErrorKey } from "@/lib/error-message";
-import { cn } from "@/lib/utils";
 
 interface MafiaVotingPhaseProps {
   gameId: Id<"games">;
@@ -41,7 +39,7 @@ export function MafiaVotingPhase({
 
   const mafiaVotes = useQuery(
     api.mafiaVoting.getMafiaVotes,
-    canSeeMafiaVotes ? { gameId } : "skip",
+    canSeeMafiaVotes ? { gameId } : "skip"
   );
 
   const [acting, setActing] = useState(false);
@@ -62,7 +60,10 @@ export function MafiaVotingPhase({
     return (
       <div className="relative flex flex-1 flex-col items-center justify-center gap-5 py-8 text-center">
         <TimerDisplay deadlineAt={effectiveDeadline} variant="ring" />
-        <WaitingOverlay title={t("waiting.title")} subtitle={t("waiting.subtitle")} />
+        <WaitingOverlay
+          title={t("waiting.title")}
+          subtitle={t("waiting.subtitle")}
+        />
       </div>
     );
   }
@@ -76,12 +77,12 @@ export function MafiaVotingPhase({
   }
 
   const playerById = new Map(
-    gameState.players.map((player) => [player.playerId, player]),
+    gameState.players.map((player) => [player.playerId, player])
   );
 
   const myVoteTargetId =
-    mafiaVotes.votes.find((vote) => vote.voterId === gameState.me.playerId)?.targetId ??
-    null;
+    mafiaVotes.votes.find((vote) => vote.voterId === gameState.me.playerId)
+      ?.targetId ?? null;
 
   const votesByTarget = mafiaVotes.aliveTargets.map((target) => {
     const voters = mafiaVotes.votes
@@ -125,7 +126,9 @@ export function MafiaVotingPhase({
       />
 
       <div className="text-center space-y-1">
-        <h2 className="text-lg font-semibold text-white glow-effect">{t("title")}</h2>
+        <h2 className="text-lg font-semibold text-white glow-effect">
+          {t("title")}
+        </h2>
         <p className="text-sm text-white/60">{t("subtitle")}</p>
       </div>
 
@@ -134,7 +137,8 @@ export function MafiaVotingPhase({
           const isSelected = myVoteTargetId === target.playerId;
           const tallyCount = mafiaVotes.tally[target.playerId] ?? 0;
           const voters =
-            votesByTarget.find((entry) => entry.targetId === target.playerId)?.voters ?? [];
+            votesByTarget.find((entry) => entry.targetId === target.playerId)
+              ?.voters ?? [];
 
           return (
             <PlayerCard
@@ -149,7 +153,9 @@ export function MafiaVotingPhase({
               disabled={acting}
               trailing={
                 <>
-                  <span className="text-[10px] text-white/40 mt-1">{t("tapToVote")}</span>
+                  <span className="text-[10px] text-white/40 mt-1">
+                    {t("tapToVote")}
+                  </span>
                   {voters.length > 0 && (
                     <div className="flex flex-wrap justify-center gap-1 mt-2 w-full">
                       {voters.map((voterName) => (
@@ -173,14 +179,22 @@ export function MafiaVotingPhase({
         {myVoteTargetId
           ? t("yourVote", {
               name:
-                mafiaVotes.aliveTargets.find((target) => target.playerId === myVoteTargetId)
-                  ?.username ?? "?",
+                mafiaVotes.aliveTargets.find(
+                  (target) => target.playerId === myVoteTargetId
+                )?.username ?? "?",
             })
           : t("noVoteYet")}
       </p>
 
       <BottomActionBar>
-        <PrimaryButton onClick={handleConfirm} disabled={confirming} icon="my_location" variant="danger" shimmer loading={confirming}>
+        <PrimaryButton
+          onClick={handleConfirm}
+          disabled={confirming}
+          icon="my_location"
+          variant="danger"
+          shimmer
+          loading={confirming}
+        >
           {confirming ? ct("loading") : t("confirm")}
         </PrimaryButton>
       </BottomActionBar>

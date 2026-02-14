@@ -3,7 +3,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Divider } from "@/components/ui/divider";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -30,7 +30,13 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [awaitingSession, setAwaitingSession] = useState(false);
-  const [showCookieHint, setShowCookieHint] = useState(false);
+  const showCookieHint = useMemo(() => {
+    const isSecure = window.location.protocol === "https:";
+    const isLocalhost =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+    return !isSecure && !isLocalhost;
+  }, []);
 
   useEffect(() => {
     if (currentUser) {
@@ -40,12 +46,7 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (!awaitingSession) return;
-
-    if (currentUser) {
-      setAwaitingSession(false);
-      setLoading(false);
-      return;
-    }
+    if (currentUser) return;
 
     const timeoutId = window.setTimeout(() => {
       setAwaitingSession(false);
@@ -56,17 +57,8 @@ export default function AuthPage() {
     return () => window.clearTimeout(timeoutId);
   }, [awaitingSession, currentUser, et]);
 
-  useEffect(() => {
-    const isSecure = window.location.protocol === "https:";
-    const isLocalhost =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
-
-    setShowCookieHint(!isSecure && !isLocalhost);
-  }, []);
-
   async function submitEmailPasswordAuth(
-    event: React.FormEvent<HTMLFormElement>,
+    event: React.FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
     setLoading(true);

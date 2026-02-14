@@ -31,12 +31,12 @@ const MAX_MESSAGES_RETURNED = 100;
 async function getPlayerInGame(
   ctx: QueryCtx | MutationCtx,
   gameId: Id<"games">,
-  userId: Id<"users">,
+  userId: Id<"users">
 ) {
   return ctx.db
     .query("players")
     .withIndex("by_gameId_userId", (q) =>
-      q.eq("gameId", gameId).eq("userId", userId),
+      q.eq("gameId", gameId).eq("userId", userId)
     )
     .first();
 }
@@ -44,7 +44,7 @@ async function getPlayerInGame(
 async function checkRateLimit(
   ctx: MutationCtx,
   gameId: Id<"games">,
-  senderId: Id<"users">,
+  senderId: Id<"users">
 ) {
   const now = Date.now();
   const cutoff = now - RATE_LIMIT_WINDOW_MS;
@@ -53,12 +53,12 @@ async function checkRateLimit(
   const recentMessages = await ctx.db
     .query("chatMessages")
     .withIndex("by_gameId_timestamp", (q) =>
-      q.eq("gameId", gameId).gte("timestamp", cutoff),
+      q.eq("gameId", gameId).gte("timestamp", cutoff)
     )
     .collect();
 
   const senderMessages = recentMessages.filter(
-    (msg) => msg.senderId === senderId,
+    (msg) => msg.senderId === senderId
   );
 
   if (senderMessages.length >= RATE_LIMIT_MAX_MESSAGES) {
@@ -151,7 +151,7 @@ export const sendChatMessage = mutation({
       }
       if (content.length > MAX_CONTENT_LENGTH) {
         throw new ConvexError(
-          `Message cannot exceed ${MAX_CONTENT_LENGTH} characters.`,
+          `Message cannot exceed ${MAX_CONTENT_LENGTH} characters.`
         );
       }
     } else {
@@ -209,7 +209,7 @@ export const getChatMessages = query({
     const messages = await ctx.db
       .query("chatMessages")
       .withIndex("by_gameId_channel", (q) =>
-        q.eq("gameId", args.gameId).eq("channel", args.channel),
+        q.eq("gameId", args.gameId).eq("channel", args.channel)
       )
       .order("asc")
       .take(MAX_MESSAGES_RETURNED);

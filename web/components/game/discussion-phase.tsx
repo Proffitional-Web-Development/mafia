@@ -71,7 +71,9 @@ export function DiscussionPhase({
 
       {/* Title + subtitle */}
       <div className="text-center space-y-1">
-        <h2 className="text-lg font-semibold text-white glow-effect">{t("title")}</h2>
+        <h2 className="text-lg font-semibold text-white glow-effect">
+          {t("title")}
+        </h2>
         <p className="text-sm text-white/60">{t("subtitle")}</p>
       </div>
 

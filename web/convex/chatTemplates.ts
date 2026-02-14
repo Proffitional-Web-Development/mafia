@@ -92,11 +92,14 @@ export function getTemplatesForChannel(channel: ChatChannel): ChatTemplate[] {
 /** Resolve English fallback text by replacing placeholders */
 export function resolveTemplateFallback(
   template: ChatTemplate,
-  params: Record<string, string>,
+  params: Record<string, string>
 ): string {
   let text = template.fallbackEn;
   for (const placeholder of template.placeholders) {
-    text = text.replace(`{${placeholder}}`, params[placeholder] ?? `{${placeholder}}`);
+    text = text.replace(
+      `{${placeholder}}`,
+      params[placeholder] ?? `{${placeholder}}`
+    );
   }
   return text;
 }

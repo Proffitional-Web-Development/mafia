@@ -78,19 +78,22 @@ export function ChatPanel({
 
   // ── Derived ───────────────────────────────────────────────────────────
   const canSend =
-    isAlive &&
-    (channel === "mafia" || (chatEnabled && !chatMuted));
+    isAlive && (channel === "mafia" || (chatEnabled && !chatMuted));
 
-  const disabledReason: "muted" | "disabled" | "eliminated" | "rateLimited" | undefined =
-    !isAlive
-      ? "eliminated"
-      : rateLimited
-        ? "rateLimited"
-        : channel === "public" && chatMuted
-          ? "muted"
-          : channel === "public" && !chatEnabled
-            ? "disabled"
-            : undefined;
+  const disabledReason:
+    | "muted"
+    | "disabled"
+    | "eliminated"
+    | "rateLimited"
+    | undefined = !isAlive
+    ? "eliminated"
+    : rateLimited
+      ? "rateLimited"
+      : channel === "public" && chatMuted
+        ? "muted"
+        : channel === "public" && !chatEnabled
+          ? "disabled"
+          : undefined;
 
   // Players for template picker (alive, excluding self)
   const templatePlayers =
@@ -123,7 +126,7 @@ export function ChatPanel({
         throw err;
       }
     },
-    [gameId, channel, sendMessage],
+    [gameId, channel, sendMessage]
   );
 
   const handleToggleChat = useCallback(async () => {
@@ -168,7 +171,7 @@ export function ChatPanel({
       className={cn(
         "fixed inset-y-0 end-0 z-50 flex w-full flex-col border-s border-white/10 bg-background/95 backdrop-blur-xl sm:w-80",
         "motion-safe:animate-[slide-in_200ms_ease-out]",
-        className,
+        className
       )}
     >
       {/* ── Header ───────────────────────────────────────────────────── */}
@@ -193,7 +196,7 @@ export function ChatPanel({
             "flex-1 py-2 text-xs font-medium transition-colors",
             channel === "public"
               ? "border-b-2 border-primary text-primary"
-              : "text-text-muted hover:text-white",
+              : "text-text-muted hover:text-white"
           )}
         >
           {t("channel.public")}
@@ -206,7 +209,7 @@ export function ChatPanel({
               "flex-1 py-2 text-xs font-medium transition-colors",
               channel === "mafia"
                 ? "border-b-2 border-danger text-danger"
-                : "text-text-muted hover:text-white",
+                : "text-text-muted hover:text-white"
             )}
           >
             {t("channel.mafia")}
@@ -224,7 +227,7 @@ export function ChatPanel({
               "rounded-lg border px-2.5 py-1 text-[10px] font-medium transition-colors",
               chatEnabled
                 ? "border-success/40 bg-success/15 text-success"
-                : "border-white/15 bg-white/5 text-text-muted",
+                : "border-white/15 bg-white/5 text-text-muted"
             )}
           >
             {t("enableChat")}
@@ -236,7 +239,7 @@ export function ChatPanel({
               "rounded-lg border px-2.5 py-1 text-[10px] font-medium transition-colors",
               chatMuted
                 ? "border-danger/40 bg-danger/15 text-danger"
-                : "border-white/15 bg-white/5 text-text-muted",
+                : "border-white/15 bg-white/5 text-text-muted"
             )}
           >
             {t("muteAll")}
@@ -245,19 +248,21 @@ export function ChatPanel({
       )}
 
       {/* ── Messages ─────────────────────────────────────────────────── */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto px-3 py-2 space-y-2"
+      >
         {!messages || messages.length === 0 ? (
-          <p className="py-8 text-center text-xs text-text-muted">{t("empty")}</p>
+          <p className="py-8 text-center text-xs text-text-muted">
+            {t("empty")}
+          </p>
         ) : (
           messages.map((msg) => {
             const isMe = msg.senderId === currentUserId;
             return (
               <div
                 key={msg._id}
-                className={cn(
-                  "flex gap-2",
-                  isMe && "flex-row-reverse",
-                )}
+                className={cn("flex gap-2", isMe && "flex-row-reverse")}
               >
                 <AvatarCircle
                   username={msg.senderUsername}
@@ -270,7 +275,7 @@ export function ChatPanel({
                     isMe
                       ? "bg-primary/20 text-white"
                       : "bg-white/5 text-text-secondary",
-                    msg.isTemplate && "border border-white/10",
+                    msg.isTemplate && "border border-white/10"
                   )}
                 >
                   <p className="text-[10px] font-semibold text-text-muted mb-0.5">

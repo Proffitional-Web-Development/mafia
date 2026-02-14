@@ -66,10 +66,7 @@ export const ROLE_COLORS: Record<
 // Phase colours & icons
 // ---------------------------------------------------------------------------
 
-export const PHASE_META: Record<
-  string,
-  { icon: string; color: string }
-> = {
+export const PHASE_META: Record<string, { icon: string; color: string }> = {
   cardDistribution: { icon: "style", color: "text-text-tertiary" },
   discussion: { icon: "chat", color: "text-primary-light" },
   publicVoting: { icon: "how_to_vote", color: "text-warning" },

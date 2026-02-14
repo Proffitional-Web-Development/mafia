@@ -13,9 +13,36 @@ import { cn } from "@/lib/utils";
  * Duplicated here to avoid importing server code into client bundle.
  */
 const ALLOWED_EMOJIS = [
-  "😂", "🤣", "😭", "😢", "😤", "😡", "😱", "🤔", "🤨", "🧐",
-  "😏", "😈", "👀", "🤫", "🤥", "💀", "☠️", "🔥", "❤️", "💔",
-  "👍", "👎", "👏", "🙏", "✌️", "🤞", "🫡", "🫣", "😬", "🤡",
+  "😂",
+  "🤣",
+  "😭",
+  "😢",
+  "😤",
+  "😡",
+  "😱",
+  "🤔",
+  "🤨",
+  "🧐",
+  "😏",
+  "😈",
+  "👀",
+  "🤫",
+  "🤥",
+  "💀",
+  "☠️",
+  "🔥",
+  "❤️",
+  "💔",
+  "👍",
+  "👎",
+  "👏",
+  "🙏",
+  "✌️",
+  "🤞",
+  "🫡",
+  "🫣",
+  "😬",
+  "🤡",
 ] as const;
 
 interface EmojiReactionPickerProps {
@@ -47,7 +74,7 @@ export function EmojiReactionPicker({
         setSending(false);
       }
     },
-    [gameId, setReaction],
+    [gameId, setReaction]
   );
 
   return (
@@ -60,7 +87,7 @@ export function EmojiReactionPicker({
           "inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-medium transition-all",
           currentEmoji
             ? "border-primary/40 bg-primary/15 text-white"
-            : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white",
+            : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
         )}
         aria-label={t("pickEmoji")}
       >
@@ -118,7 +145,7 @@ export function EmojiReactionPicker({
                   className={cn(
                     "flex items-center justify-center rounded-lg p-1.5 text-xl transition-all hover:bg-white/10 active:scale-90",
                     emoji === currentEmoji &&
-                      "bg-primary/20 ring-1 ring-primary/50",
+                      "bg-primary/20 ring-1 ring-primary/50"
                   )}
                 >
                   {emoji}

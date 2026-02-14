@@ -18,12 +18,12 @@ const MAX_PUBLIC_RUNOFF_SUBROUNDS = 1;
 async function requireAlivePlayer(
   ctx: MutationCtx,
   gameId: Id<"games">,
-  userId: Id<"users">,
+  userId: Id<"users">
 ) {
   const player = await ctx.db
     .query("players")
     .withIndex("by_gameId_userId", (q) =>
-      q.eq("gameId", gameId).eq("userId", userId),
+      q.eq("gameId", gameId).eq("userId", userId)
     )
     .first();
 
@@ -34,7 +34,7 @@ async function requireAlivePlayer(
 
 async function requirePublicVotingPhase(
   ctx: MutationCtx | QueryCtx,
-  gameId: Id<"games">,
+  gameId: Id<"games">
 ) {
   const game = await ctx.db.get(gameId);
   if (!game) throw new ConvexError("Game not found.");
@@ -60,7 +60,9 @@ export const castPublicVote = mutation({
     const isSkip = !isRunoff && (Boolean(args.isSkip) || !args.targetPlayerId);
 
     if (isRunoff && !args.targetPlayerId) {
-      throw new ConvexError("Runoff votes must target one of the tied players.");
+      throw new ConvexError(
+        "Runoff votes must target one of the tied players."
+      );
     }
 
     if (!isSkip && args.targetPlayerId) {
@@ -75,7 +77,10 @@ export const castPublicVote = mutation({
       if (target._id === voter._id) {
         throw new ConvexError("Cannot vote for yourself.");
       }
-      if (isRunoff && !tiedCandidates.some((candidateId) => candidateId === target._id)) {
+      if (
+        isRunoff &&
+        !tiedCandidates.some((candidateId) => candidateId === target._id)
+      ) {
         throw new ConvexError("Target is not part of the runoff candidates.");
       }
     }
@@ -87,7 +92,7 @@ export const castPublicVote = mutation({
           .eq("gameId", args.gameId)
           .eq("round", game.round)
           .eq("phase", "public")
-          .eq("voterId", voter._id),
+          .eq("voterId", voter._id)
       )
       .first();
 
@@ -128,7 +133,7 @@ export const getPublicVotes = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
     if (!me) throw new ConvexError("You are not a player in this game.");
@@ -139,26 +144,28 @@ export const getPublicVotes = query({
         q
           .eq("gameId", args.gameId)
           .eq("round", game.round)
-          .eq("phase", "public"),
+          .eq("phase", "public")
       )
       .collect();
 
     const alivePlayers = await ctx.db
       .query("players")
       .withIndex("by_gameId_isAlive", (q) =>
-        q.eq("gameId", args.gameId).eq("isAlive", true),
+        q.eq("gameId", args.gameId).eq("isAlive", true)
       )
       .collect();
 
     const userDocs = await Promise.all(
-      alivePlayers.map((player) => ctx.db.get(player.userId)),
+      alivePlayers.map((player) => ctx.db.get(player.userId))
     );
     const userById = new Map(
       userDocs
         .filter((user): user is NonNullable<typeof user> => user !== null)
-        .map((user) => [user._id, user]),
+        .map((user) => [user._id, user])
     );
-    const playerById = new Map(alivePlayers.map((player) => [player._id, player]));
+    const playerById = new Map(
+      alivePlayers.map((player) => [player._id, player])
+    );
 
     const tally: Record<string, number> = {};
     let skipCount = 0;
@@ -219,7 +226,7 @@ export const getPublicVotingRunoffState = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
     if (!me) throw new ConvexError("You are not a player in this game.");
@@ -240,16 +247,20 @@ export const getPublicVotingRunoffState = query({
       };
     }
 
-    const players = await Promise.all(tiedCandidates.map((playerId) => ctx.db.get(playerId)));
+    const players = await Promise.all(
+      tiedCandidates.map((playerId) => ctx.db.get(playerId))
+    );
     const validPlayers = players.filter(
-      (player): player is NonNullable<typeof player> => Boolean(player),
+      (player): player is NonNullable<typeof player> => Boolean(player)
     );
 
-    const users = await Promise.all(validPlayers.map((player) => ctx.db.get(player.userId)));
+    const users = await Promise.all(
+      validPlayers.map((player) => ctx.db.get(player.userId))
+    );
     const userById = new Map(
       users
         .filter((user): user is NonNullable<typeof user> => Boolean(user))
-        .map((user) => [user._id, user]),
+        .map((user) => [user._id, user])
     );
 
     return {
@@ -285,7 +296,7 @@ export const confirmVoting = mutation({
       await ctx.scheduler.runAfter(
         0,
         internal.stateMachine.advancePhaseInternal,
-        { gameId: args.gameId, reason: "timer_auto_resolve" },
+        { gameId: args.gameId, reason: "timer_auto_resolve" }
       );
     }
 
@@ -303,7 +314,7 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
   const votes = await ctx.db
     .query("votes")
     .withIndex("by_gameId_round_phase", (q) =>
-      q.eq("gameId", gameId).eq("round", game.round).eq("phase", "public"),
+      q.eq("gameId", gameId).eq("round", game.round).eq("phase", "public")
     )
     .collect();
 
@@ -334,7 +345,9 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
       if (votingSubRound < MAX_PUBLIC_RUNOFF_SUBROUNDS) {
         const now = Date.now();
         const nextSubRound = votingSubRound + 1;
-        const tiedCandidates = topCandidates.map(([playerId]) => playerId as Id<"players">);
+        const tiedCandidates = topCandidates.map(
+          ([playerId]) => playerId as Id<"players">
+        );
         const nextPhaseToken = (game.phaseToken ?? 0) + 1;
 
         for (const vote of votes) {
@@ -349,12 +362,16 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
           phaseToken: nextPhaseToken,
         });
 
-        const tiedCandidatesDocs = await Promise.all(tiedCandidates.map(id => ctx.db.get(id)));
-        const tiedInfo = await Promise.all(tiedCandidatesDocs.map(async p => {
-          if (!p) return "Unknown";
-          const u = await ctx.db.get(p.userId);
-          return u?.displayName ?? u?.username ?? "Unknown";
-        }));
+        const tiedCandidatesDocs = await Promise.all(
+          tiedCandidates.map((id) => ctx.db.get(id))
+        );
+        const tiedInfo = await Promise.all(
+          tiedCandidatesDocs.map(async (p) => {
+            if (!p) return "Unknown";
+            const u = await ctx.db.get(p.userId);
+            return u?.displayName ?? u?.username ?? "Unknown";
+          })
+        );
 
         await logGameEvent(ctx, {
           gameId,
@@ -368,7 +385,7 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
           {
             gameId,
             expectedToken: nextPhaseToken,
-          },
+          }
         );
 
         return {
@@ -390,17 +407,20 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
     }
   }
 
-  const now = Date.now();
-
   if (eliminatedPlayerId) {
     await ctx.db.patch(eliminatedPlayerId as Id<"players">, {
       isAlive: false,
       eliminatedAtRound: game.round,
     });
 
-    const eliminatedPlayer = await ctx.db.get(eliminatedPlayerId as Id<"players">);
-    const eliminatedUser = eliminatedPlayer ? await ctx.db.get(eliminatedPlayer.userId) : null;
-    const eliminatedName = eliminatedUser?.displayName ?? eliminatedUser?.username ?? "Unknown";
+    const eliminatedPlayer = await ctx.db.get(
+      eliminatedPlayerId as Id<"players">
+    );
+    const eliminatedUser = eliminatedPlayer
+      ? await ctx.db.get(eliminatedPlayer.userId)
+      : null;
+    const eliminatedName =
+      eliminatedUser?.displayName ?? eliminatedUser?.username ?? "Unknown";
 
     await logGameEvent(ctx, {
       gameId,
@@ -453,7 +473,7 @@ export const autoResolvePublicVoting = internalMutation({
       await ctx.scheduler.runAfter(
         0,
         internal.stateMachine.advancePhaseInternal,
-        { gameId: args.gameId, reason: "timer_auto_resolve" },
+        { gameId: args.gameId, reason: "timer_auto_resolve" }
       );
     }
 

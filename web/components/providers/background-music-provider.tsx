@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { api } from "@/convex/_generated/api";
 
 export function BackgroundMusicProvider({
@@ -11,7 +11,6 @@ export function BackgroundMusicProvider({
 }) {
   const user = useQuery(api.users.getCurrentUser);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Default to true if user is not loaded yet or if preference is missing (though schema default is handled)
   // Logic: if user is undefined (loading), don't play yet? Or play if default is yes?
@@ -21,7 +20,6 @@ export function BackgroundMusicProvider({
 
   useEffect(() => {
     const handleInteraction = () => {
-      setHasInteracted(true);
       // Try resolving autoplay restriction if pending
       if (audioRef.current && isMusicEnabled && audioRef.current.paused) {
         audioRef.current.play().catch(() => {});

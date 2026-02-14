@@ -14,8 +14,7 @@ type SecondaryButtonVariant =
   | "text-link"
   | "danger-text";
 
-interface SecondaryButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface SecondaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: string;
   iconPosition?: "start" | "end";
   variant?: SecondaryButtonVariant;
@@ -55,7 +54,7 @@ export function SecondaryButton({
           "w-auto min-h-0 bg-transparent p-0 text-primary hover:text-primary-light",
         variant === "danger-text" &&
           "w-auto min-h-0 bg-transparent p-0 text-danger hover:text-danger-dark",
-        className,
+        className
       )}
       {...props}
     >
@@ -67,7 +66,7 @@ export function SecondaryButton({
             loading && "animate-spin",
             !loading &&
               isDirectionalIcon(icon) &&
-              "[html[dir='rtl']_&]:-scale-x-100",
+              "[html[dir='rtl']_&]:-scale-x-100"
           )}
         />
       ) : null}
@@ -77,7 +76,7 @@ export function SecondaryButton({
           name={icon}
           variant="round"
           className={cn(
-            isDirectionalIcon(icon) && "[html[dir='rtl']_&]:-scale-x-100",
+            isDirectionalIcon(icon) && "[html[dir='rtl']_&]:-scale-x-100"
           )}
         />
       ) : null}

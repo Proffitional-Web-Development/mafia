@@ -10,17 +10,9 @@ function toFaction(role: Doc<"players">["role"]): "mafia" | "citizens" {
   return role === "mafia" ? "mafia" : "citizens";
 }
 
-function parseJson<T>(value: string): T | null {
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
-  }
-}
-
 async function getGameInAbilityPhaseOrThrow(
   ctx: MutationCtx,
-  gameId: Id<"games">,
+  gameId: Id<"games">
 ) {
   const game = await ctx.db.get(gameId);
   if (!game) {
@@ -35,12 +27,12 @@ async function getGameInAbilityPhaseOrThrow(
 async function getPlayerOrThrow(
   ctx: MutationCtx,
   gameId: Id<"games">,
-  userId: Id<"users">,
+  userId: Id<"users">
 ) {
   const player = await ctx.db
     .query("players")
     .withIndex("by_gameId_userId", (q) =>
-      q.eq("gameId", gameId).eq("userId", userId),
+      q.eq("gameId", gameId).eq("userId", userId)
     )
     .first();
 
@@ -54,19 +46,19 @@ async function getActionForActorThisRound(
   ctx: MutationCtx,
   gameId: Id<"games">,
   round: number,
-  actorId: Id<"players">,
+  actorId: Id<"players">
 ) {
   return ctx.db
     .query("actions")
     .withIndex("by_gameId_round_actorId", (q) =>
-      q.eq("gameId", gameId).eq("round", round).eq("actorId", actorId),
+      q.eq("gameId", gameId).eq("round", round).eq("actorId", actorId)
     )
     .first();
 }
 
 async function maybeCompleteAbilityPhase(
   ctx: MutationCtx,
-  gameId: Id<"games">,
+  gameId: Id<"games">
 ) {
   const game = await ctx.db.get(gameId);
   if (!game || game.phase !== "abilityPhase") {
@@ -76,7 +68,7 @@ async function maybeCompleteAbilityPhase(
   const alivePlayers = await ctx.db
     .query("players")
     .withIndex("by_gameId_isAlive", (q) =>
-      q.eq("gameId", gameId).eq("isAlive", true),
+      q.eq("gameId", gameId).eq("isAlive", true)
     )
     .collect();
 
@@ -86,7 +78,7 @@ async function maybeCompleteAbilityPhase(
   const actionsThisRound = await ctx.db
     .query("actions")
     .withIndex("by_gameId_round", (q) =>
-      q.eq("gameId", gameId).eq("round", game.round),
+      q.eq("gameId", gameId).eq("round", game.round)
     )
     .collect();
 
@@ -141,7 +133,7 @@ export const useSheikhAbility = mutation({
       ctx,
       args.gameId,
       game.round,
-      actor._id,
+      actor._id
     );
     if (existing) {
       throw new ConvexError("You have already used your ability this round.");
@@ -163,7 +155,10 @@ export const useSheikhAbility = mutation({
 
     await logGameEvent(ctx, {
       gameId: args.gameId,
-      eventType: faction === "mafia" ? "SHEIKH_INVESTIGATION_MAFIA" : "SHEIKH_INVESTIGATION_CITIZEN",
+      eventType:
+        faction === "mafia"
+          ? "SHEIKH_INVESTIGATION_MAFIA"
+          : "SHEIKH_INVESTIGATION_CITIZEN",
       params: {},
     });
 
@@ -197,7 +192,7 @@ export const useGirlAbility = mutation({
       ctx,
       args.gameId,
       game.round,
-      actor._id,
+      actor._id
     );
     if (existing) {
       throw new ConvexError("You have already used your ability this round.");
@@ -232,7 +227,7 @@ export const confirmAbilityAction = mutation({
 
     if (!actor.isAlive || (actor.role !== "sheikh" && actor.role !== "girl")) {
       throw new ConvexError(
-        "Only alive Sheikh or Girl players can confirm an ability action.",
+        "Only alive Sheikh or Girl players can confirm an ability action."
       );
     }
 
@@ -240,7 +235,7 @@ export const confirmAbilityAction = mutation({
       ctx,
       args.gameId,
       game.round,
-      actor._id,
+      actor._id
     );
 
     if (!action || action.role !== actor.role) {
@@ -274,7 +269,7 @@ export const getAbilityPhaseState = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
 
@@ -288,12 +283,12 @@ export const getAbilityPhaseState = query({
       .collect();
 
     const userDocs = await Promise.all(
-      allPlayers.map((p) => ctx.db.get(p.userId)),
+      allPlayers.map((p) => ctx.db.get(p.userId))
     );
     const userById = new Map(
       userDocs
         .filter((u): u is NonNullable<typeof u> => u !== null)
-        .map((u) => [u._id, u]),
+        .map((u) => [u._id, u])
     );
 
     const alivePlayers = allPlayers.filter((p) => p.isAlive);
@@ -303,7 +298,7 @@ export const getAbilityPhaseState = query({
     const actionsThisRound = await ctx.db
       .query("actions")
       .withIndex("by_gameId_round", (q) =>
-        q.eq("gameId", args.gameId).eq("round", game.round),
+        q.eq("gameId", args.gameId).eq("round", game.round)
       )
       .collect();
 
@@ -403,7 +398,7 @@ export const getSheikhInvestigationLog = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
 
@@ -420,12 +415,12 @@ export const getSheikhInvestigationLog = query({
       .collect();
 
     const userDocs = await Promise.all(
-      allPlayers.map((player) => ctx.db.get(player.userId)),
+      allPlayers.map((player) => ctx.db.get(player.userId))
     );
     const userById = new Map(
       userDocs
         .filter((user): user is NonNullable<typeof user> => user !== null)
-        .map((user) => [user._id, user]),
+        .map((user) => [user._id, user])
     );
 
     const actions = (
@@ -465,7 +460,7 @@ export const getGirlProtectionLog = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
 
@@ -482,12 +477,12 @@ export const getGirlProtectionLog = query({
       .collect();
 
     const userDocs = await Promise.all(
-      allPlayers.map((player) => ctx.db.get(player.userId)),
+      allPlayers.map((player) => ctx.db.get(player.userId))
     );
     const userById = new Map(
       userDocs
         .filter((user): user is NonNullable<typeof user> => user !== null)
-        .map((user) => [user._id, user]),
+        .map((user) => [user._id, user])
     );
 
     const actions = (
@@ -514,7 +509,7 @@ export const getGirlProtectionLog = query({
       });
 
     const mafiaResultByRound = new Map(
-      mafiaVoteResults.map((result) => [result.round, result]),
+      mafiaVoteResults.map((result) => [result.round, result])
     );
 
     return actions.map((action) => {

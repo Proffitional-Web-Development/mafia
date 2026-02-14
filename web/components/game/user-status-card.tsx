@@ -20,7 +20,7 @@ export function UserStatusCard({
     <div
       className={cn(
         "inline-flex items-center gap-3 rounded-xl border border-white/10 bg-surface/80 px-3 py-2 backdrop-blur-md",
-        className,
+        className
       )}
     >
       <AvatarCircle
@@ -30,8 +30,12 @@ export function UserStatusCard({
         showOnline={online}
       />
       <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-white">{username ?? "Player"}</p>
-        {subtitle ? <p className="truncate text-xs text-text-tertiary">{subtitle}</p> : null}
+        <p className="truncate text-sm font-semibold text-white">
+          {username ?? "Player"}
+        </p>
+        {subtitle ? (
+          <p className="truncate text-xs text-text-tertiary">{subtitle}</p>
+        ) : null}
       </div>
     </div>
   );

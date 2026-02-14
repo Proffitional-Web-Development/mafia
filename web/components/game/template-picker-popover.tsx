@@ -41,12 +41,12 @@ export function TemplatePickerPopover({
   const sendMessage = useMutation(api.chat.sendChatMessage);
 
   const [selectedTemplateKey, setSelectedTemplateKey] = useState<string | null>(
-    null,
+    null
   );
   const [sending, setSending] = useState(false);
 
   const selectedTemplate = templates?.find(
-    (tmpl) => tmpl.key === selectedTemplateKey,
+    (tmpl) => tmpl.key === selectedTemplateKey
   );
   const needsPlayer =
     selectedTemplate?.placeholders.includes("player") ?? false;
@@ -74,7 +74,7 @@ export function TemplatePickerPopover({
         }
       }
     },
-    [gameId, channel, sendMessage, onClose],
+    [gameId, channel, sendMessage, onClose]
   );
 
   const handleSelectPlayer = useCallback(
@@ -95,7 +95,7 @@ export function TemplatePickerPopover({
         setSending(false);
       }
     },
-    [gameId, channel, selectedTemplateKey, sendMessage, onClose],
+    [gameId, channel, selectedTemplateKey, sendMessage, onClose]
   );
 
   /** Derive a short label from the template key: "chat.template.suspect" -> "suspect" */
@@ -123,7 +123,7 @@ export function TemplatePickerPopover({
       <div
         className={cn(
           "absolute bottom-full mb-2 start-0 z-50 w-72 max-h-64 overflow-y-auto rounded-xl border border-white/15 bg-surface/95 p-2 shadow-xl backdrop-blur-lg",
-          className,
+          className
         )}
       >
         {/* Step 2: Player selection */}

@@ -25,7 +25,9 @@ export function ResolutionPhase({
   const t = useTranslations("resolution");
   const ct = useTranslations("common");
 
-  const resolutionState = useQuery(api.resolution.getResolutionState, { gameId });
+  const resolutionState = useQuery(api.resolution.getResolutionState, {
+    gameId,
+  });
 
   if (!resolutionState) {
     return (
@@ -37,17 +39,17 @@ export function ResolutionPhase({
 
   const eliminatedByMainResolution = resolutionState.eliminated;
   const baseEliminatedSet = new Set(
-    eliminatedByMainResolution.map((item) => item.playerId),
+    eliminatedByMainResolution.map((item) => item.playerId)
   );
 
   const revengeEliminated = resolutionState.players.filter(
     (player) =>
       player.eliminatedAtRound === resolutionState.round &&
-      !baseEliminatedSet.has(String(player.playerId)),
+      !baseEliminatedSet.has(String(player.playerId))
   );
 
   const aliveTargets = resolutionState.players.filter(
-    (player) => player.isAlive && player.userId !== currentUserId,
+    (player) => player.isAlive && player.userId !== currentUserId
   );
 
   const canActAsBoy = resolutionState.isCurrentPlayerPendingBoy;
@@ -93,7 +95,9 @@ export function ResolutionPhase({
         </section>
       )}
 
-      {canActAsBoy && <BoyRevenge gameId={gameId} aliveTargets={aliveTargets} />}
+      {canActAsBoy && (
+        <BoyRevenge gameId={gameId} aliveTargets={aliveTargets} />
+      )}
 
       {!canActAsBoy && pendingBoyCount > 0 && (
         <StatusBanner variant="warning" message={t("boyPrompt.waiting")} />

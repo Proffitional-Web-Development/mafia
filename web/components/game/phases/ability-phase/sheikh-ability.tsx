@@ -28,7 +28,7 @@ export function SheikhAbility({
 
   const runSheikhAbility = useMutation(api.abilityPhase.useSheikhAbility);
   const confirmAbilityAction = useMutation(
-    api.abilityPhase.confirmAbilityAction,
+    api.abilityPhase.confirmAbilityAction
   );
 
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
@@ -71,17 +71,14 @@ export function SheikhAbility({
         ? t("result.citizens")
         : null;
 
-  const canSubmit =
-    abilityState.canAct && Boolean(selectedTargetId) && !acting;
+  const canSubmit = abilityState.canAct && Boolean(selectedTargetId) && !acting;
   const canConfirm = abilityState.canConfirm && !confirming;
 
   return (
     <AbilityPanel
       title={t("sheikh.title")}
       subtitle={
-        abilityState.canAct
-          ? t("sheikh.selectTarget")
-          : t("sheikh.alreadyUsed")
+        abilityState.canAct ? t("sheikh.selectTarget") : t("sheikh.alreadyUsed")
       }
       players={abilityState.players}
       currentUserId={currentUserId}

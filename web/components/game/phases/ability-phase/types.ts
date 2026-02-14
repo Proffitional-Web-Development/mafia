@@ -10,7 +10,4 @@ export type SheikhAbilityState = Extract<
   { roleView: "sheikh" }
 >;
 
-export type GirlAbilityState = Extract<
-  AbilityPhaseState,
-  { roleView: "girl" }
->;
+export type GirlAbilityState = Extract<AbilityPhaseState, { roleView: "girl" }>;

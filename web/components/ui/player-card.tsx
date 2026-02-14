@@ -14,11 +14,13 @@ const playerCardVariants = cva(
     variants: {
       variant: {
         "game-phase": "border-white/10 bg-surface/40 hover:bg-surface/60",
-        selected: "border-primary bg-primary/20 glow-primary shadow-[0_0_15px_rgba(242,13,51,0.3)]",
+        selected:
+          "border-primary bg-primary/20 glow-primary shadow-[0_0_15px_rgba(242,13,51,0.3)]",
         self: "border-warning/60 bg-warning/10",
         speaking: "border-success/60 bg-success/10",
         voting: "border-white/10 bg-surface/30",
-        "mafia-target": "border-danger/40 bg-danger/10 shadow-[0_0_15px_rgba(220,38,38,0.2)]",
+        "mafia-target":
+          "border-danger/40 bg-danger/10 shadow-[0_0_15px_rgba(220,38,38,0.2)]",
         ability: "border-white/10 bg-neutral-dark/50",
         protection: "border-success/60 bg-success/10",
         dead: "border-white/5 bg-surface/20 opacity-60 grayscale",
@@ -38,11 +40,12 @@ const playerCardVariants = cva(
       selectable: false,
       compact: false,
     },
-  },
+  }
 );
 
 export interface PlayerCardProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
+  extends
+    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
     VariantProps<typeof playerCardVariants> {
   username: string;
   avatarUrl?: string;
@@ -105,7 +108,7 @@ export function PlayerCard({
           compact,
         }),
         disabled && "pointer-events-none",
-        className,
+        className
       )}
       {...props}
     >

@@ -18,7 +18,7 @@ export const overview = query({
     const totalRooms = allRooms.length;
     const roomsLast24h = allRooms.filter((r) => r.createdAt > oneDayAgo).length;
     const roomsLast7d = allRooms.filter(
-      (r) => r.createdAt > sevenDaysAgo,
+      (r) => r.createdAt > sevenDaysAgo
     ).length;
 
     // Games by status
@@ -29,10 +29,10 @@ export const overview = query({
 
     // Winner faction breakdown
     const mafiaWins = finishedGames.filter(
-      (g) => g.winnerFaction === "mafia",
+      (g) => g.winnerFaction === "mafia"
     ).length;
     const citizenWins = finishedGames.filter(
-      (g) => g.winnerFaction === "citizens",
+      (g) => g.winnerFaction === "citizens"
     ).length;
 
     // Average game duration (finished games with endedAt)
@@ -41,7 +41,7 @@ export const overview = query({
       gamesWithDuration.length > 0
         ? gamesWithDuration.reduce(
             (sum, g) => sum + (g.endedAt! - g.startedAt),
-            0,
+            0
           ) / gamesWithDuration.length
         : 0;
 
@@ -56,7 +56,7 @@ export const overview = query({
     const allUsers = await ctx.db.query("users").collect();
     const totalUsers = allUsers.length;
     const usersLast7d = allUsers.filter(
-      (u) => u.createdAt && u.createdAt > sevenDaysAgo,
+      (u) => u.createdAt && u.createdAt > sevenDaysAgo
     ).length;
 
     return {

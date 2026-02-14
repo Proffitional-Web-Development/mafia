@@ -28,15 +28,25 @@ export function GameReportRow({
         !isYou && isMafia && "border-danger/40 bg-danger/10",
         !isYou && !isMafia && "border-white/10 bg-white/5",
         !alive && "opacity-70 grayscale",
-        className,
+        className
       )}
     >
       <div className="flex items-center gap-2 min-w-0">
-        <AvatarCircle username={username} avatarUrl={avatarUrl} size={30} dead={!alive} />
+        <AvatarCircle
+          username={username}
+          avatarUrl={avatarUrl}
+          size={30}
+          dead={!alive}
+        />
         <span className="truncate text-sm text-text-secondary">{username}</span>
       </div>
       <span className="text-xs font-medium text-text-tertiary">{role}</span>
-      <span className={cn("text-xs font-semibold", alive ? "text-success" : "text-danger")}>
+      <span
+        className={cn(
+          "text-xs font-semibold",
+          alive ? "text-success" : "text-danger"
+        )}
+      >
         {alive ? "Alive" : "Dead"}
       </span>
     </div>

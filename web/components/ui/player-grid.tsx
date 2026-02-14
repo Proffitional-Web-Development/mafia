@@ -56,22 +56,18 @@ export function PlayerGrid({
           : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4";
 
   return (
-    <div
-      className={cn(
-        "grid",
-        columnsClass,
-        gapClass,
-        className,
-      )}
-    >
+    <div className={cn("grid", columnsClass, gapClass, className)}>
       {children ? children : null}
 
       {!children
         ? players.map((player) => {
             const isMe = player.userId === currentUserId;
             const isDead = player.isAlive === false;
-            const isSelected = selectedId === (player.playerId ?? player.userId);
-            const canSelect = Boolean(selectable && !isDead && !isMe && onSelect);
+            const isSelected =
+              selectedId === (player.playerId ?? player.userId);
+            const canSelect = Boolean(
+              selectable && !isDead && !isMe && onSelect
+            );
 
             return (
               <PlayerCard

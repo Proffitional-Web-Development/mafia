@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import { GameRouter } from "@/components/game/game-router";
 import { SettingsPanel } from "@/components/game/settings-panel";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -52,19 +52,19 @@ export default function RoomPage({
     // If in-game, and user is NOT a member...
     const isMember = roomState.members.some((m) => m.userId === currentUser.id);
     if (!isMember) {
-       // Cannot join in-game room via this route currently
-       // Show error or redirect
-       // For now, let's render LobbyView which will show "Game started" via auto-join logic?
-       // But LobbyView expects roomState.
-       // If status is in-game, joinRoomByLink will return GAME_STARTED.
-       // So we can fall through to LobbyView logic if !isMember?
+      // Cannot join in-game room via this route currently
+      // Show error or redirect
+      // For now, let's render LobbyView which will show "Game started" via auto-join logic?
+      // But LobbyView expects roomState.
+      // If status is in-game, joinRoomByLink will return GAME_STARTED.
+      // So we can fall through to LobbyView logic if !isMember?
     } else {
-        return (
-          <GameRouter
-            gameId={roomState.currentGameId}
-            currentUserId={currentUser.id}
-          />
-        );
+      return (
+        <GameRouter
+          gameId={roomState.currentGameId}
+          currentUserId={currentUser.id}
+        />
+      );
     }
   }
 
@@ -132,14 +132,16 @@ function LobbyView({
   const canStart = memberCount >= 4;
   const isMember = roomState.members.some((m) => m.userId === currentUserId);
 
-  function redirectToLobbyWithJoinError(
-    key: "gameStarted" | "roomFull" | "notFound" | "passwordRequired",
-  ) {
-    router.replace(`/game?joinError=${key}`);
-  }
+  const redirectToLobbyWithJoinError = useCallback(
+    (key: "gameStarted" | "roomFull" | "notFound" | "passwordRequired") => {
+      router.replace(`/game?joinError=${key}`);
+    },
+    [router]
+  );
 
   useEffect(() => {
-    if (isMember || hasAttemptedAutoJoin || joining || passwordDialogOpen) return;
+    if (isMember || hasAttemptedAutoJoin || joining || passwordDialogOpen)
+      return;
 
     const autoJoin = async () => {
       setJoining(true);
@@ -165,9 +167,19 @@ function LobbyView({
         setJoining(false);
       }
     };
-    
+
     autoJoin();
-  }, [isMember, roomId, joinRoomByLink, hasAttemptedAutoJoin, joining, passwordDialogOpen, et, t]);
+  }, [
+    et,
+    hasAttemptedAutoJoin,
+    isMember,
+    joinRoomByLink,
+    joining,
+    passwordDialogOpen,
+    redirectToLobbyWithJoinError,
+    roomId,
+    t,
+  ]);
 
   useEffect(() => {
     if (
@@ -207,15 +219,7 @@ function LobbyView({
     return () => {
       cancelled = true;
     };
-  }, [
-    autoResettingMafia,
-    et,
-    isOwner,
-    mafiaInfo,
-    roomId,
-    t,
-    updateSettings,
-  ]);
+  }, [autoResettingMafia, et, isOwner, mafiaInfo, roomId, t, updateSettings]);
 
   async function handleStart() {
     setStarting(true);
@@ -270,7 +274,7 @@ function LobbyView({
 
   async function handleSettingChange(
     field: string,
-    value: number | boolean | Record<string, boolean>,
+    value: number | boolean | Record<string, boolean>
   ) {
     try {
       setInfoMessage(null);
@@ -349,7 +353,10 @@ function LobbyView({
       if (result.success) {
         setPasswordDialogOpen(false);
       } else {
-        if (result.error === "INVALID_PASSWORD" || result.error === "PASSWORD_REQUIRED") {
+        if (
+          result.error === "INVALID_PASSWORD" ||
+          result.error === "PASSWORD_REQUIRED"
+        ) {
           setError(t("join.passwordRequired"));
         } else if (result.error === "GAME_STARTED") {
           redirectToLobbyWithJoinError("gameStarted");
@@ -361,7 +368,7 @@ function LobbyView({
           setError(result.error ?? "Unknown error");
         }
       }
-    } catch(e) {
+    } catch (e) {
       setError(et(mapAppErrorKey(e)));
     } finally {
       setJoining(false);
@@ -422,7 +429,12 @@ function LobbyView({
               </Badge>
             </div>
 
-            <PlayerGrid players={[]} columns={4} gap="md" showOwnerBadge={false}>
+            <PlayerGrid
+              players={[]}
+              columns={4}
+              gap="md"
+              showOwnerBadge={false}
+            >
               {roomState.members.map((member) => {
                 const isMe = member.userId === currentUserId;
                 return (
@@ -456,7 +468,10 @@ function LobbyView({
               })}
 
               {Array.from({
-                length: Math.max(0, roomState.settings.maxPlayers - memberCount),
+                length: Math.max(
+                  0,
+                  roomState.settings.maxPlayers - memberCount
+                ),
               })
                 .slice(0, Math.max(0, 12 - memberCount))
                 .map((_, slotOffset) => {
@@ -521,7 +536,9 @@ function LobbyView({
                         ? "auto"
                         : String(roomState.settings.mafiaCount)
                     }
-                    onChange={(event) => void handleMafiaCountChange(event.target.value)}
+                    onChange={(event) =>
+                      void handleMafiaCountChange(event.target.value)
+                    }
                     disabled={
                       mafiaUpdating ||
                       autoResettingMafia ||
@@ -538,9 +555,13 @@ function LobbyView({
                     </option>
                     {Array.from(
                       { length: mafiaInfo?.maxAllowed ?? 1 },
-                      (_, index) => index + 1,
+                      (_, index) => index + 1
                     ).map((count) => (
-                      <option key={count} value={count} className="bg-surface text-white">
+                      <option
+                        key={count}
+                        value={count}
+                        className="bg-surface text-white"
+                      >
                         {count} ({t("settings.mafiaCountCustom")})
                       </option>
                     ))}
@@ -555,31 +576,38 @@ function LobbyView({
                 </p>
               )}
 
-              {mafiaInfo?.customMafiaCount !== undefined && !mafiaInfo.customValid ? (
-                <p className="mt-2 text-xs text-danger">{t("settings.mafiaCountInvalid")}</p>
+              {mafiaInfo?.customMafiaCount !== undefined &&
+              !mafiaInfo.customValid ? (
+                <p className="mt-2 text-xs text-danger">
+                  {t("settings.mafiaCountInvalid")}
+                </p>
               ) : null}
             </section>
 
             <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
-              <p className="mb-2 text-sm font-medium text-white">{t("memeLevel.title")}</p>
+              <p className="mb-2 text-sm font-medium text-white">
+                {t("memeLevel.title")}
+              </p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
-                {([
-                  {
-                    value: "NORMAL",
-                    label: t("memeLevel.normal"),
-                    description: t("memeLevel.normalDesc"),
-                  },
-                  {
-                    value: "FUN",
-                    label: t("memeLevel.fun"),
-                    description: t("memeLevel.funDesc"),
-                  },
-                  {
-                    value: "CHAOS",
-                    label: t("memeLevel.chaos"),
-                    description: t("memeLevel.chaosDesc"),
-                  },
-                ] as const).map((option) => {
+                {(
+                  [
+                    {
+                      value: "NORMAL",
+                      label: t("memeLevel.normal"),
+                      description: t("memeLevel.normalDesc"),
+                    },
+                    {
+                      value: "FUN",
+                      label: t("memeLevel.fun"),
+                      description: t("memeLevel.funDesc"),
+                    },
+                    {
+                      value: "CHAOS",
+                      label: t("memeLevel.chaos"),
+                      description: t("memeLevel.chaosDesc"),
+                    },
+                  ] as const
+                ).map((option) => {
                   const selected = roomState.memeLevel === option.value;
                   return (
                     <button
@@ -595,7 +623,9 @@ function LobbyView({
                       ].join(" ")}
                     >
                       <p className="text-xs font-semibold">{option.label}</p>
-                      <p className="text-[11px] text-text-tertiary">{option.description}</p>
+                      <p className="text-[11px] text-text-tertiary">
+                        {option.description}
+                      </p>
                     </button>
                   );
                 })}
@@ -654,33 +684,33 @@ function LobbyView({
         onCancel={() => setKickTarget(null)}
       />
 
-       {/* Password Dialog */}
-       {passwordDialogOpen && (
+      {/* Password Dialog */}
+      {passwordDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-           <div className="w-full max-w-sm rounded-xl border border-white/10 bg-surface p-6 shadow-xl space-y-4">
-             <h3 className="text-lg font-semibold text-white">{t("enterPrivateRoomPassword")}</h3>
-             <TextInput 
-                value={passwordInput}
-               onChange={(event) => setPasswordInput(event.target.value)}
-                placeholder={t("optionalRoomPassword")}
-                type="password"
-             />
-             <div className="flex justify-end gap-3">
-               <SecondaryButton onClick={() => router.push("/game")} disabled={joining}>
-                 {ct("cancel")}
-               </SecondaryButton>
-               <PrimaryButton onClick={handlePasswordJoin} loading={joining}>
-                 {ct("confirm")}
-               </PrimaryButton>
-             </div>
-           </div>
+          <div className="w-full max-w-sm rounded-xl border border-white/10 bg-surface p-6 shadow-xl space-y-4">
+            <h3 className="text-lg font-semibold text-white">
+              {t("enterPrivateRoomPassword")}
+            </h3>
+            <TextInput
+              value={passwordInput}
+              onChange={(event) => setPasswordInput(event.target.value)}
+              placeholder={t("optionalRoomPassword")}
+              type="password"
+            />
+            <div className="flex justify-end gap-3">
+              <SecondaryButton
+                onClick={() => router.push("/game")}
+                disabled={joining}
+              >
+                {ct("cancel")}
+              </SecondaryButton>
+              <PrimaryButton onClick={handlePasswordJoin} loading={joining}>
+                {ct("confirm")}
+              </PrimaryButton>
+            </div>
+          </div>
         </div>
       )}
     </main>
   );
-}
-
-function RoleName({ role }: { role: string }) {
-  const t = useTranslations("roles");
-  return <span>{t(role as "sheikh" | "girl" | "boy")}</span>;
 }

@@ -11,7 +11,7 @@ export function getMaxAllowedMafia(playerCount: number): number {
 
 export function validateMafiaCount(
   mafiaCount: number,
-  playerCount: number,
+  playerCount: number
 ): { valid: boolean; maxAllowed: number; error?: string } {
   const maxAllowed = getMaxAllowedMafia(playerCount);
 

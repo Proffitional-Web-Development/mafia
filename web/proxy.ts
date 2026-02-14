@@ -30,7 +30,7 @@ const authMiddleware = convexAuthNextjsMiddleware(
     if (!(await convexAuth.isAuthenticated())) {
       return nextjsMiddlewareRedirect(request, `/${locale}/auth`);
     }
-  },
+  }
 );
 
 type IntlRequest = Parameters<typeof handleI18nRouting>[0];
@@ -68,7 +68,7 @@ export default async function proxy(request: IntlRequest, event: AuthEvent) {
 
   const authResponse = await authMiddleware(
     request as unknown as AuthRequest,
-    event,
+    event
   );
   if (authResponse) {
     return authResponse;

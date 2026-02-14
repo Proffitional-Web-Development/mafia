@@ -3,23 +3,6 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getOptionalAuthUserId, requireAuthUserId } from "./lib/auth";
 
-function normalizeUsername(username: string) {
-  return username.trim().toLowerCase();
-}
-
-function validateUsername(username: string) {
-  const trimmed = username.trim();
-  if (trimmed.length < 3 || trimmed.length > 24) {
-    throw new ConvexError("Username must be between 3 and 24 characters.");
-  }
-  if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
-    throw new ConvexError(
-      "Username can only include letters, numbers, and underscores."
-    );
-  }
-  return trimmed;
-}
-
 export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
@@ -69,7 +52,7 @@ export const updateDisplayName = mutation({
 
     if (displayName.length < 3 || displayName.length > 32) {
       throw new ConvexError(
-        "Display name must be between 3 and 32 characters.",
+        "Display name must be between 3 and 32 characters."
       );
     }
 
@@ -132,7 +115,9 @@ export const completeProfile = mutation({
     const displayName = args.displayName.trim(); // basic trim, maybe length check
 
     if (displayName.length < 3 || displayName.length > 32) {
-      throw new ConvexError("Display name must be between 3 and 32 characters.");
+      throw new ConvexError(
+        "Display name must be between 3 and 32 characters."
+      );
     }
 
     const currentUser = await ctx.db.get(userId);

@@ -60,7 +60,7 @@ export const skipDiscussion = mutation({
       {
         gameId: args.gameId,
         reason: "timer",
-      },
+      }
     );
 
     return { success: true };
@@ -87,7 +87,7 @@ export const getDiscussionState = query({
     const player = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
 
@@ -98,12 +98,12 @@ export const getDiscussionState = query({
     const alivePlayers = await ctx.db
       .query("players")
       .withIndex("by_gameId_isAlive", (q) =>
-        q.eq("gameId", args.gameId).eq("isAlive", true),
+        q.eq("gameId", args.gameId).eq("isAlive", true)
       )
       .collect();
 
     const userDocs = await Promise.all(
-      alivePlayers.map((p) => ctx.db.get(p.userId)),
+      alivePlayers.map((p) => ctx.db.get(p.userId))
     );
 
     return {

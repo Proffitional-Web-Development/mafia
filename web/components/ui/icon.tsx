@@ -40,7 +40,7 @@ export function Icon({
         "inline-flex shrink-0 select-none items-center justify-center leading-none",
         variantClass[variant],
         sizeClass[size],
-        className,
+        className
       )}
     >
       {name}

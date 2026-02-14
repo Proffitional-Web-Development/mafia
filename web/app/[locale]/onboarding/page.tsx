@@ -24,13 +24,13 @@ export default function OnboardingPage() {
   const currentUser = useQuery(api.users.getCurrentUser);
   const completeProfile = useMutation(api.users.completeProfile);
   const generateAvatarUploadUrl = useMutation(
-    api.users.generateAvatarUploadUrl,
+    api.users.generateAvatarUploadUrl
   );
   const setAvatarFromStorage = useMutation(api.users.setAvatarFromStorage);
 
   const [displayName, setDisplayName] = useState("");
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
-    null,
+    null
   );
   const [step, setStep] = useState<1 | 2>(1);
   const [submitting, setSubmitting] = useState(false);

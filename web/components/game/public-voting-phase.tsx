@@ -74,13 +74,13 @@ export function PublicVotingPhase({
     : (myVote?.targetId ?? null);
 
   const tiedCandidateIds = new Set(
-    (runoffState?.tiedCandidates ?? []).map((candidate) => candidate.playerId),
+    (runoffState?.tiedCandidates ?? []).map((candidate) => candidate.playerId)
   );
   const isRunoff = Boolean(runoffState?.isRunoff);
 
   // Filter alive players (excluding self) as vote targets
   const alivePlayers = players.filter(
-    (p) => p.isAlive && p.playerId !== me.playerId,
+    (p) => p.isAlive && p.playerId !== me.playerId
   );
   const voteTargets = isRunoff
     ? alivePlayers.filter((player) => tiedCandidateIds.has(player.playerId))
@@ -120,7 +120,9 @@ export function PublicVotingPhase({
       <TimerDisplay deadlineAt={deadlineAt} variant="progress-bar" />
 
       <div className="text-center space-y-1">
-        <h2 className="text-lg font-semibold text-white glow-effect">{t("title")}</h2>
+        <h2 className="text-lg font-semibold text-white glow-effect">
+          {t("title")}
+        </h2>
         <p className="text-sm text-white/60">
           {isAlive ? t("selectTarget") : t("deadCannotVote")}
         </p>
@@ -210,13 +212,18 @@ export function PublicVotingPhase({
               "hover:bg-white/5 border-white/20",
               mySelectedTargetId === "skip" &&
                 "border-warning bg-warning/20 shadow-[0_0_15px_rgba(234,179,8,0.3)]",
-                mySelectedTargetId !== "skip" && "bg-surface/20"
+              mySelectedTargetId !== "skip" && "bg-surface/20"
             )}
           >
             <span className="text-3xl filter drop-shadow-md">🚫</span>
-            <span className="text-xs font-medium text-white/80">{t("skipVote")}</span>
+            <span className="text-xs font-medium text-white/80">
+              {t("skipVote")}
+            </span>
             {votesData.skipCount > 0 && (
-              <Badge variant="vote-count" className="absolute -top-1 -end-1 bg-warning text-black">
+              <Badge
+                variant="vote-count"
+                className="absolute -top-1 -end-1 bg-warning text-black"
+              >
                 {votesData.skipCount}
               </Badge>
             )}
@@ -239,14 +246,23 @@ export function PublicVotingPhase({
       {/* Owner confirm button */}
       {isOwner && isAlive && (
         <BottomActionBar>
-          <PrimaryButton onClick={handleConfirm} disabled={confirming} icon="gavel" loading={confirming}>
+          <PrimaryButton
+            onClick={handleConfirm}
+            disabled={confirming}
+            icon="gavel"
+            loading={confirming}
+          >
             {confirming ? ct("loading") : t("confirmResults")}
           </PrimaryButton>
         </BottomActionBar>
       )}
 
       {isAlive && !isRunoff ? (
-        <SecondaryButton variant="dashed" icon="block" onClick={() => handleVoteFor("skip") }>
+        <SecondaryButton
+          variant="dashed"
+          icon="block"
+          onClick={() => handleVoteFor("skip")}
+        >
           {t("skipVote")}
         </SecondaryButton>
       ) : null}

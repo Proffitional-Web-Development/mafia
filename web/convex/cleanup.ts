@@ -93,7 +93,10 @@ export const cleanupFinishedGame = internalMutation({
     }
 
     if (game.phase !== "finished") {
-      logger.warn("cleanup.game.notFinished", { gameId: args.gameId, phase: game.phase });
+      logger.warn("cleanup.game.notFinished", {
+        gameId: args.gameId,
+        phase: game.phase,
+      });
       return { cleaned: false, reason: "GAME_NOT_FINISHED" as const };
     }
 
@@ -127,14 +130,18 @@ export const cleanupFinishedGame = internalMutation({
       }
 
       if (room.status === "finished") {
-        await ctx.scheduler.runAfter(0, internal.cleanup.deleteRoomAndRelatedData, {
-          roomId: room._id,
-        });
+        await ctx.scheduler.runAfter(
+          0,
+          internal.cleanup.deleteRoomAndRelatedData,
+          {
+            roomId: room._id,
+          }
+        );
       }
     }
 
     console.log(
-      `Cleaned up game ${String(game._id)} — deleted ${deleted.players} players, ${deleted.votes} votes, ${deleted.actions} actions, ${deleted.events} events, ${deleted.chatMessages} chat messages`,
+      `Cleaned up game ${String(game._id)} — deleted ${deleted.players} players, ${deleted.votes} votes, ${deleted.actions} actions, ${deleted.events} events, ${deleted.chatMessages} chat messages`
     );
     logger.info("cleanup.game.done", {
       gameId: String(game._id),
@@ -184,11 +191,15 @@ export const deleteRoomAndRelatedData = internalMutation({
         gameDeleted = await cleanupGameDataBatch(ctx, game._id);
 
         if (gameDeleted.hasMore) {
-          await ctx.scheduler.runAfter(0, internal.cleanup.deleteRoomAndRelatedData, {
-            roomId: room._id,
-          });
+          await ctx.scheduler.runAfter(
+            0,
+            internal.cleanup.deleteRoomAndRelatedData,
+            {
+              roomId: room._id,
+            }
+          );
           console.log(
-            `deleteRoomAndRelatedData (batched game cleanup) room=${String(room._id)} game=${String(game._id)}`,
+            `deleteRoomAndRelatedData (batched game cleanup) room=${String(room._id)} game=${String(game._id)}`
           );
           return {
             cleaned: false,
@@ -203,11 +214,15 @@ export const deleteRoomAndRelatedData = internalMutation({
 
     const membersDeleted = await cleanupRoomMembersBatch(ctx, room._id);
     if (membersDeleted.hasMore) {
-      await ctx.scheduler.runAfter(0, internal.cleanup.deleteRoomAndRelatedData, {
-        roomId: room._id,
-      });
+      await ctx.scheduler.runAfter(
+        0,
+        internal.cleanup.deleteRoomAndRelatedData,
+        {
+          roomId: room._id,
+        }
+      );
       console.log(
-        `deleteRoomAndRelatedData (batched members) room=${String(room._id)} deletedMembers=${membersDeleted.deleted}`,
+        `deleteRoomAndRelatedData (batched members) room=${String(room._id)} deletedMembers=${membersDeleted.deleted}`
       );
       return {
         cleaned: false,
@@ -220,7 +235,7 @@ export const deleteRoomAndRelatedData = internalMutation({
     await ctx.db.delete(room._id);
 
     console.log(
-      `Cleaned up room ${String(room._id)} — deleted ${membersDeleted.deleted} members`,
+      `Cleaned up room ${String(room._id)} — deleted ${membersDeleted.deleted} members`
     );
 
     return {
@@ -256,11 +271,18 @@ export const cleanupExpiredRooms = internalMutation({
         }
       }
 
-      await ctx.scheduler.runAfter(0, internal.cleanup.deleteRoomAndRelatedData, {
-        roomId: room._id,
-      });
+      await ctx.scheduler.runAfter(
+        0,
+        internal.cleanup.deleteRoomAndRelatedData,
+        {
+          roomId: room._id,
+        }
+      );
 
-      const hoursAgo = ((Date.now() - room.createdAt) / (60 * 60 * 1000)).toFixed(2);
+      const hoursAgo = (
+        (Date.now() - room.createdAt) /
+        (60 * 60 * 1000)
+      ).toFixed(2);
       logger.info("cleanup.room.expired", {
         roomId: String(room._id),
         hoursAgo: Number(hoursAgo),
@@ -301,10 +323,17 @@ export const cleanupExpiredRateLimits = internalMutation({
     }
 
     if (expired.length === BATCH_SIZE) {
-      await ctx.scheduler.runAfter(0, internal.cleanup.cleanupExpiredRateLimits, {});
+      await ctx.scheduler.runAfter(
+        0,
+        internal.cleanup.cleanupExpiredRateLimits,
+        {}
+      );
     }
 
-    logger.info("cleanup.rateLimits", { deleted: expired.length, hasMore: expired.length === BATCH_SIZE });
+    logger.info("cleanup.rateLimits", {
+      deleted: expired.length,
+      hasMore: expired.length === BATCH_SIZE,
+    });
 
     return { deleted: expired.length };
   },

@@ -14,7 +14,7 @@ import { logGameEvent } from "./gameEvents";
 async function getMafiaVoterOrThrow(
   ctx: MutationCtx,
   gameId: Id<"games">,
-  userId: Id<"users">,
+  userId: Id<"users">
 ) {
   const game = await ctx.db.get(gameId);
   if (!game) throw new ConvexError("Game not found.");
@@ -25,7 +25,7 @@ async function getMafiaVoterOrThrow(
   const voter = await ctx.db
     .query("players")
     .withIndex("by_gameId_userId", (q) =>
-      q.eq("gameId", gameId).eq("userId", userId),
+      q.eq("gameId", gameId).eq("userId", userId)
     )
     .first();
 
@@ -37,18 +37,10 @@ async function getMafiaVoterOrThrow(
   return { game, voter };
 }
 
-function parseJson<T>(value: string): T | null {
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
-  }
-}
-
 async function resolveMafiaVoting(
   ctx: MutationCtx,
   gameId: Id<"games">,
-  expectedToken?: number,
+  expectedToken?: number
 ) {
   const game = await ctx.db.get(gameId);
   if (!game) throw new ConvexError("Game not found.");
@@ -63,7 +55,7 @@ async function resolveMafiaVoting(
   const events = await ctx.db
     .query("gameEvents")
     .withIndex("by_gameId_round", (q) =>
-      q.eq("gameId", gameId).eq("round", game.round),
+      q.eq("gameId", gameId).eq("round", game.round)
     )
     .collect();
 
@@ -72,7 +64,7 @@ async function resolveMafiaVoting(
   const existingEvent = events.find(
     (e) =>
       e.eventType === "MAFIA_ELIMINATION" ||
-      e.eventType === "MAFIA_FAILED_ELIMINATION",
+      e.eventType === "MAFIA_FAILED_ELIMINATION"
   );
 
   if (existingEvent) {
@@ -84,7 +76,8 @@ async function resolveMafiaVoting(
       result: {
         eliminatedPlayerId: null,
         noElimination: existingEvent.eventType !== "MAFIA_ELIMINATION",
-        protectionBlocked: existingEvent.eventType === "MAFIA_FAILED_ELIMINATION",
+        protectionBlocked:
+          existingEvent.eventType === "MAFIA_FAILED_ELIMINATION",
         intendedEliminatedPlayerId: null,
         wasRandomTieBreak: false,
         tiedPlayerIds: [],
@@ -96,7 +89,7 @@ async function resolveMafiaVoting(
   const votes = await ctx.db
     .query("votes")
     .withIndex("by_gameId_round_phase", (q) =>
-      q.eq("gameId", gameId).eq("round", game.round).eq("phase", "mafia"),
+      q.eq("gameId", gameId).eq("round", game.round).eq("phase", "mafia")
     )
     .collect();
 
@@ -156,7 +149,7 @@ async function resolveMafiaVoting(
     const girlAction = await ctx.db
       .query("actions")
       .withIndex("by_gameId_round_role", (q) =>
-        q.eq("gameId", gameId).eq("round", game.round).eq("role", "girl"),
+        q.eq("gameId", gameId).eq("round", game.round).eq("role", "girl")
       )
       .first();
 
@@ -171,7 +164,6 @@ async function resolveMafiaVoting(
         eventType: "MAFIA_FAILED_ELIMINATION",
         params: {},
       });
-
     } else {
       await ctx.db.patch(intendedEliminatedPlayerId as Id<"players">, {
         isAlive: false,
@@ -214,7 +206,7 @@ export const castMafiaVote = mutation({
     const { game, voter } = await getMafiaVoterOrThrow(
       ctx,
       args.gameId,
-      userId,
+      userId
     );
 
     const target = await ctx.db.get(args.targetPlayerId);
@@ -235,7 +227,7 @@ export const castMafiaVote = mutation({
           .eq("gameId", args.gameId)
           .eq("round", game.round)
           .eq("phase", "mafia")
-          .eq("voterId", voter._id),
+          .eq("voterId", voter._id)
       )
       .first();
 
@@ -275,7 +267,7 @@ export const getMafiaVotes = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
     if (!me) throw new ConvexError("You are not a player in this game.");
@@ -288,12 +280,12 @@ export const getMafiaVotes = query({
       .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
       .collect();
     const userDocs = await Promise.all(
-      allPlayers.map((p) => ctx.db.get(p.userId)),
+      allPlayers.map((p) => ctx.db.get(p.userId))
     );
     const userById = new Map(
       userDocs
         .filter((u): u is NonNullable<typeof u> => u !== null)
-        .map((u) => [u._id, u]),
+        .map((u) => [u._id, u])
     );
 
     const aliveTargets = allPlayers
@@ -308,10 +300,7 @@ export const getMafiaVotes = query({
     const votes = await ctx.db
       .query("votes")
       .withIndex("by_gameId_round_phase", (q) =>
-        q
-          .eq("gameId", args.gameId)
-          .eq("round", game.round)
-          .eq("phase", "mafia"),
+        q.eq("gameId", args.gameId).eq("round", game.round).eq("phase", "mafia")
       )
       .collect();
 
@@ -351,7 +340,7 @@ export const confirmMafiaVoting = mutation({
       {
         gameId: args.gameId,
         reason: "timer_auto_resolve",
-      },
+      }
     );
 
     return resolved;
@@ -373,7 +362,7 @@ export const autoResolveMafiaVoting = internalMutation({
     const resolved = await resolveMafiaVoting(
       ctx,
       args.gameId,
-      args.expectedToken,
+      args.expectedToken
     );
     if (resolved.skipped && resolved.reason === "token_mismatch") {
       return resolved;
@@ -385,7 +374,7 @@ export const autoResolveMafiaVoting = internalMutation({
       {
         gameId: args.gameId,
         reason: "timer_auto_resolve",
-      },
+      }
     );
 
     return resolved;

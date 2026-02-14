@@ -37,7 +37,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
     api.rooms.getRoomState,
     gameState?.game.roomId
       ? { roomId: gameState.game.roomId as Id<"rooms"> }
-      : "skip",
+      : "skip"
   );
   const pt = useTranslations("phases");
   const ct = useTranslations("common");
@@ -89,7 +89,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
               className={cn(
                 "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
                 "hover:bg-white/10 hover:text-white",
-                isChatOpen && "bg-primary/20 border-primary/40 text-primary",
+                isChatOpen && "bg-primary/20 border-primary/40 text-primary"
               )}
             >
               <Icon name="chat" variant="round" size="sm" />
@@ -107,7 +107,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
               aria-label={et("timeline.title")}
               className={cn(
                 "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
-                "hover:bg-white/10 hover:text-white",
+                "hover:bg-white/10 hover:text-white"
               )}
             >
               <Icon name="history" variant="round" size="sm" />
@@ -127,7 +127,9 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
         onUnreadCountChange={setUnreadCount}
       />
 
-      {game.phase !== "finished" ? <RoleLogsPanel gameId={gameId} role={me.role} /> : null}
+      {game.phase !== "finished" ? (
+        <RoleLogsPanel gameId={gameId} role={me.role} />
+      ) : null}
 
       {/* Phase-specific content */}
       {game.phase === "cardDistribution" && <RoleRevealPhase gameId={gameId} />}
@@ -183,7 +185,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
                 | "abilityPhase"
                 | "mafiaVoting"
                 | "resolution"
-                | "endCheck",
+                | "endCheck"
             )}
             ...
           </p>

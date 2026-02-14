@@ -17,7 +17,8 @@ function getSecureRandomInt(maxExclusive: number): number {
     throw new ConvexError("Secure random source unavailable.");
   }
 
-  const threshold = Math.floor(MAX_UINT32_PLUS_ONE / maxExclusive) * maxExclusive;
+  const threshold =
+    Math.floor(MAX_UINT32_PLUS_ONE / maxExclusive) * maxExclusive;
   const buffer = new Uint32Array(1);
 
   while (true) {
@@ -80,7 +81,7 @@ interface RoomSettings {
  */
 function buildRoleList(
   playerCount: number,
-  settings: RoomSettings,
+  settings: RoomSettings
 ): PlayerRole[] {
   let mafiaCount = getMafiaCount(playerCount);
 
@@ -90,7 +91,7 @@ function buildRoleList(
       mafiaCount = settings.mafiaCount;
     } else {
       console.warn(
-        `[cardDistribution] Invalid custom mafiaCount=${settings.mafiaCount} for playerCount=${playerCount}. Falling back to auto=${mafiaCount}.`,
+        `[cardDistribution] Invalid custom mafiaCount=${settings.mafiaCount} for playerCount=${playerCount}. Falling back to auto=${mafiaCount}.`
       );
     }
   }
@@ -196,7 +197,7 @@ export const getMyRole = query({
     const player = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
 
@@ -235,7 +236,7 @@ export const getMafiaTeammates = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId),
+        q.eq("gameId", args.gameId).eq("userId", userId)
       )
       .first();
 
@@ -254,11 +255,11 @@ export const getMafiaTeammates = query({
       .collect();
 
     const teammates = allPlayers.filter(
-      (p) => p.role === "mafia" && p._id !== me._id,
+      (p) => p.role === "mafia" && p._id !== me._id
     );
 
     const userDocs = await Promise.all(
-      teammates.map((p) => ctx.db.get(p.userId)),
+      teammates.map((p) => ctx.db.get(p.userId))
     );
 
     return teammates.map((p, i) => ({

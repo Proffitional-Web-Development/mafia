@@ -26,7 +26,7 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
   const gameState = useQuery(api.stateMachine.getGameState, { gameId });
   const roomState = useQuery(
     api.rooms.getRoomState,
-    gameState ? { roomId: gameState.game.roomId } : "skip",
+    gameState ? { roomId: gameState.game.roomId } : "skip"
   );
   const playAgain = useMutation(api.rooms.playAgain);
 
@@ -41,7 +41,11 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
   const winner = gameState.game.winnerFaction;
   const myRole = gameState.me.role;
   const didWin =
-    winner === "mafia" ? myRole === "mafia" : winner === "citizens" ? myRole !== "mafia" : false;
+    winner === "mafia"
+      ? myRole === "mafia"
+      : winner === "citizens"
+        ? myRole !== "mafia"
+        : false;
   const isOwner = roomState?.ownerId === currentUserId;
 
   async function handlePlayAgain() {
@@ -59,10 +63,16 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
         </div>
         <h2 className="text-2xl font-bold">{t("title")}</h2>
         <p className="text-sm text-zinc-300">
-          {winner ? t("winner", { faction: winner === "mafia" ? t("mafia") : t("citizens") }) : t("unknownWinner")}
+          {winner
+            ? t("winner", {
+                faction: winner === "mafia" ? t("mafia") : t("citizens"),
+              })
+            : t("unknownWinner")}
         </p>
         <div className="flex justify-center">
-          <Badge variant="phase">{winner === "mafia" ? t("mafia") : t("citizens")}</Badge>
+          <Badge variant="phase">
+            {winner === "mafia" ? t("mafia") : t("citizens")}
+          </Badge>
         </div>
       </div>
 
@@ -86,7 +96,14 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
               avatarUrl={player.avatarUrl ?? undefined}
               role={
                 player.role
-                  ? rt(player.role as "citizen" | "mafia" | "sheikh" | "girl" | "boy")
+                  ? rt(
+                      player.role as
+                        | "citizen"
+                        | "mafia"
+                        | "sheikh"
+                        | "girl"
+                        | "boy"
+                    )
                   : t("roleHidden")
               }
               alive={player.isAlive}
@@ -98,14 +115,24 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
       </section>
 
       {gameState.players.some((player) => player.role === undefined) && (
-        <p className="text-xs text-zinc-500 text-center">{t("revealPending")}</p>
+        <p className="text-xs text-zinc-500 text-center">
+          {t("revealPending")}
+        </p>
       )}
 
       <BottomActionBar layout="split">
-        <PrimaryButton onClick={handlePlayAgain} disabled={!isOwner} icon="refresh">
+        <PrimaryButton
+          onClick={handlePlayAgain}
+          disabled={!isOwner}
+          icon="refresh"
+        >
           {t("playAgain")}
         </PrimaryButton>
-        <SecondaryButton variant="outline" onClick={() => router.push("/")} icon="logout">
+        <SecondaryButton
+          variant="outline"
+          onClick={() => router.push("/")}
+          icon="logout"
+        >
           {t("leave")}
         </SecondaryButton>
       </BottomActionBar>

@@ -54,11 +54,7 @@ export function ConfirmDialog({
             fullWidth={false}
             onClick={onConfirm}
             disabled={loading}
-            variant={
-              variant === "destructive"
-                ? "danger"
-                : "primary"
-            }
+            variant={variant === "destructive" ? "danger" : "primary"}
             className="min-h-10 px-4 py-2"
           >
             {loading ? t("loading") : (confirmLabel ?? t("confirm"))}

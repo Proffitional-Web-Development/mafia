@@ -21,7 +21,12 @@ export function GraveyardSheet({
   if (players.length === 0) return null;
 
   return (
-    <section className={cn("rounded-t-2xl border border-white/10 bg-surface/80 p-4", className)}>
+    <section
+      className={cn(
+        "rounded-t-2xl border border-white/10 bg-surface/80 p-4",
+        className
+      )}
+    >
       <div className="mb-3 flex justify-center">
         <span className="h-1.5 w-12 rounded-full bg-white/20" aria-hidden />
       </div>
@@ -40,7 +45,9 @@ export function GraveyardSheet({
               size={28}
               dead
             />
-            <span className="truncate text-xs text-text-secondary">{player.username}</span>
+            <span className="truncate text-xs text-text-secondary">
+              {player.username}
+            </span>
           </div>
         ))}
       </div>

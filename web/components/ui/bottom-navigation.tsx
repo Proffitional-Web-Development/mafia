@@ -24,14 +24,14 @@ export function BottomNavigation({ items, className }: BottomNavigationProps) {
     <nav
       className={cn(
         "fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-surface-darker/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl",
-        className,
+        className
       )}
       aria-label="Bottom navigation"
     >
       <div
         className={cn(
           "mx-auto flex w-full max-w-sm items-center justify-between gap-2 md:max-w-3xl lg:max-w-5xl",
-          direction === "rtl" && "flex-row-reverse",
+          direction === "rtl" && "flex-row-reverse"
         )}
       >
         {items.map((item) => (
@@ -43,7 +43,7 @@ export function BottomNavigation({ items, className }: BottomNavigationProps) {
               "flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold uppercase tracking-wide transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               item.active
                 ? "bg-primary/20 text-primary-light"
-                : "text-text-tertiary hover:text-text-secondary",
+                : "text-text-tertiary hover:text-text-secondary"
             )}
             aria-current={item.active ? "page" : undefined}
           >

@@ -2,7 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -52,8 +52,9 @@ function getHighlightCandidates(params: unknown) {
           .filter((item) => item.length > 0)
       : [];
 
-  return [...player, ...players]
-    .sort((left, right) => right.length - left.length);
+  return [...player, ...players].sort(
+    (left, right) => right.length - left.length
+  );
 }
 
 function renderHighlightedText(text: string, candidates: string[]) {
@@ -76,7 +77,7 @@ function renderHighlightedText(text: string, candidates: string[]) {
 }
 
 function toTranslationValues(
-  params?: Record<string, unknown>,
+  params?: Record<string, unknown>
 ): Record<string, string | number | Date> {
   if (!params) return {};
   const normalized: Record<string, string | number | Date> = {};
@@ -101,24 +102,11 @@ export function GameEventTimeline({
   const t = useTranslations("events");
   const locale = useLocale();
   const events = useQuery(api.gameEvents.getGameEvents, { gameId });
-  const [lastOpenedAt, setLastOpenedAt] = useState(0);
-
-  useEffect(() => {
-    if (open) {
-      setLastOpenedAt(Date.now());
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (open && events) {
-      setLastOpenedAt(Date.now());
-    }
-  }, [events, open]);
 
   const unreadCount = useMemo(() => {
     if (!events || events.length === 0) return 0;
-    return events.filter((event) => event.timestamp > lastOpenedAt).length;
-  }, [events, lastOpenedAt]);
+    return open ? 0 : events.length;
+  }, [events, open]);
 
   useEffect(() => {
     onUnreadCountChange?.(unreadCount);
@@ -144,20 +132,28 @@ export function GameEventTimeline({
 
           const message = t(
             messageKey,
-            toTranslationValues(event.messageParams as Record<string, unknown> | undefined),
+            toTranslationValues(
+              event.messageParams as Record<string, unknown> | undefined
+            )
           );
           const highlighted = renderHighlightedText(
             message,
-            getHighlightCandidates(event.messageParams),
+            getHighlightCandidates(event.messageParams)
           );
 
           return (
-            <li key={String(event._id)} className="flex items-start gap-3 px-3 py-2.5">
+            <li
+              key={String(event._id)}
+              className="flex items-start gap-3 px-3 py-2.5"
+            >
               <span className="shrink-0 rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-[11px] text-white/80">
                 {t("timeline.round", { round: event.round })}
               </span>
               <div className="min-w-0 flex-1 space-y-1">
-                <p className="text-sm leading-relaxed text-text-secondary" dir="auto">
+                <p
+                  className="text-sm leading-relaxed text-text-secondary"
+                  dir="auto"
+                >
                   {highlighted}
                 </p>
                 <p className="text-[11px] text-text-muted">
@@ -177,11 +173,13 @@ export function GameEventTimeline({
       className={cn(
         "overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md transition-all",
         open ? "max-h-64 opacity-100" : "max-h-0 opacity-0",
-        className,
+        className
       )}
     >
       <header className="flex items-center justify-between border-b border-white/10 px-3 py-2">
-        <h3 className="text-sm font-semibold text-white">{t("timeline.title")}</h3>
+        <h3 className="text-sm font-semibold text-white">
+          {t("timeline.title")}
+        </h3>
       </header>
       <div className="max-h-64 overflow-y-auto pb-2">{content}</div>
     </section>

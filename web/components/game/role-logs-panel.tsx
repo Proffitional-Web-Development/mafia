@@ -19,11 +19,11 @@ export function RoleLogsPanel({ gameId, role }: RoleLogsPanelProps) {
 
   const sheikhLogs = useQuery(
     api.abilityPhase.getSheikhInvestigationLog,
-    role === "sheikh" ? { gameId } : "skip",
+    role === "sheikh" ? { gameId } : "skip"
   );
   const girlLogs = useQuery(
     api.abilityPhase.getGirlProtectionLog,
-    role === "girl" ? { gameId } : "skip",
+    role === "girl" ? { gameId } : "skip"
   );
 
   if (role !== "sheikh" && role !== "girl") {
@@ -64,12 +64,15 @@ export function RoleLogsPanel({ gameId, role }: RoleLogsPanelProps) {
                   >
                     <div className="min-w-0">
                       <p className="truncate text-xs text-text-secondary">
-                        {t("logs.round", { round: log.round })} · {log.targetUsername}
+                        {t("logs.round", { round: log.round })} ·{" "}
+                        {log.targetUsername}
                       </p>
                     </div>
                     <Badge
                       variant="investigation-result"
-                      resultTone={log.faction === "mafia" ? "mafia" : "innocent"}
+                      resultTone={
+                        log.faction === "mafia" ? "mafia" : "innocent"
+                      }
                     >
                       {log.faction === "mafia"
                         ? t("result.mafia")
@@ -92,7 +95,8 @@ export function RoleLogsPanel({ gameId, role }: RoleLogsPanelProps) {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-xs text-text-secondary">
-                      {t("logs.round", { round: log.round })} · {log.targetUsername}
+                      {t("logs.round", { round: log.round })} ·{" "}
+                      {log.targetUsername}
                     </p>
                   </div>
 

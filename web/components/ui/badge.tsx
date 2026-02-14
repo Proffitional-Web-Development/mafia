@@ -7,7 +7,8 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        "vote-count": "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5 motion-safe:animate-bounce motion-reduce:animate-none",
+        "vote-count":
+          "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5 motion-safe:animate-bounce motion-reduce:animate-none",
         you: "bg-warning/20 text-warning border border-warning/50 text-[10px] px-2 py-1 uppercase tracking-wider",
         host: "bg-warning/20 text-warning border border-warning/50 text-[10px] px-2 py-1",
         phase:
@@ -18,7 +19,8 @@ const badgeVariants = cva(
           "bg-white/10 text-text-secondary border border-white/15 text-[10px] px-2 py-1",
         "investigation-result":
           "bg-white/10 text-text-secondary border border-white/15 text-[10px] px-2 py-1",
-        notification: "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5 motion-safe:animate-pulse motion-reduce:animate-none",
+        notification:
+          "min-h-5 min-w-5 bg-danger text-white text-[10px] px-1.5 motion-safe:animate-pulse motion-reduce:animate-none",
       },
       size: {
         sm: "text-[10px]",
@@ -35,11 +37,12 @@ const badgeVariants = cva(
       variant: "status",
       size: "sm",
     },
-  },
+  }
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
+  extends
+    React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {
   resultTone?: "mafia" | "innocent";
 }
@@ -55,9 +58,13 @@ export function Badge({
     <span
       className={cn(
         badgeVariants({ variant, size }),
-        variant === "investigation-result" && resultTone === "mafia" && "bg-danger/20 text-danger border-danger/40",
-        variant === "investigation-result" && resultTone === "innocent" && "bg-success/20 text-success border-success/40",
-        className,
+        variant === "investigation-result" &&
+          resultTone === "mafia" &&
+          "bg-danger/20 text-danger border-danger/40",
+        variant === "investigation-result" &&
+          resultTone === "innocent" &&
+          "bg-success/20 text-success border-success/40",
+        className
       )}
       {...props}
     />

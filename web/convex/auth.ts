@@ -15,7 +15,9 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           throw new Error("Username must be between 3 and 24 characters.");
         }
         if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
-          throw new Error("Username can only include letters, numbers, and underscores.");
+          throw new Error(
+            "Username can only include letters, numbers, and underscores."
+          );
         }
 
         const name = typeof params.name === "string" ? params.name.trim() : "";

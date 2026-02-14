@@ -17,7 +17,7 @@
  */
 
 import { ConvexError } from "convex/values";
-import type { GenericMutationCtx, GenericDataModel } from "convex/server";
+import type { MutationCtx } from "../_generated/server";
 
 interface RateLimitOpts {
   /** Unique key, e.g. `userId:action` */
@@ -33,21 +33,18 @@ interface RateLimitOpts {
  * Uses the `rateLimits` table to track request counts per key/window.
  * Throws ConvexError("RATE_LIMITED") if the limit is exceeded.
  */
-export async function rateLimit(
-  ctx: GenericMutationCtx<GenericDataModel>,
-  opts: RateLimitOpts,
-) {
+export async function rateLimit(ctx: MutationCtx, opts: RateLimitOpts) {
   const now = Date.now();
   const { key, limit, windowMs } = opts;
 
-  const existing = await (ctx.db as any)
+  const existing = await ctx.db
     .query("rateLimits")
-    .withIndex("by_key", (q: any) => q.eq("key", key))
+    .withIndex("by_key", (q) => q.eq("key", key))
     .unique();
 
   if (!existing) {
     // First request — create entry
-    await (ctx.db as any).insert("rateLimits", {
+    await ctx.db.insert("rateLimits", {
       key,
       count: 1,
       windowStart: now,
@@ -57,7 +54,7 @@ export async function rateLimit(
 
   // If the window has expired, reset
   if (now - existing.windowStart > windowMs) {
-    await (ctx.db as any).patch(existing._id, {
+    await ctx.db.patch(existing._id, {
       count: 1,
       windowStart: now,
     });
@@ -70,7 +67,7 @@ export async function rateLimit(
   }
 
   // Increment counter
-  await (ctx.db as any).patch(existing._id, {
+  await ctx.db.patch(existing._id, {
     count: existing.count + 1,
   });
 }

@@ -69,11 +69,11 @@ export default defineSchema({
   rooms: defineTable({
     code: v.string(),
     ownerId: v.id("users"),
-    visibility: v.optional(
-      v.union(v.literal("public"), v.literal("private")),
-    ),
+    visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
     password: v.optional(v.string()),
-    memeLevel: v.optional(v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS"))),
+    memeLevel: v.optional(
+      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS"))
+    ),
     settings: v.object({
       discussionDuration: v.number(),
       maxPlayers: v.number(),
@@ -197,22 +197,26 @@ export default defineSchema({
 
   gameEvents: defineTable({
     gameId: v.id("games"),
-    eventType: v.optional(v.union(
-      v.literal("VOTE_ELIMINATION"),
-      v.literal("MAFIA_ELIMINATION"),
-      v.literal("MAFIA_FAILED_ELIMINATION"),
-      v.literal("SHEIKH_INVESTIGATION_CITIZEN"),
-      v.literal("SHEIKH_INVESTIGATION_MAFIA"),
-      v.literal("ROUND_END"),
-      v.literal("VOTE_TIE"),
-      v.literal("MAFIA_VOTE_TIE_RANDOM")
-    )),
+    eventType: v.optional(
+      v.union(
+        v.literal("VOTE_ELIMINATION"),
+        v.literal("MAFIA_ELIMINATION"),
+        v.literal("MAFIA_FAILED_ELIMINATION"),
+        v.literal("SHEIKH_INVESTIGATION_CITIZEN"),
+        v.literal("SHEIKH_INVESTIGATION_MAFIA"),
+        v.literal("ROUND_END"),
+        v.literal("VOTE_TIE"),
+        v.literal("MAFIA_VOTE_TIE_RANDOM")
+      )
+    ),
     resolvedMessage: v.optional(v.string()),
     messageKey: v.optional(v.string()),
     messageParams: v.optional(v.any()),
     round: v.number(),
     timestamp: v.number(),
-    memeLevel: v.optional(v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS"))),
+    memeLevel: v.optional(
+      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS"))
+    ),
     type: v.optional(v.string()),
     payload: v.optional(v.string()),
   })

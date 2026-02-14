@@ -13,8 +13,7 @@ const inputVariants = cva(
       variant: {
         default:
           "h-12 border-white/10 focus:border-primary focus:ring-1 focus:ring-primary",
-        code:
-          "h-12 border-white/10 text-center font-mono text-lg tracking-[0.5em] uppercase focus:border-primary focus:ring-1 focus:ring-primary",
+        code: "h-12 border-white/10 text-center font-mono text-lg tracking-[0.5em] uppercase focus:border-primary focus:ring-1 focus:ring-primary",
       },
       state: {
         default: "",
@@ -26,11 +25,12 @@ const inputVariants = cva(
       variant: "default",
       state: "default",
     },
-  },
+  }
 );
 
 export interface TextInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix">,
+  extends
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix">,
     VariantProps<typeof inputVariants> {
   label?: string;
   icon?: string;
@@ -58,7 +58,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
       onChange,
       ...props
     },
-    ref,
+    ref
   ) => {
     const generatedId = useId();
     const inputId = id ?? generatedId;
@@ -102,7 +102,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
               inputVariants({ variant, state: resolvedState }),
               icon && "ps-10",
               trailingIcon && "pe-10",
-              className,
+              className
             )}
             {...props}
           />
@@ -121,12 +121,14 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
             {hasError ? errorText : helperText}
           </span>
           {showCounter && maxLength ? (
-            <span className="text-text-muted tabular-nums">{currentLength}/{maxLength}</span>
+            <span className="text-text-muted tabular-nums">
+              {currentLength}/{maxLength}
+            </span>
           ) : null}
         </div>
       </div>
     );
-  },
+  }
 );
 
 TextInput.displayName = "TextInput";

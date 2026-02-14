@@ -20,7 +20,7 @@ export function BottomActionBar({
       <div
         className={cn(
           "border-t border-white/10 bg-background/95 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl",
-          className,
+          className
         )}
       >
         <div
@@ -28,7 +28,7 @@ export function BottomActionBar({
             "mx-auto w-full max-w-sm md:max-w-3xl lg:max-w-5xl",
             layout === "single" && "flex items-center",
             layout === "split" && "grid grid-cols-2 gap-3",
-            layout === "stacked" && "flex flex-col gap-3",
+            layout === "stacked" && "flex flex-col gap-3"
           )}
         >
           {children}
