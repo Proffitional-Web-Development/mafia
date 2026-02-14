@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ChatPanel } from "@/components/game/chat-panel";
 import { GameEventTimeline } from "@/components/game/game-event-timeline";
 import {
   AbilityPhase,
@@ -22,6 +23,7 @@ import { Icon } from "@/components/ui/icon";
 import { LoadingState } from "@/components/ui/loading-state";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { useChatUnread } from "@/hooks/use-chat-unread";
 import { cn } from "@/lib/utils";
 
 interface GameRouterProps {
@@ -40,8 +42,11 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
   const pt = useTranslations("phases");
   const ct = useTranslations("common");
   const et = useTranslations("events");
+  const cht = useTranslations("chat");
   const [isLogOpen, setIsLogOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const chatUnread = useChatUnread(gameId, isChatOpen);
 
   if (!gameState) {
     return (
@@ -57,6 +62,12 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
     setIsLogOpen((prev) => !prev);
   }
 
+  function toggleChat() {
+    setIsChatOpen((prev) => !prev);
+  }
+
+  const isOwner = roomState?.ownerId === currentUserId;
+
   const deadPlayers = gameState.players.filter((player) => !player.isAlive);
 
   return (
@@ -69,22 +80,44 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
         role={me.role}
         memeLevel={roomState?.memeLevel}
         actions={
-          <button
-            type="button"
-            onClick={toggleGameLog}
-            aria-label={et("timeline.title")}
-            className={cn(
-              "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
-              "hover:bg-white/10 hover:text-white",
-            )}
-          >
-            <Icon name="history" variant="round" size="sm" />
-            {unreadCount > 0 ? (
-              <span className="absolute -end-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold leading-4 text-white">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            ) : null}
-          </button>
+          <div className="flex items-center gap-1.5">
+            {/* Chat toggle */}
+            <button
+              type="button"
+              onClick={toggleChat}
+              aria-label={cht("title")}
+              className={cn(
+                "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
+                "hover:bg-white/10 hover:text-white",
+                isChatOpen && "bg-primary/20 border-primary/40 text-primary",
+              )}
+            >
+              <Icon name="chat" variant="round" size="sm" />
+              {chatUnread > 0 && !isChatOpen ? (
+                <span className="absolute -end-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold leading-4 text-white">
+                  {chatUnread > 99 ? "99+" : chatUnread}
+                </span>
+              ) : null}
+            </button>
+
+            {/* Game log toggle */}
+            <button
+              type="button"
+              onClick={toggleGameLog}
+              aria-label={et("timeline.title")}
+              className={cn(
+                "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
+                "hover:bg-white/10 hover:text-white",
+              )}
+            >
+              <Icon name="history" variant="round" size="sm" />
+              {unreadCount > 0 ? (
+                <span className="absolute -end-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold leading-4 text-white">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              ) : null}
+            </button>
+          </div>
         }
       />
 
@@ -168,6 +201,18 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
             username: player.username,
             avatarUrl: player.avatarUrl ?? undefined,
           }))}
+        />
+      )}
+
+      {/* Chat panel (slide-over) */}
+      {isChatOpen && gameState.game.roomId && (
+        <ChatPanel
+          gameId={gameId}
+          roomId={gameState.game.roomId as Id<"rooms">}
+          currentUserId={currentUserId}
+          isOwner={isOwner}
+          open={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
         />
       )}
     </main>

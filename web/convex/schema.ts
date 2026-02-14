@@ -83,6 +83,7 @@ export default defineSchema({
         girl: v.boolean(),
         boy: v.boolean(),
       }),
+      chatEnabled: v.optional(v.boolean()),
     }),
     status: v.union(
       v.literal("waiting"),
@@ -132,6 +133,7 @@ export default defineSchema({
     winnerFaction: v.optional(
       v.union(v.literal("mafia"), v.literal("citizens"))
     ),
+    chatMuted: v.optional(v.boolean()),
   })
     .index("by_roomId", ["roomId"])
     .index("by_phase", ["phase"]),
@@ -150,6 +152,7 @@ export default defineSchema({
     isConnected: v.boolean(),
     eliminatedAtRound: v.optional(v.number()),
     joinedAt: v.number(),
+    emojiReaction: v.optional(v.string()),
   })
     .index("by_gameId", ["gameId"])
     .index("by_userId", ["userId"])
@@ -213,5 +216,19 @@ export default defineSchema({
   })
     .index("by_gameId", ["gameId"])
     .index("by_gameId_round", ["gameId", "round"])
+    .index("by_gameId_timestamp", ["gameId", "timestamp"]),
+
+  chatMessages: defineTable({
+    gameId: v.id("games"),
+    channel: v.union(v.literal("public"), v.literal("mafia")),
+    senderId: v.id("users"),
+    senderUsername: v.string(),
+    content: v.string(),
+    isTemplate: v.optional(v.boolean()),
+    templateKey: v.optional(v.string()),
+    templateParams: v.optional(v.any()),
+    timestamp: v.number(),
+  })
+    .index("by_gameId_channel", ["gameId", "channel"])
     .index("by_gameId_timestamp", ["gameId", "timestamp"]),
 });

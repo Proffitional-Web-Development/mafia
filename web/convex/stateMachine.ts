@@ -370,6 +370,16 @@ async function transitionCore(
     tiedCandidates: nextPhase === "publicVoting" ? undefined : game.tiedCandidates,
   });
 
+  // Clear emoji reactions when entering publicVoting phase
+  if (nextPhase === "publicVoting") {
+    const players = await getPlayersByGame(ctx, game._id);
+    await Promise.all(
+      players
+        .filter((p) => p.emojiReaction !== undefined)
+        .map((p) => ctx.db.patch(p._id, { emojiReaction: undefined })),
+    );
+  }
+
   if (nextRound > game.round) {
     await logGameEvent(ctx, {
       gameId: game._id,
@@ -601,6 +611,7 @@ export const getGameState = query({
         isConnected: player.isConnected,
         eliminatedAtRound: player.eliminatedAtRound,
         role: roleVisibleToRequester ? player.role : undefined,
+        emojiReaction: player.emojiReaction,
       };
     });
 

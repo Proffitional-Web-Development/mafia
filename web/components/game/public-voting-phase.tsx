@@ -7,6 +7,8 @@ import { AvatarCircle } from "@/components/ui/avatar-circle";
 import { Badge } from "@/components/ui/badge";
 import { PlayerCard } from "@/components/ui/player-card";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
+import { EmojiReactionBadge } from "@/components/game/emoji-reaction-badge";
+import { EmojiReactionPicker } from "@/components/game/emoji-reaction-picker";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
@@ -177,18 +179,23 @@ export function PublicVotingPhase({
               showVoteCount={voteCount > 0}
               voteCount={voteCount}
               trailing={
-                votersForPlayer.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-1 mt-2 w-full">
-                    {votersForPlayer.map((voter) => (
-                      <span
-                        key={voter.id}
-                        className="text-[9px] bg-white/10 text-white/70 rounded px-1.5 py-0.5"
-                      >
-                        {voter.name}
-                      </span>
-                    ))}
-                  </div>
-                )
+                <>
+                  {player.emojiReaction && (
+                    <EmojiReactionBadge emoji={player.emojiReaction} />
+                  )}
+                  {votersForPlayer.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-1 mt-2 w-full">
+                      {votersForPlayer.map((voter) => (
+                        <span
+                          key={voter.id}
+                          className="text-[9px] bg-white/10 text-white/70 rounded px-1.5 py-0.5"
+                        >
+                          {voter.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </>
               }
             />
           );
@@ -275,6 +282,19 @@ export function PublicVotingPhase({
       {/* Error */}
       {error && (
         <StatusBanner message={error} variant="error" className="text-center" />
+      )}
+
+      {/* Emoji reaction picker for alive players */}
+      {isAlive && (
+        <div className="flex justify-center">
+          <EmojiReactionPicker
+            gameId={gameId}
+            currentEmoji={
+              gameState.players.find((p) => p.playerId === me.playerId)
+                ?.emojiReaction ?? undefined
+            }
+          />
+        </div>
       )}
     </div>
   );

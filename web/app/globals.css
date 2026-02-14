@@ -179,6 +179,39 @@ html[lang="ar"] body {
   animation: timer-pulse-ring 2s ease-in-out infinite;
 }
 
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+html[dir="rtl"] .motion-safe\:animate-\[slide-in_200ms_ease-out\] {
+  animation-name: slide-in-rtl;
+}
+
+@keyframes slide-in-rtl {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .bg-scanlines {
   background-image: linear-gradient(
     to bottom,

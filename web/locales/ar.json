@@ -453,5 +453,38 @@
     "discardPrompt": "لديك تغييرات غير محفوظة. تجاهل؟",
     "discard": "تجاهل",
     "stay": "بقاء"
+  },
+  "reactions": {
+    "pickEmoji": "تفاعل",
+    "clear": "مسح"
+  },
+  "chat": {
+    "title": "الدردشة",
+    "send": "إرسال",
+    "placeholder": "...اكتب رسالة",
+    "disabled": "الدردشة معطلة من قبل مالك الغرفة",
+    "muted": "الدردشة مكتومة",
+    "eliminated": "تم إقصاؤك — مشاهدة فقط",
+    "rateLimited": "تمهّل! حاول مرة أخرى بعد لحظة",
+    "empty": "لا رسائل بعد",
+    "unread": "{count} جديد",
+    "enableChat": "تفعيل الدردشة",
+    "muteAll": "كتم الجميع",
+    "channel": {
+      "public": "الدردشة العامة",
+      "mafia": "دردشة المافيا"
+    },
+    "template": {
+      "suspect": "أشك في {player}",
+      "voteFor": "صوّتوا ضد {player}",
+      "trustMe": "ثقوا بي، أنا بريء",
+      "waitNextRound": "لننتظر الجولة القادمة",
+      "followMyLead": "اتبعوا خطتي",
+      "sayNothing": "اصمتوا، لا تكشفوا شيئاً",
+      "mafiaTarget": "استهدفوا {player} الليلة",
+      "mafiaAvoid": "لا تستهدفوا {player}",
+      "mafiaBlend": "تصرفوا بشكل طبيعي",
+      "mafiaAgree": "موافق"
+    }
   }
 }

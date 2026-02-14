@@ -455,5 +455,38 @@
     "discardPrompt": "You have unsaved changes. Discard?",
     "discard": "Discard",
     "stay": "Stay"
+  },
+  "reactions": {
+    "pickEmoji": "React",
+    "clear": "Clear"
+  },
+  "chat": {
+    "title": "Chat",
+    "send": "Send",
+    "placeholder": "Type a message...",
+    "disabled": "Chat is disabled by the room owner",
+    "muted": "Chat is muted",
+    "eliminated": "You are eliminated — spectating",
+    "rateLimited": "Slow down! Try again in a moment",
+    "empty": "No messages yet",
+    "unread": "{count} new",
+    "enableChat": "Enable Chat",
+    "muteAll": "Mute All",
+    "channel": {
+      "public": "Public Chat",
+      "mafia": "Mafia Chat"
+    },
+    "template": {
+      "suspect": "I suspect {player}",
+      "voteFor": "Vote for {player}",
+      "trustMe": "Trust me, I'm innocent",
+      "waitNextRound": "Let's wait for the next round",
+      "followMyLead": "Follow my lead",
+      "sayNothing": "Stay quiet, don't reveal anything",
+      "mafiaTarget": "Target {player} tonight",
+      "mafiaAvoid": "Don't target {player}",
+      "mafiaBlend": "Act normal, blend in",
+      "mafiaAgree": "Agreed"
+    }
   }
 }
