@@ -2,6 +2,7 @@ import { ConvexError, v } from "convex/values";
 
 import type { Id } from "./_generated/dataModel";
 import { internalMutation, query, type QueryCtx } from "./_generated/server";
+import { getAutoMafiaCount, validateMafiaCount } from "./lib/gameRules";
 import { requireAuthUserId } from "./lib/auth";
 import type { PlayerRole } from "./schema";
 
@@ -37,10 +38,7 @@ function getSecureRandomInt(maxExclusive: number): number {
  * Rough rule: ~1/3 mafia (min 1, max 4).
  */
 function getMafiaCount(playerCount: number): number {
-  if (playerCount <= 5) return 1;
-  if (playerCount <= 8) return 2;
-  if (playerCount <= 12) return 3;
-  return 4;
+  return getAutoMafiaCount(playerCount);
 }
 
 /**
@@ -68,6 +66,7 @@ async function hasCardsDistributedEvent(ctx: QueryCtx, gameId: Id<"games">) {
 }
 
 interface RoomSettings {
+  mafiaCount?: number;
   enabledRoles: {
     sheikh: boolean;
     girl: boolean;
@@ -83,7 +82,19 @@ function buildRoleList(
   playerCount: number,
   settings: RoomSettings,
 ): PlayerRole[] {
-  const mafiaCount = getMafiaCount(playerCount);
+  let mafiaCount = getMafiaCount(playerCount);
+
+  if (settings.mafiaCount !== undefined) {
+    const validation = validateMafiaCount(settings.mafiaCount, playerCount);
+    if (validation.valid) {
+      mafiaCount = settings.mafiaCount;
+    } else {
+      console.warn(
+        `[cardDistribution] Invalid custom mafiaCount=${settings.mafiaCount} for playerCount=${playerCount}. Falling back to auto=${mafiaCount}.`,
+      );
+    }
+  }
+
   const roles: PlayerRole[] = [];
 
   // 1. Assign mafia slots

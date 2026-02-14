@@ -97,6 +97,16 @@
     "kickConfirm": "إزالة {username} من الغرفة؟",
     "ownerBadge": "المالك",
     "readOnlySettings": "فقط مالك الغرفة يمكنه تغيير الإعدادات",
+    "settings": {
+      "mafiaCount": "عدد المافيا",
+      "mafiaCountAuto": "تلقائي ({count})",
+      "mafiaCountCustom": "مخصص",
+      "mafiaCountHelper": "يجب أن يكون عدد المافيا أقل من المواطنين",
+      "mafiaCountInvalid": "غير صالح: عدد المافيا كبير جداً مقارنة باللاعبين الحاليين",
+      "mafiaCountReset": "تم إعادة تعيين عدد المافيا تلقائياً بسبب تغيّر اللاعبين",
+      "mafiaDisplayAuto": "المافيا: تلقائي ({count})",
+      "mafiaDisplayCustom": "المافيا: {count} (مخصص)"
+    },
     "memeLevel": {
       "title": "مستوى المزاح",
       "normal": "عادي",

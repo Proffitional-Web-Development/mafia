@@ -18,6 +18,17 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
 import { mapAppErrorKey } from "@/lib/error-message";
 
+function getAutoMafiaCount(playerCount: number): number {
+  if (playerCount <= 5) return 1;
+  if (playerCount <= 8) return 2;
+  if (playerCount <= 12) return 3;
+  return 4;
+}
+
+function getMaxAllowedMafia(playerCount: number): number {
+  return Math.max(1, Math.ceil(playerCount / 2) - 1);
+}
+
 export default function GamePage() {
   const t = useTranslations("room");
   const gt = useTranslations("game");
@@ -36,6 +47,7 @@ export default function GamePage() {
   );
   const [createPassword, setCreatePassword] = useState("");
   const [memeLevel, setMemeLevel] = useState<"NORMAL" | "FUN" | "CHAOS">("FUN");
+  const [createMafiaCount, setCreateMafiaCount] = useState<number | null>(null);
   const [roomSearch, setRoomSearch] = useState("");
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
@@ -58,6 +70,7 @@ export default function GamePage() {
     setCreating(true);
     setError(null);
     try {
+      const settings = createMafiaCount === null ? undefined : { mafiaCount: createMafiaCount };
       const result = await createRoom({
         visibility: roomVisibility,
         password:
@@ -65,6 +78,7 @@ export default function GamePage() {
             ? createPassword.trim()
             : undefined,
         memeLevel,
+        settings,
       });
       router.push(`/game/room/${result.roomId}`);
     } catch (e) {
@@ -126,6 +140,10 @@ export default function GamePage() {
       room.ownerUsername.toLowerCase().includes(query)
     );
   });
+
+  const creationPlayerCount = 12;
+  const creationMaxAllowedMafia = getMaxAllowedMafia(creationPlayerCount);
+  const creationAutoMafia = getAutoMafiaCount(creationPlayerCount);
 
   return (
     <main className="relative mx-auto min-h-[100dvh] w-full max-w-sm overflow-hidden px-6 pb-28 pt-6 md:max-w-3xl md:px-8 lg:max-w-5xl lg:px-10">
@@ -230,6 +248,33 @@ export default function GamePage() {
                   );
                 })}
               </div>
+            </div>
+
+            <div className="mb-4 space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                {t("settings.mafiaCount")}
+              </p>
+              <select
+                value={createMafiaCount === null ? "auto" : String(createMafiaCount)}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  setCreateMafiaCount(value === "auto" ? null : Number(value));
+                }}
+                className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-primary/50"
+                aria-label={t("settings.mafiaCount")}
+              >
+                <option value="auto" className="bg-surface text-white">
+                  {t("settings.mafiaCountAuto", { count: creationAutoMafia })}
+                </option>
+                {Array.from({ length: creationMaxAllowedMafia }, (_, index) => index + 1).map(
+                  (count) => (
+                    <option key={count} value={count} className="bg-surface text-white">
+                      {count} ({t("settings.mafiaCountCustom")})
+                    </option>
+                  ),
+                )}
+              </select>
+              <p className="text-[11px] text-text-tertiary">{t("settings.mafiaCountHelper")}</p>
             </div>
 
             <PrimaryButton

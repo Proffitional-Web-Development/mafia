@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { GameRouter } from "@/components/game/game-router";
 import { SettingsPanel } from "@/components/game/settings-panel";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -88,11 +88,15 @@ function LobbyView({
   const kickPlayer = useMutation(api.rooms.kickPlayer);
   const leaveRoom = useMutation(api.rooms.leaveRoom);
   const startGame = useMutation(api.rooms.startGame);
+  const mafiaInfo = useQuery(api.rooms.getMaxAllowedMafiaInfo, { roomId });
 
   const [starting, setStarting] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [memeUpdating, setMemeUpdating] = useState(false);
+  const [mafiaUpdating, setMafiaUpdating] = useState(false);
+  const [autoResettingMafia, setAutoResettingMafia] = useState(false);
   const [copied, setCopied] = useState(false);
   const [kickTarget, setKickTarget] = useState<{
     userId: Id<"users">;
@@ -101,7 +105,55 @@ function LobbyView({
 
   const isOwner = roomState.ownerId === currentUserId;
   const memberCount = roomState.members.length;
-  const canStart = memberCount >= 3;
+  const canStart = memberCount >= 4;
+
+  useEffect(() => {
+    if (
+      !isOwner ||
+      !mafiaInfo ||
+      mafiaInfo.customMafiaCount === undefined ||
+      mafiaInfo.customValid ||
+      autoResettingMafia
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+    setAutoResettingMafia(true);
+
+    void (async () => {
+      try {
+        await updateSettings({
+          roomId,
+          settings: { mafiaCount: null },
+        });
+        if (!cancelled) {
+          setInfoMessage(t("settings.mafiaCountReset"));
+          setError(null);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setError(et(mapAppErrorKey(e)));
+        }
+      } finally {
+        if (!cancelled) {
+          setAutoResettingMafia(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    autoResettingMafia,
+    et,
+    isOwner,
+    mafiaInfo,
+    roomId,
+    t,
+    updateSettings,
+  ]);
 
   async function handleStart() {
     setStarting(true);
@@ -159,16 +211,20 @@ function LobbyView({
     value: number | boolean | Record<string, boolean>,
   ) {
     try {
+      setInfoMessage(null);
       if (field === "discussionDuration") {
         await updateSettings({
           roomId,
           settings: { discussionDuration: value as number },
         });
       } else if (field === "maxPlayers") {
-        await updateSettings({
+        const result = await updateSettings({
           roomId,
           settings: { maxPlayers: value as number },
         });
+        if (result.mafiaCountReset) {
+          setInfoMessage(t("settings.mafiaCountReset"));
+        }
       } else if (field === "enabledRoles") {
         await updateSettings({
           roomId,
@@ -181,8 +237,33 @@ function LobbyView({
           },
         });
       }
+      setError(null);
     } catch (e) {
       setError(et(mapAppErrorKey(e)));
+    }
+  }
+
+  async function handleMafiaCountChange(value: string) {
+    if (!isOwner || mafiaUpdating) return;
+
+    const mafiaCount = value === "auto" ? null : Number(value);
+
+    setMafiaUpdating(true);
+    setInfoMessage(null);
+
+    try {
+      const result = await updateSettings({
+        roomId,
+        settings: { mafiaCount },
+      });
+      if (result.mafiaCountReset) {
+        setInfoMessage(t("settings.mafiaCountReset"));
+      }
+      setError(null);
+    } catch (e) {
+      setError(et(mapAppErrorKey(e)));
+    } finally {
+      setMafiaUpdating(false);
     }
   }
 
@@ -304,7 +385,7 @@ function LobbyView({
 
             {!canStart && (
               <p className="text-center text-xs text-text-muted">
-                {t("minPlayersRequired", { count: 3 })}
+                {t("minPlayersRequired", { count: 4 })}
               </p>
             )}
           </section>
@@ -328,6 +409,67 @@ function LobbyView({
                 handleSettingChange("maxPlayers", value)
               }
             />
+
+            <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
+              <p className="mb-2 text-sm font-medium text-white">
+                {t("settings.mafiaCount")}
+              </p>
+              <p className="mb-2 text-xs text-text-tertiary">
+                {mafiaInfo?.customMafiaCount !== undefined
+                  ? t("settings.mafiaDisplayCustom", {
+                      count: mafiaInfo.customMafiaCount,
+                    })
+                  : t("settings.mafiaDisplayAuto", {
+                      count: mafiaInfo?.autoMafiaCount ?? 1,
+                    })}
+              </p>
+
+              {isOwner ? (
+                <div className="space-y-2">
+                  <select
+                    value={
+                      roomState.settings.mafiaCount === undefined
+                        ? "auto"
+                        : String(roomState.settings.mafiaCount)
+                    }
+                    onChange={(event) => void handleMafiaCountChange(event.target.value)}
+                    disabled={
+                      mafiaUpdating ||
+                      autoResettingMafia ||
+                      !mafiaInfo ||
+                      mafiaInfo.currentPlayerCount < 4
+                    }
+                    className="w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white outline-none transition-colors focus:border-primary/50 disabled:cursor-not-allowed disabled:opacity-60"
+                    aria-label={t("settings.mafiaCount")}
+                  >
+                    <option value="auto" className="bg-surface text-white">
+                      {t("settings.mafiaCountAuto", {
+                        count: mafiaInfo?.autoMafiaCount ?? 1,
+                      })}
+                    </option>
+                    {Array.from(
+                      { length: mafiaInfo?.maxAllowed ?? 1 },
+                      (_, index) => index + 1,
+                    ).map((count) => (
+                      <option key={count} value={count} className="bg-surface text-white">
+                        {count} ({t("settings.mafiaCountCustom")})
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-text-tertiary">
+                    {t("settings.mafiaCountHelper")}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-[11px] text-text-tertiary">
+                  {t("readOnlySettings")}
+                </p>
+              )}
+
+              {mafiaInfo?.customMafiaCount !== undefined && !mafiaInfo.customValid ? (
+                <p className="mt-2 text-xs text-danger">{t("settings.mafiaCountInvalid")}</p>
+              ) : null}
+            </section>
 
             <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
               <p className="mb-2 text-sm font-medium text-white">
@@ -406,6 +548,13 @@ function LobbyView({
           <StatusBanner
             message={error}
             variant="error"
+            className="text-center"
+          />
+        )}
+        {infoMessage && (
+          <StatusBanner
+            message={infoMessage}
+            variant="info"
             className="text-center"
           />
         )}

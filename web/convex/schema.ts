@@ -77,6 +77,7 @@ export default defineSchema({
     settings: v.object({
       discussionDuration: v.number(),
       maxPlayers: v.number(),
+      mafiaCount: v.optional(v.number()),
       enabledRoles: v.object({
         sheikh: v.boolean(),
         girl: v.boolean(),

@@ -99,6 +99,16 @@
     "kickConfirm": "Remove {username} from the room?",
     "ownerBadge": "Owner",
     "readOnlySettings": "Only the room owner can change settings",
+    "settings": {
+      "mafiaCount": "Number of Mafia",
+      "mafiaCountAuto": "Auto ({count})",
+      "mafiaCountCustom": "Custom",
+      "mafiaCountHelper": "Mafia must be fewer than citizens",
+      "mafiaCountInvalid": "Invalid: too many mafia for current players",
+      "mafiaCountReset": "Mafia count reset to auto due to player changes",
+      "mafiaDisplayAuto": "Mafia: Auto ({count})",
+      "mafiaDisplayCustom": "Mafia: {count} (custom)"
+    },
     "memeLevel": {
       "title": "Meme Level",
       "normal": "Normal",

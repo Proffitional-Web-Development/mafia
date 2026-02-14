@@ -9,6 +9,11 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
+import {
+  getAutoMafiaCount,
+  getMaxAllowedMafia,
+  validateMafiaCount,
+} from "./lib/gameRules";
 import { requireAuthUserId } from "./lib/auth";
 
 // ---------------------------------------------------------------------------
@@ -28,7 +33,7 @@ function generateRoomCode(): string {
   return chars.join("");
 }
 
-const MIN_PLAYERS = 3;
+const MIN_PLAYERS = 4;
 const DEFAULT_MAX_PLAYERS = 12;
 const ABSOLUTE_MAX_PLAYERS = 20;
 const DEFAULT_DISCUSSION_DURATION = 120; // seconds
@@ -88,6 +93,11 @@ export const createRoom = mutation({
     memeLevel: v.optional(
       v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS")),
     ),
+    settings: v.optional(
+      v.object({
+        mafiaCount: v.optional(v.number()),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
@@ -111,6 +121,17 @@ export const createRoom = mutation({
 
     const visibility = args.visibility ?? "private";
     const password = args.password?.trim();
+    const preliminaryMafiaCount = args.settings?.mafiaCount;
+
+    if (preliminaryMafiaCount !== undefined) {
+      const validation = validateMafiaCount(
+        preliminaryMafiaCount,
+        DEFAULT_MAX_PLAYERS,
+      );
+      if (!validation.valid) {
+        throw new ConvexError(validation.error ?? "Invalid mafia count.");
+      }
+    }
 
     const roomId = await ctx.db.insert("rooms", {
       code,
@@ -121,6 +142,7 @@ export const createRoom = mutation({
       settings: {
         discussionDuration: DEFAULT_DISCUSSION_DURATION,
         maxPlayers: DEFAULT_MAX_PLAYERS,
+        mafiaCount: preliminaryMafiaCount,
         enabledRoles: { sheikh: true, girl: true, boy: true },
       },
       status: "waiting",
@@ -225,6 +247,7 @@ export const updateRoomSettings = mutation({
     settings: v.object({
       discussionDuration: v.optional(v.number()),
       maxPlayers: v.optional(v.number()),
+      mafiaCount: v.optional(v.union(v.number(), v.null())),
       enabledRoles: v.optional(
         v.object({
           sheikh: v.boolean(),
@@ -243,10 +266,16 @@ export const updateRoomSettings = mutation({
     }
 
     const current = room.settings;
+    const requestedMafiaCount =
+      args.settings.mafiaCount === null
+        ? undefined
+        : args.settings.mafiaCount ?? current.mafiaCount;
+
     const next = {
       discussionDuration:
         args.settings.discussionDuration ?? current.discussionDuration,
       maxPlayers: args.settings.maxPlayers ?? current.maxPlayers,
+      mafiaCount: requestedMafiaCount,
       enabledRoles: args.settings.enabledRoles ?? current.enabledRoles,
     };
 
@@ -265,12 +294,30 @@ export const updateRoomSettings = mutation({
       );
     }
 
+    let mafiaCountReset = false;
+
+    if (next.mafiaCount !== undefined) {
+      const validation = validateMafiaCount(next.mafiaCount, next.maxPlayers);
+      if (!validation.valid) {
+        if (args.settings.maxPlayers !== undefined && args.settings.mafiaCount === undefined) {
+          next.mafiaCount = undefined;
+          mafiaCountReset = true;
+        } else {
+          throw new ConvexError(validation.error ?? "Invalid mafia count.");
+        }
+      }
+    }
+
     await ctx.db.patch(args.roomId, {
       settings: next,
       lastActivityAt: Date.now(),
     });
 
-    return { success: true };
+    return {
+      success: true,
+      mafiaCountReset,
+      maxAllowedMafia: getMaxAllowedMafia(next.maxPlayers),
+    };
   },
 });
 
@@ -365,6 +412,21 @@ export const startGame = mutation({
       );
     }
 
+    let mafiaCountReset = false;
+    if (room.settings.mafiaCount !== undefined) {
+      const validation = validateMafiaCount(room.settings.mafiaCount, members.length);
+      if (!validation.valid) {
+        mafiaCountReset = true;
+        await ctx.db.patch(args.roomId, {
+          settings: {
+            ...room.settings,
+            mafiaCount: undefined,
+          },
+          lastActivityAt: Date.now(),
+        });
+      }
+    }
+
     const now = Date.now();
 
     // Create game record
@@ -401,7 +463,41 @@ export const startGame = mutation({
       gameId,
     });
 
-    return { gameId };
+    return { gameId, mafiaCountReset };
+  },
+});
+
+export const getMaxAllowedMafiaInfo = query({
+  args: {
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    await requireAuthUserId(ctx);
+
+    const room = await ctx.db.get(args.roomId);
+    if (!room) {
+      throw new ConvexError("Room not found.");
+    }
+
+    const members = await getRoomMembers(ctx, args.roomId);
+    const currentPlayerCount = members.length;
+    const maxAllowed = getMaxAllowedMafia(currentPlayerCount);
+    const autoMafiaCount = getAutoMafiaCount(currentPlayerCount);
+
+    const custom = room.settings.mafiaCount;
+    const validation =
+      custom !== undefined
+        ? validateMafiaCount(custom, currentPlayerCount)
+        : { valid: true, maxAllowed };
+
+    return {
+      maxAllowed,
+      currentPlayerCount,
+      autoMafiaCount,
+      customMafiaCount: custom,
+      customValid: validation.valid,
+      customError: validation.error,
+    };
   },
 });
 
