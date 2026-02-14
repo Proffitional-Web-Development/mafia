@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AvatarCircle } from "@/components/ui/avatar-circle";
 import { Badge } from "@/components/ui/badge";
+import { PlayerCard } from "@/components/ui/player-card";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -116,10 +117,9 @@ export function PublicVotingPhase({
       {/* Timer */}
       <TimerDisplay deadlineAt={deadlineAt} variant="progress-bar" />
 
-      {/* Title */}
       <div className="text-center space-y-1">
-        <h2 className="text-lg font-semibold">{t("title")}</h2>
-        <p className="text-sm text-zinc-500">
+        <h2 className="text-lg font-semibold text-white glow-effect">{t("title")}</h2>
+        <p className="text-sm text-white/60">
           {isAlive ? t("selectTarget") : t("deadCannotVote")}
         </p>
       </div>
@@ -165,67 +165,49 @@ export function PublicVotingPhase({
             });
 
           return (
-            <button
+            <PlayerCard
               key={player.playerId}
-              type="button"
-              disabled={!isAlive}
+              username={player.username}
+              avatarUrl={player.avatarUrl}
+              isSelected={isSelected}
+              selectable={isAlive}
               onClick={() => handleVoteFor(player.playerId)}
-              className={cn(
-                "relative flex flex-col items-center gap-2 rounded-xl border p-3 transition-all",
-                isAlive &&
-                  "cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800",
-                isSelected &&
-                  "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-950",
-                !isAlive && "opacity-50 cursor-default",
-              )}
-            >
-              <AvatarCircle
-                username={player.username}
-                avatarUrl={player.avatarUrl ?? undefined}
-                size={48}
-              />
-              <span className="text-xs font-medium truncate max-w-full">
-                {player.username}
-              </span>
-
-              {/* Vote count badge */}
-              {voteCount > 0 && (
-                <Badge variant="vote-count" className="absolute -top-1 -end-1">
-                  {voteCount}
-                </Badge>
-              )}
-
-              {/* Voter names */}
-              {votersForPlayer.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-1 mt-1">
-                  {votersForPlayer.map((voter) => (
-                    <span
-                      key={voter.id}
-                      className="text-[9px] bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded px-1"
-                    >
-                      {voter.name}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </button>
+              disabled={!isAlive}
+              variant={isSelected ? "selected" : "voting"}
+              showVoteCount={voteCount > 0}
+              voteCount={voteCount}
+              trailing={
+                votersForPlayer.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-1 mt-2 w-full">
+                    {votersForPlayer.map((voter) => (
+                      <span
+                        key={voter.id}
+                        className="text-[9px] bg-white/10 text-white/70 rounded px-1.5 py-0.5"
+                      >
+                        {voter.name}
+                      </span>
+                    ))}
+                  </div>
+                )
+              }
+            />
           );
         })}
 
-        {/* Skip vote option */}
         {isAlive && !isRunoff && (
           <button
             type="button"
             onClick={() => handleVoteFor("skip")}
             className={cn(
-              "flex flex-col items-center gap-2 rounded-xl border border-dashed p-3 transition-all cursor-pointer",
-              "hover:bg-zinc-100 dark:hover:bg-zinc-800",
+              "flex flex-col items-center gap-2 rounded-xl border border-dashed p-3 transition-all cursor-pointer backdrop-blur-sm",
+              "hover:bg-white/5 border-white/20",
               mySelectedTargetId === "skip" &&
-                "ring-2 ring-amber-500 bg-amber-50 dark:bg-amber-950",
+                "border-warning bg-warning/20 shadow-[0_0_15px_rgba(234,179,8,0.3)]",
+                mySelectedTargetId !== "skip" && "bg-surface/20"
             )}
           >
-            <span className="text-3xl">🚫</span>
-            <span className="text-xs font-medium">{t("skipVote")}</span>
+            <span className="text-3xl filter drop-shadow-md">🚫</span>
+            <span className="text-xs font-medium text-white/80">{t("skipVote")}</span>
             {votesData.skipCount > 0 && (
               <Badge variant="vote-count" className="absolute -top-1 -end-1 bg-warning text-black">
                 {votesData.skipCount}

@@ -84,6 +84,7 @@ function LobbyView({
   const router = useRouter();
 
   const updateSettings = useMutation(api.rooms.updateRoomSettings);
+  const updateMemeLevel = useMutation(api.rooms.updateMemeLevel);
   const kickPlayer = useMutation(api.rooms.kickPlayer);
   const leaveRoom = useMutation(api.rooms.leaveRoom);
   const startGame = useMutation(api.rooms.startGame);
@@ -91,6 +92,7 @@ function LobbyView({
   const [starting, setStarting] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [memeUpdating, setMemeUpdating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [kickTarget, setKickTarget] = useState<{
     userId: Id<"users">;
@@ -181,6 +183,18 @@ function LobbyView({
       }
     } catch (e) {
       setError(et(mapAppErrorKey(e)));
+    }
+  }
+
+  async function handleMemeLevelChange(level: "NORMAL" | "FUN" | "CHAOS") {
+    if (!isOwner || memeUpdating || roomState.memeLevel === level) return;
+    setMemeUpdating(true);
+    try {
+      await updateMemeLevel({ roomId, memeLevel: level });
+    } catch (e) {
+      setError(et(mapAppErrorKey(e)));
+    } finally {
+      setMemeUpdating(false);
     }
   }
 
@@ -340,6 +354,48 @@ function LobbyView({
                     <RoleName role={role} />
                   </label>
                 ))}
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
+              <p className="mb-2 text-sm font-medium text-white">{t("memeLevel.title")}</p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
+                {([
+                  {
+                    value: "NORMAL",
+                    label: t("memeLevel.normal"),
+                    description: t("memeLevel.normalDesc"),
+                  },
+                  {
+                    value: "FUN",
+                    label: t("memeLevel.fun"),
+                    description: t("memeLevel.funDesc"),
+                  },
+                  {
+                    value: "CHAOS",
+                    label: t("memeLevel.chaos"),
+                    description: t("memeLevel.chaosDesc"),
+                  },
+                ] as const).map((option) => {
+                  const selected = roomState.memeLevel === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      disabled={!isOwner || memeUpdating}
+                      onClick={() => handleMemeLevelChange(option.value)}
+                      className={[
+                        "rounded-lg border px-3 py-2 text-start transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+                        selected
+                          ? "border-primary/50 bg-primary/20 text-white"
+                          : "border-white/15 bg-white/5 text-text-secondary hover:bg-white/10",
+                      ].join(" ")}
+                    >
+                      <p className="text-xs font-semibold">{option.label}</p>
+                      <p className="text-[11px] text-text-tertiary">{option.description}</p>
+                    </button>
+                  );
+                })}
               </div>
             </section>
           </section>

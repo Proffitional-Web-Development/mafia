@@ -85,6 +85,9 @@ export const createRoom = mutation({
   args: {
     visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
     password: v.optional(v.string()),
+    memeLevel: v.optional(
+      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS")),
+    ),
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
@@ -114,6 +117,7 @@ export const createRoom = mutation({
       ownerId: userId,
       visibility,
       password: password ? hashRoomPassword(password) : undefined,
+      memeLevel: args.memeLevel ?? "FUN",
       settings: {
         discussionDuration: DEFAULT_DISCUSSION_DURATION,
         maxPlayers: DEFAULT_MAX_PLAYERS,
@@ -190,6 +194,28 @@ export const joinRoom = mutation({
     await ctx.db.patch(room._id, { lastActivityAt: Date.now() });
 
     return { roomId: room._id, code: room.code };
+  },
+});
+
+export const updateMemeLevel = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    memeLevel: v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+    const room = await requireRoomOwner(ctx, args.roomId, userId);
+
+    if (room.status !== "waiting") {
+      throw new ConvexError("Cannot change meme level after game has started.");
+    }
+
+    await ctx.db.patch(args.roomId, {
+      memeLevel: args.memeLevel,
+      lastActivityAt: Date.now(),
+    });
+
+    return { success: true };
   },
 });
 
@@ -467,6 +493,7 @@ export const getRoomState = query({
       roomId: room._id,
       code: room.code,
       ownerId: room.ownerId,
+      memeLevel: room.memeLevel ?? "FUN",
       visibility: room.visibility ?? "private",
       hasPassword: Boolean(room.password),
       status: room.status,

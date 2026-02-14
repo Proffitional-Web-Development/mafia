@@ -59,12 +59,12 @@ function isRoleVisiblePhase(phase: string): boolean {
 }
 
 async function hasCardsDistributedEvent(ctx: QueryCtx, gameId: Id<"games">) {
-  const events = await ctx.db
-    .query("gameEvents")
+  const players = await ctx.db
+    .query("players")
     .withIndex("by_gameId", (q) => q.eq("gameId", gameId))
     .collect();
 
-  return events.some((event) => event.type === "cards_distributed");
+  return players.some((player) => player.role !== "citizen");
 }
 
 interface RoomSettings {
@@ -152,19 +152,6 @@ export const distributeCards = internalMutation({
         role: shuffledRoles[i],
       });
     }
-
-    // Log event
-    await ctx.db.insert("gameEvents", {
-      gameId: args.gameId,
-      round: game.round,
-      type: "cards_distributed",
-      payload: JSON.stringify({
-        playerCount: players.length,
-        mafiaCount: shuffledRoles.filter((r) => r === "mafia").length,
-        enabledRoles: room.settings.enabledRoles,
-      }),
-      timestamp: Date.now(),
-    });
 
     // Phase stays at cardDistribution — the frontend shows the reveal animation.
     // advancePhase (manual by owner or auto) moves to discussion.

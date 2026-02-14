@@ -4,10 +4,10 @@ Tracks all task reviews, pass/fail rates, and recurring quality issues.
 
 ## Summary
 
-- Total Reviews: 17
-- Passed: 14
-- Revision Required: 3
-- Pass Rate: 82%
+- Total Reviews: 19
+- Passed: 15
+- Revision Required: 4
+- Pass Rate: 79%
 
 ## Reviews
 
@@ -30,6 +30,9 @@ Tracks all task reviews, pass/fail rates, and recurring quality issues.
 | 2026-02-13 | T11 Mafia Voting | A8 | ✅ PASSED | 0 | 0 | 0 | Mafia-only voting visibility and protection-block resolution verified |
 | 2026-02-13 | T12 Resolution & Boy Ability | A8 | ✅ PASSED | 0 | 0 | 0 | Resolution application, revenge window, and forfeiture handling verified |
 | 2026-02-13 | T13 Win Condition & Game End | A8 | ✅ PASSED | 0 | 0 | 0 | Win checks after each elimination source implemented and verified |
+| 2026-02-14 | T22 Game Event History (Backend) | A8 | 🔁 REVISION REQUIRED | 2 | 3 | 1 | Legacy `gameEvents` contract mismatch in `resolution.ts`, Sheikh-result leakage via faction-specific `messageKey`, and missing `logGameEvent` validation |
+| 2026-02-14 | T22 Game Event History (Final re-review) | A8 | ✅ PASSED | 0 | 0 | 1 | Backend + frontend requirements verified; persistent timeline toggle, unread badge, meme-level controls, and EN/AR event localization completed |
+| 2026-02-14 | T22 Game Event History (Backend re-review) | A8 | ✅ PASSED | 0 | 0 | 2 | Fixed schema-contract drift, neutralized public Sheikh signaling, added server-side leak warnings, and completed tie-break logging coverage |
 
 ## Recurring Issues
 
@@ -38,8 +41,9 @@ Tracks all task reviews, pass/fail rates, and recurring quality issues.
 | `metadata-defaults` | 2 | 🟢 Minor | Update default Next.js metadata (title/description) early in scaffolding |
 | `next-image-domains` | 1 | 🟡 Major | Configure `images.remotePatterns` whenever external image sources are introduced |
 | `unsafe-cast` | 1 | 🟡 Major | Validate API response shape at runtime before casting to Convex ID types |
-| `premature-data-exposure` | 2 | 🟡 Major | Gate sensitive game data (teammate lists) by game phase and distribution-complete checks |
+| `premature-data-exposure` | 3 | 🔴 Critical | Gate sensitive game data/signals (including public event keys) to prevent inference leaks |
 | `room-code-rng` | 1 | 🟢 Minor | Use secure RNG for room code generation if predictability risk becomes relevant |
+| `event-schema-contract-drift` | 1 | 🔴 Critical | Keep all game-event producers/consumers aligned to one schema contract before approval |
 
 ## Severity Legend
 

@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/icon";
 import { TimerDisplay } from "@/components/ui/timer-display";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { PHASE_META, ROLE_COLORS } from "@/lib/design-tokens";
+import { HeaderControls } from "@/components/game/header-controls";
 import { cn } from "@/lib/utils";
 
 interface PhaseHeaderProps {
@@ -21,6 +22,8 @@ interface PhaseHeaderProps {
     | "mafia-night";
   deadlineAt?: number;
   subtitle?: string;
+  actions?: React.ReactNode;
+  memeLevel?: "NORMAL" | "FUN" | "CHAOS";
 }
 
 export function PhaseHeader({
@@ -31,6 +34,8 @@ export function PhaseHeader({
   variant = "standard",
   deadlineAt,
   subtitle,
+  actions,
+  memeLevel,
 }: PhaseHeaderProps) {
   const pt = useTranslations("phases");
   const ct = useTranslations("common");
@@ -84,9 +89,16 @@ export function PhaseHeader({
             variant === "ability-split" && "flex-col items-end gap-1",
           )}
         >
+          <HeaderControls />
+          {actions ? <div className="self-end">{actions}</div> : null}
           <span className="text-xs text-zinc-500">
             {ct("round", { number: round })}
           </span>
+          {memeLevel ? (
+            <span className="rounded-full border border-primary/40 bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
+              {memeLevel}
+            </span>
+          ) : null}
           <span
             className={cn(
               "text-xs font-medium px-2 py-0.5 rounded-full border",

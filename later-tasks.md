@@ -6,12 +6,11 @@
 
 8- show active rooms/ if game not started you can join it (when owner create room he should have ability to set room as public room without pass or private with pass)
 
-5- on voting mode each player should see those are voting on him
+1- game should show game events history for all plyers:
+    - player x eliminated via voting
+    - player y eliminated  via mifia
+    - Mafia fail to victim, god bless girl she protect the right person
+    - Shikh now know one of the citizen (if he asked about citizen)
+    - Shikh now know one of the mafia (if he asked about mafia)
 
-bugs:
-9- shikh phase not works proply it is directly redirect to mafia mode before shike see the mafia (all ability modes must have confirm button before moving to next abuliity phase)
-10- abilities phase start after the end of voting phase and elimination of the voted one
-11- if votes are equal on more than one player, system reset the votes and start again for only those that have the same number of votes
-12- if mafia votes are equal on different players system will randomly choose one of them to be eliminated
-13- shik must have investigation logs
-14- girl must have protection logs 
+    

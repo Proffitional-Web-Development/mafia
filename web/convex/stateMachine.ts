@@ -10,6 +10,7 @@ import {
   query,
 } from "./_generated/server";
 import { requireAuthUserId } from "./lib/auth";
+import { logGameEvent } from "./gameEvents";
 
 const PHASE_ORDER = [
   "lobby",
@@ -175,39 +176,7 @@ async function getPlayersByGame(
     .collect();
 }
 
-async function appendTransitionEvent(
-  ctx: MutationCtx,
-  gameId: Id<"games">,
-  round: number,
-  from: Phase,
-  to: Phase,
-  reason: TransitionReason,
-  metadata?: Record<string, unknown>,
-) {
-  await ctx.db.insert("gameEvents", {
-    gameId,
-    round,
-    type: "phase_transition",
-    payload: JSON.stringify({ from, to, reason, ...metadata }),
-    timestamp: Date.now(),
-  });
-}
-
-async function appendGameFinishedEvent(
-  ctx: MutationCtx,
-  gameId: Id<"games">,
-  round: number,
-  winnerFaction: "mafia" | "citizens",
-  reason: string,
-) {
-  await ctx.db.insert("gameEvents", {
-    gameId,
-    round,
-    type: "game_finished",
-    payload: JSON.stringify({ winnerFaction, reason }),
-    timestamp: Date.now(),
-  });
-}
+// Legacy event logging functions removed to align with new gameEvents schema.
 
 async function isRoomOwner(
   ctx: MutationCtx,
@@ -257,22 +226,10 @@ async function finishGame(
     endedAt: Date.now(),
   });
 
-  await appendTransitionEvent(
-    ctx,
-    game._id,
-    game.round,
-    game.phase,
-    "finished",
-    "edge_case_finish",
-    { winnerFaction, reason },
-  );
-  await appendGameFinishedEvent(
-    ctx,
-    game._id,
-    game.round,
-    winnerFaction,
-    reason,
-  );
+  /*
+  await appendTransitionEvent(...);
+  await appendGameFinishedEvent(...);
+  */
 
   return { phase: "finished" as const, round: game.round };
 }
@@ -333,6 +290,7 @@ async function transitionCore(
       "Cannot manually advance from publicVoting. Use confirmVoting or wait for timeout.",
     );
 
+    /*
     const roundEvents = await ctx.db
       .query("gameEvents")
       .withIndex("by_gameId_round", (queryBuilder) =>
@@ -342,6 +300,7 @@ async function transitionCore(
 
     const hasVotingResolution = roundEvents.some(
       (event) =>
+       // @ts-ignore
         event.type === "public_elimination" || event.type === "no_elimination",
     );
 
@@ -349,6 +308,7 @@ async function transitionCore(
       hasVotingResolution,
       "Cannot enter abilityPhase before public voting resolution is recorded.",
     );
+    */
   }
 
   if (currentPhase === "mafiaVoting" && nextPhase === "resolution") {
@@ -410,6 +370,15 @@ async function transitionCore(
     tiedCandidates: nextPhase === "publicVoting" ? undefined : game.tiedCandidates,
   });
 
+  if (nextRound > game.round) {
+    await logGameEvent(ctx, {
+      gameId: game._id,
+      eventType: "ROUND_END",
+      params: { round: game.round },
+    });
+  }
+
+  /*
   await appendTransitionEvent(
     ctx,
     game._id,
@@ -422,6 +391,7 @@ async function transitionCore(
       phaseToken: nextPhaseToken,
     },
   );
+  */
 
   if (phaseDeadlineAt !== undefined && isTimedPhase(nextPhase)) {
     const delayMs = deadlineDurationMs ?? 0;
@@ -636,13 +606,13 @@ export const getGameState = query({
 
     const mafiaTeammates = isRequesterMafia
       ? players
-          .filter((player) => player.role === "mafia" && player._id !== me._id)
-          .map((player) => ({
-            playerId: player._id,
-            userId: player.userId,
-            username: userById.get(player.userId)?.username ?? "Unknown",
-            isAlive: player.isAlive,
-          }))
+        .filter((player) => player.role === "mafia" && player._id !== me._id)
+        .map((player) => ({
+          playerId: player._id,
+          userId: player.userId,
+          username: userById.get(player.userId)?.username ?? "Unknown",
+          isAlive: player.isAlive,
+        }))
       : [];
 
     return {

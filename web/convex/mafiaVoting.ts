@@ -9,6 +9,7 @@ import {
   query,
 } from "./_generated/server";
 import { requireAuthUserId } from "./lib/auth";
+import { logGameEvent } from "./gameEvents";
 
 async function getMafiaVoterOrThrow(
   ctx: MutationCtx,
@@ -58,38 +59,36 @@ async function resolveMafiaVoting(
     return { skipped: true, reason: "token_mismatch" as const };
   }
 
+  // Check for existing events to prevent re-execution of RNG
   const events = await ctx.db
     .query("gameEvents")
     .withIndex("by_gameId_round", (q) =>
       q.eq("gameId", gameId).eq("round", game.round),
     )
     .collect();
-  const existingResult = events.find(
-    (event) => event.type === "mafia_vote_result",
-  );
-  if (existingResult) {
-    const payload =
-      parseJson<{
-        eliminatedPlayerId: string | null;
-        noElimination: boolean;
-        protectionBlocked: boolean;
-        intendedEliminatedPlayerId?: string | null;
-        wasRandomTieBreak?: boolean;
-        tiedPlayerIds?: string[];
-        tally: Record<string, number>;
-      }>(existingResult.payload) ?? null;
 
+  // If we already have a Mafia event for this round, return the stored result (or nullish if we can't fully reconstruct)
+  // We prioritize correctness of RNG over perfect reconstruction of the legacy return object
+  const existingEvent = events.find(
+    (e) =>
+      e.eventType === "MAFIA_ELIMINATION" ||
+      e.eventType === "MAFIA_FAILED_ELIMINATION",
+  );
+
+  if (existingEvent) {
+    // We already resolved this round.
+    // Reconstruct minimal result from messageParams if possible, or just return skipped.
     return {
       skipped: true,
       reason: "already_resolved" as const,
       result: {
-        eliminatedPlayerId: payload?.eliminatedPlayerId ?? null,
-        noElimination: payload?.noElimination ?? true,
-        protectionBlocked: payload?.protectionBlocked ?? false,
-        intendedEliminatedPlayerId: payload?.intendedEliminatedPlayerId ?? null,
-        wasRandomTieBreak: payload?.wasRandomTieBreak ?? false,
-        tiedPlayerIds: payload?.tiedPlayerIds ?? [],
-        tally: payload?.tally ?? {},
+        eliminatedPlayerId: null,
+        noElimination: existingEvent.eventType !== "MAFIA_ELIMINATION",
+        protectionBlocked: existingEvent.eventType === "MAFIA_FAILED_ELIMINATION",
+        intendedEliminatedPlayerId: null,
+        wasRandomTieBreak: false,
+        tiedPlayerIds: [],
+        tally: {},
       },
     };
   }
@@ -131,7 +130,29 @@ async function resolveMafiaVoting(
 
   let protectionBlocked = false;
   const intendedEliminatedPlayerId = eliminatedPlayerId;
+
+  // Resolve User Name
+  let targetName = "Unknown";
+  if (intendedEliminatedPlayerId) {
+    const p = await ctx.db.get(intendedEliminatedPlayerId as Id<"players">);
+    if (p) {
+      const u = await ctx.db.get(p.userId);
+      targetName = u?.displayName ?? u?.username ?? "Unknown";
+    }
+  }
+
+  // Handle Logic
   if (eliminatedPlayerId) {
+    if (wasRandomTieBreak) {
+      await logGameEvent(ctx, {
+        gameId,
+        eventType: "MAFIA_VOTE_TIE_RANDOM",
+        params: {
+          player: targetName,
+        },
+      });
+    }
+
     const girlAction = await ctx.db
       .query("actions")
       .withIndex("by_gameId_round_role", (q) =>
@@ -143,25 +164,33 @@ async function resolveMafiaVoting(
       protectionBlocked = true;
       eliminatedPlayerId = null;
       noElimination = true;
-    }
-  }
 
-  await ctx.db.insert("gameEvents", {
-    gameId,
-    round: game.round,
-    type: "mafia_vote_result",
-    payload: JSON.stringify({
-      eliminatedPlayerId,
-      noElimination,
-      protectionBlocked,
-      intendedEliminatedPlayerId,
-      wasRandomTieBreak,
-      tiedPlayerIds,
-      tally,
-      totalVotes: votes.length,
-    }),
-    timestamp: Date.now(),
-  });
+      // Log Failed Elimination
+      await logGameEvent(ctx, {
+        gameId,
+        eventType: "MAFIA_FAILED_ELIMINATION",
+        params: {
+          player: targetName,
+        },
+      });
+
+    } else {
+      await ctx.db.patch(intendedEliminatedPlayerId as Id<"players">, {
+        isAlive: false,
+        eliminatedAtRound: game.round,
+      });
+
+      await logGameEvent(ctx, {
+        gameId,
+        eventType: "MAFIA_ELIMINATION",
+        params: {
+          player: targetName,
+        },
+      });
+    }
+  } else {
+    // No elimination (no votes) - No log
+  }
 
   return {
     skipped: false,

@@ -9,13 +9,14 @@ import { useTheme } from "@/components/theme-provider";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { api } from "@/convex/_generated/api";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 
 export default function HomePage() {
   const t = useTranslations("home");
   const ct = useTranslations("common");
   const currentUser = useQuery(api.users.getCurrentUser);
   const { setTheme } = useTheme();
+  const router = useRouter();
 
   const destination = currentUser?.hasCompletedProfile ? "/game" : "/auth";
 
@@ -76,9 +77,25 @@ export default function HomePage() {
 
       <BottomNavigation
         items={[
-          { key: "home", label: ct("home"), icon: "home", active: true },
-          { key: "profile", label: ct("profile"), icon: "person" },
-          { key: "settings", label: ct("settings"), icon: "settings" },
+          {
+            key: "home",
+            label: ct("home"),
+            icon: "home",
+            active: true,
+            onClick: () => router.push("/"),
+          },
+          {
+            key: "profile",
+            label: ct("profile"),
+            icon: "person",
+            onClick: () => router.push("/settings"),
+          },
+          {
+            key: "settings",
+            label: ct("settings"),
+            icon: "settings",
+            onClick: () => router.push("/settings"),
+          },
         ]}
       />
     </main>

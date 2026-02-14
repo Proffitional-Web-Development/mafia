@@ -1,17 +1,15 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { BoyRevenge } from "@/components/game/phases/ability-phase/boy-revenge";
 import { EliminationCard } from "@/components/game/elimination-card";
-import { RevengePanel } from "@/components/game/revenge-panel";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PlayerGrid } from "@/components/ui/player-grid";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { TimerDisplay } from "@/components/ui/timer-display";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import { mapAppErrorKey } from "@/lib/error-message";
 
 interface ResolutionPhaseProps {
   gameId: Id<"games">;
@@ -26,14 +24,8 @@ export function ResolutionPhase({
 }: ResolutionPhaseProps) {
   const t = useTranslations("resolution");
   const ct = useTranslations("common");
-  const et = useTranslations("errors");
 
   const resolutionState = useQuery(api.resolution.getResolutionState, { gameId });
-  const runBoyRevenge = useMutation(api.resolution.useBoyRevenge);
-
-  const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
-  const [acting, setActing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   if (!resolutionState) {
     return (
@@ -57,25 +49,6 @@ export function ResolutionPhase({
   const aliveTargets = resolutionState.players.filter(
     (player) => player.isAlive && player.userId !== currentUserId,
   );
-
-  async function handleBoyRevenge() {
-    if (!selectedTargetId) {
-      return;
-    }
-    setActing(true);
-    setError(null);
-    try {
-      await runBoyRevenge({
-        gameId,
-        targetPlayerId: selectedTargetId as Id<"players">,
-      });
-      setSelectedTargetId(null);
-    } catch (e) {
-      setError(et(mapAppErrorKey(e)));
-    } finally {
-      setActing(false);
-    }
-  }
 
   const canActAsBoy = resolutionState.isCurrentPlayerPendingBoy;
   const pendingBoyCount = resolutionState.pendingBoyRevengeIds.length;
@@ -120,20 +93,7 @@ export function ResolutionPhase({
         </section>
       )}
 
-      {canActAsBoy && (
-        <RevengePanel
-          players={aliveTargets}
-          selectedId={selectedTargetId}
-          onSelect={(playerId) => {
-            setSelectedTargetId(playerId);
-            setError(null);
-          }}
-          onConfirm={handleBoyRevenge}
-          confirmLabel={acting ? ct("loading") : t("boyPrompt.confirm")}
-          loading={acting}
-          disabled={acting}
-        />
-      )}
+      {canActAsBoy && <BoyRevenge gameId={gameId} aliveTargets={aliveTargets} />}
 
       {!canActAsBoy && pendingBoyCount > 0 && (
         <StatusBanner variant="warning" message={t("boyPrompt.waiting")} />
@@ -159,10 +119,6 @@ export function ResolutionPhase({
           ⏭️
         </span>
       </div>
-
-      {error && (
-        <StatusBanner message={error} variant="error" className="text-center" />
-      )}
     </div>
   );
 }

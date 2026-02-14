@@ -2,6 +2,8 @@
 
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { GameEventTimeline } from "@/components/game/game-event-timeline";
 import {
   AbilityPhase,
   AbilityPhaseNightTransition,
@@ -16,9 +18,11 @@ import { PublicVotingPhase } from "@/components/game/public-voting-phase";
 import { ResolutionPhase } from "@/components/game/phases/ability-phase/resolution-phase";
 import { RoleLogsPanel } from "@/components/game/role-logs-panel";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
+import { Icon } from "@/components/ui/icon";
 import { LoadingState } from "@/components/ui/loading-state";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 
 interface GameRouterProps {
   gameId: Id<"games">;
@@ -27,8 +31,17 @@ interface GameRouterProps {
 
 export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
   const gameState = useQuery(api.stateMachine.getGameState, { gameId });
+  const roomState = useQuery(
+    api.rooms.getRoomState,
+    gameState?.game.roomId
+      ? { roomId: gameState.game.roomId as Id<"rooms"> }
+      : "skip",
+  );
   const pt = useTranslations("phases");
   const ct = useTranslations("common");
+  const et = useTranslations("events");
+  const [isLogOpen, setIsLogOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   if (!gameState) {
     return (
@@ -40,6 +53,10 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
 
   const { game, me } = gameState;
 
+  function toggleGameLog() {
+    setIsLogOpen((prev) => !prev);
+  }
+
   const deadPlayers = gameState.players.filter((player) => !player.isAlive);
 
   return (
@@ -50,6 +67,31 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
         round={game.round}
         isAlive={me.isAlive}
         role={me.role}
+        memeLevel={roomState?.memeLevel}
+        actions={
+          <button
+            type="button"
+            onClick={toggleGameLog}
+            aria-label={et("timeline.title")}
+            className={cn(
+              "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
+              "hover:bg-white/10 hover:text-white",
+            )}
+          >
+            <Icon name="history" variant="round" size="sm" />
+            {unreadCount > 0 ? (
+              <span className="absolute -end-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-semibold leading-4 text-white">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            ) : null}
+          </button>
+        }
+      />
+
+      <GameEventTimeline
+        gameId={gameId}
+        open={isLogOpen}
+        onUnreadCountChange={setUnreadCount}
       />
 
       {game.phase !== "finished" ? <RoleLogsPanel gameId={gameId} role={me.role} /> : null}

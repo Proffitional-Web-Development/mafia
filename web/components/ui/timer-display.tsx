@@ -146,7 +146,7 @@ export function TimerDisplay({
     return (
       <div
         className={cn(
-          "inline-flex h-24 w-24 flex-col items-center justify-center rounded-full border border-white/15 bg-surface/60",
+          "inline-flex h-24 w-24 flex-col items-center justify-center rounded-full border border-white/15 bg-surface/40 backdrop-blur-sm",
           "motion-safe:animate-timer-ring motion-reduce:animate-none",
           className,
         )}

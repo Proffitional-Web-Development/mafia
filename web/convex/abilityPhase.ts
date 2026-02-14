@@ -4,6 +4,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { type MutationCtx, mutation, query } from "./_generated/server";
 import { requireAuthUserId } from "./lib/auth";
+import { logGameEvent } from "./gameEvents";
 
 function toFaction(role: Doc<"players">["role"]): "mafia" | "citizens" {
   return role === "mafia" ? "mafia" : "citizens";
@@ -160,12 +161,13 @@ export const useSheikhAbility = mutation({
       timestamp: now,
     });
 
-    await ctx.db.insert("gameEvents", {
+    const targetUser = await ctx.db.get(target.userId);
+    const targetName = targetUser?.displayName ?? targetUser?.username ?? "Unknown";
+
+    await logGameEvent(ctx, {
       gameId: args.gameId,
-      round: game.round,
-      type: "sheikh_investigated",
-      payload: JSON.stringify({ actorId: actor._id }),
-      timestamp: now,
+      eventType: faction === "mafia" ? "SHEIKH_INVESTIGATION_MAFIA" : "SHEIKH_INVESTIGATION_CITIZEN",
+      params: { player: targetName },
     });
 
     return { success: true, faction };
@@ -216,13 +218,7 @@ export const useGirlAbility = mutation({
       timestamp: now,
     });
 
-    await ctx.db.insert("gameEvents", {
-      gameId: args.gameId,
-      round: game.round,
-      type: "girl_protected",
-      payload: JSON.stringify({ actorId: actor._id }),
-      timestamp: now,
-    });
+    // Private action logging is handled by 'actions' table. No public event for Girl usage.
 
     return { success: true };
   },
@@ -257,13 +253,7 @@ export const confirmAbilityAction = mutation({
     if (!action.confirmed) {
       await ctx.db.patch(action._id, { confirmed: true });
 
-      await ctx.db.insert("gameEvents", {
-        gameId: args.gameId,
-        round: game.round,
-        type: "ability_action_confirmed",
-        payload: JSON.stringify({ role: actor.role, actorId: actor._id }),
-        timestamp: Date.now(),
-      });
+      // No public confirmed event.
     }
 
     await maybeCompleteAbilityPhase(ctx, args.gameId);
@@ -518,13 +508,11 @@ export const getGirlProtectionLog = query({
         .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
         .collect()
     )
-      .filter((event) => event.type === "mafia_vote_result")
+      .filter((event) => event.eventType === "MAFIA_FAILED_ELIMINATION")
       .map((event) => {
-        const payload =
-          parseJson<{ protectionBlocked?: boolean }>(event.payload) ?? {};
         return {
           round: event.round,
-          protectionBlocked: Boolean(payload.protectionBlocked),
+          protectionBlocked: true,
         };
       });
 

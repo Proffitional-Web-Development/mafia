@@ -71,13 +71,13 @@ export function DiscussionPhase({
 
       {/* Title + subtitle */}
       <div className="text-center space-y-1">
-        <h2 className="text-lg font-semibold">{t("title")}</h2>
-        <p className="text-sm text-zinc-500">{t("subtitle")}</p>
+        <h2 className="text-lg font-semibold text-white glow-effect">{t("title")}</h2>
+        <p className="text-sm text-white/60">{t("subtitle")}</p>
       </div>
 
       {/* Alive players */}
       <div className="w-full">
-        <h3 className="text-xs font-semibold uppercase text-zinc-500 mb-2">
+        <h3 className="text-xs font-semibold uppercase text-white/60 mb-2">
           {ct("players")} ({players.length})
         </h3>
         <PlayerGrid

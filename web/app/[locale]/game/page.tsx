@@ -35,6 +35,7 @@ export default function GamePage() {
     "private",
   );
   const [createPassword, setCreatePassword] = useState("");
+  const [memeLevel, setMemeLevel] = useState<"NORMAL" | "FUN" | "CHAOS">("FUN");
   const [roomSearch, setRoomSearch] = useState("");
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
@@ -63,6 +64,7 @@ export default function GamePage() {
           roomVisibility === "private" && createPassword.trim()
             ? createPassword.trim()
             : undefined,
+        memeLevel,
       });
       router.push(`/game/room/${result.roomId}`);
     } catch (e) {
@@ -186,6 +188,49 @@ export default function GamePage() {
                 />
               </div>
             ) : null}
+
+            <div className="mb-4 space-y-2 rounded-xl border border-white/10 bg-white/5 p-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                {t("memeLevel.title")}
+              </p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                {([
+                  {
+                    value: "NORMAL",
+                    label: t("memeLevel.normal"),
+                    description: t("memeLevel.normalDesc"),
+                  },
+                  {
+                    value: "FUN",
+                    label: t("memeLevel.fun"),
+                    description: t("memeLevel.funDesc"),
+                  },
+                  {
+                    value: "CHAOS",
+                    label: t("memeLevel.chaos"),
+                    description: t("memeLevel.chaosDesc"),
+                  },
+                ] as const).map((option) => {
+                  const selected = memeLevel === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setMemeLevel(option.value)}
+                      className={[
+                        "rounded-lg border px-3 py-2 text-start transition-colors",
+                        selected
+                          ? "border-primary/50 bg-primary/20 text-white"
+                          : "border-white/15 bg-white/5 text-text-secondary hover:bg-white/10",
+                      ].join(" ")}
+                    >
+                      <p className="text-xs font-semibold">{option.label}</p>
+                      <p className="text-[11px] text-text-tertiary">{option.description}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             <PrimaryButton
               icon="add"

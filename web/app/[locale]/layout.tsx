@@ -9,6 +9,7 @@ import {
 import { LocaleProvider } from "@/components/locale-provider";
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "../../components/theme-provider";
+import { BackgroundMusicProvider } from "@/components/providers/background-music-provider";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -36,13 +37,15 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <LocaleProvider>
         <ThemeProvider>
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-sm"
-          >
-            {common("skipToContent")}
-          </a>
-          <div id="main-content">{children}</div>
+          <BackgroundMusicProvider>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-sm"
+            >
+              {common("skipToContent")}
+            </a>
+            <div id="main-content">{children}</div>
+          </BackgroundMusicProvider>
         </ThemeProvider>
       </LocaleProvider>
     </NextIntlClientProvider>

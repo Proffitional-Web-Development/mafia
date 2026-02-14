@@ -31,14 +31,14 @@ export function RevengePanel({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-danger/40 bg-danger/10 p-4",
+        "rounded-xl border border-danger/40 bg-surface/30 backdrop-blur-md p-6 shadow-[0_0_20px_rgba(220,38,38,0.15)]",
         className,
       )}
     >
-      <h3 className="mb-2 text-sm font-semibold text-danger">
+      <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-danger drop-shadow-sm">
         {t("boyPrompt.title")}
       </h3>
-      <p className="mb-3 text-xs text-text-secondary">
+      <p className="mb-4 text-xs text-white/70">
         {t("boyPrompt.subtitle")}
       </p>
 

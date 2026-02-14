@@ -61,7 +61,7 @@ html {
   --color-text-accent: var(--app-text-accent);
   --font-sans: var(--font-space-grotesk);
   --font-mono: var(--font-space-grotesk);
-  --font-display: var(--font-space-grotesk);
+  --font-display: var(--font-be-vietnam-pro);
   --font-display-alt: var(--font-be-vietnam-pro);
   --font-arabic: var(--font-noto-sans-arabic);
 }

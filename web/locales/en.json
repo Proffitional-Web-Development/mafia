@@ -98,7 +98,16 @@
     "kickPlayer": "Kick",
     "kickConfirm": "Remove {username} from the room?",
     "ownerBadge": "Owner",
-    "readOnlySettings": "Only the room owner can change settings"
+    "readOnlySettings": "Only the room owner can change settings",
+    "memeLevel": {
+      "title": "Meme Level",
+      "normal": "Normal",
+      "normalDesc": "Just the facts",
+      "fun": "Fun",
+      "funDesc": "Light humor",
+      "chaos": "Chaos",
+      "chaosDesc": "Full meme mode"
+    }
   },
   "roleReveal": {
     "yourRole": "Your Role",
@@ -265,6 +274,141 @@
     "detective": "Detective",
     "moderator": "Moderator"
   },
+  "events": {
+    "timeline": {
+      "title": "Game Log",
+      "empty": "No events yet — the game is just getting started!",
+      "round": "Round {round}"
+    },
+    "VOTE_ELIMINATION": {
+      "normal": {
+        "1": "{player} has been eliminated by vote.",
+        "2": "The village voted. {player} is out."
+      },
+      "fun": {
+        "1": "🗳️ Democracy strikes again. {player} didn’t survive the ballot.",
+        "2": "📢 The people have spoken — {player} has left the chat.",
+        "3": "🪦 RIP {player}. Voted off the island."
+      },
+      "chaos": {
+        "1": "🗳️💀 {player} just got ratio’d IRL.",
+        "2": "👋 {player} tried to blend in. The village said NOPE.",
+        "3": "🚨 {player} has been democratically yeeted."
+      }
+    },
+    "MAFIA_ELIMINATION": {
+      "normal": {
+        "1": "Under cover of night, {player} was eliminated.",
+        "2": "Morning report: {player} did not survive the night."
+      },
+      "fun": {
+        "1": "🌙 The mafia filed paperwork and {player} was approved for elimination.",
+        "2": "🕵️ Night shift update: {player} got caught lacking.",
+        "3": "🖤 The mafia made a move — {player} is out."
+      },
+      "chaos": {
+        "1": "🌚 Midnight chaos unlocked: {player} has vanished from the lobby.",
+        "2": "🗡️ Sirens at dawn. {player} got removed from the storyline.",
+        "3": "💥 Night event complete: {player} has been eliminated."
+      }
+    },
+    "MAFIA_FAILED_ELIMINATION": {
+      "normal": {
+        "1": "The mafia attempted an elimination, but the target was protected.",
+        "2": "A night attack was made, but {player} survived."
+      },
+      "fun": {
+        "1": "🛡️ The mafia swung and missed. {player} is still here.",
+        "2": "✨ Plot armor activated. {player} survived the night.",
+        "3": "😮 The mafia had a plan. The night had other ideas for {player}."
+      },
+      "chaos": {
+        "1": "🌀 Night chaos: elimination attempt blocked. {player} remains alive.",
+        "2": "🚫 The mafia got denied at the final step. {player} stays in the game.",
+        "3": "⚡ Unexpected twist: {player} dodged elimination."
+      }
+    },
+    "SHEIKH_INVESTIGATION_CITIZEN": {
+      "normal": {
+        "1": "The Sheikh investigated {player} this round.",
+        "2": "An investigation was conducted on {player}."
+      },
+      "fun": {
+        "1": "🔍 The Sheikh did detective work on {player}.",
+        "2": "🧠 Case notes updated: {player} was investigated.",
+        "3": "📜 Quiet night, loud clues — {player} was checked."
+      },
+      "chaos": {
+        "1": "🕯️ Suspicion meter rising. {player} got investigated.",
+        "2": "🧩 Investigation event triggered on {player}.",
+        "3": "⚖️ Night intel move: {player} was put under review."
+      }
+    },
+    "SHEIKH_INVESTIGATION_MAFIA": {
+      "normal": {
+        "1": "The Sheikh investigated {player} this round.",
+        "2": "An investigation was conducted on {player}."
+      },
+      "fun": {
+        "1": "🔍 The Sheikh did detective work on {player}.",
+        "2": "🧠 Case notes updated: {player} was investigated.",
+        "3": "📜 Quiet night, loud clues — {player} was checked."
+      },
+      "chaos": {
+        "1": "🕯️ Suspicion meter rising. {player} got investigated.",
+        "2": "🧩 Investigation event triggered on {player}.",
+        "3": "⚖️ Night intel move: {player} was put under review."
+      }
+    },
+    "ROUND_END": {
+      "normal": {
+        "1": "Round {round} has ended.",
+        "2": "End of round {round}."
+      },
+      "fun": {
+        "1": "⏳ Round {round} is in the books.",
+        "2": "📘 Round {round} wrapped. Next chaos incoming.",
+        "3": "🎬 Cut! Round {round} is done."
+      },
+      "chaos": {
+        "1": "🌪️ Round {round} has collapsed into history.",
+        "2": "🚨 Round {round} concluded. Brace for impact.",
+        "3": "🔥 Curtain drop on round {round}."
+      }
+    },
+    "VOTE_TIE": {
+      "normal": {
+        "1": "Public vote ended in a tie between: {players}.",
+        "2": "Tie vote recorded: {players}."
+      },
+      "fun": {
+        "1": "🤝 It’s a tie! Nobody blinked first: {players}.",
+        "2": "🎭 Perfect split from the village: {players}.",
+        "3": "🪙 Deadlock achieved. Tied players: {players}."
+      },
+      "chaos": {
+        "1": "⚔️ Vote collision detected. Tie between {players}.",
+        "2": "🧨 The ballots exploded into a tie: {players}.",
+        "3": "📛 Stalemate mode. Nobody moves: {players}."
+      }
+    },
+    "MAFIA_VOTE_TIE_RANDOM": {
+      "normal": {
+        "1": "Mafia vote tied; random selection chose {player}.",
+        "2": "Tie-break by chance selected {player}."
+      },
+      "fun": {
+        "1": "🎲 Mafia vote tie. RNG picked {player}.",
+        "2": "🕹️ Tie-break wheel spun and landed on {player}.",
+        "3": "📉 Equal votes, random fate: {player}."
+      },
+      "chaos": {
+        "1": "🎰 Total tie chaos. Random choice locked on {player}.",
+        "2": "⚡ Night lottery winner (unlucky): {player}.",
+        "3": "🧪 Tie-break protocol engaged. Selected: {player}."
+      }
+    }
+  },
   "errors": {
     "sessionExpired": "Your session has expired. Please sign in again.",
     "network": "Network error. Please try again.",
@@ -272,5 +416,34 @@
     "roomNotFound": "Room not found.",
     "roomFull": "Room is full.",
     "gameAlreadyStarted": "Game has already started."
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": {
+      "title": "Profile",
+      "updateDisplayName": "Update Display Name",
+      "avatar": "Avatar",
+      "changeAvatar": "Change Avatar",
+      "uploading": "Uploading...",
+      "maxSize": "Max size 5MB"
+    },
+    "security": {
+      "title": "Security",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "passwordHelp": "Must be at least 6 characters"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "music": "Background Music",
+      "musicEnabled": "Enabled",
+      "musicDisabled": "Disabled"
+    },
+    "saved": "Changes saved",
+    "discardPrompt": "You have unsaved changes. Discard?",
+    "discard": "Discard",
+    "stay": "Stay"
   }
 }

@@ -51,14 +51,6 @@ async function checkAndTriggerWinCondition(
   return false;
 }
 
-function parseJson<T>(value: string): T | null {
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return null;
-  }
-}
-
 function unique<T>(values: T[]) {
   return [...new Set(values)];
 }
@@ -75,20 +67,14 @@ async function getPendingBoyIdsForRound(
   gameId: Id<"games">,
   round: number,
 ) {
-  const roundEvents = await ctx.db
-    .query("gameEvents")
-    .withIndex("by_gameId_round", (q) =>
-      q.eq("gameId", gameId).eq("round", round),
-    )
+  const players = await ctx.db
+    .query("players")
+    .withIndex("by_gameId", (q) => q.eq("gameId", gameId))
     .collect();
 
-  const appliedEvent = roundEvents.find(
-    (event) => event.type === "round_resolution_applied",
-  );
-  if (!appliedEvent) return [] as string[];
-
-  const payload = parseJson<{ boyPendingIds?: string[] }>(appliedEvent.payload);
-  return payload?.boyPendingIds ?? [];
+  return players
+    .filter((player) => player.role === "boy" && player.eliminatedAtRound === round)
+    .map((player) => String(player._id));
 }
 
 async function getBoyActionsForRound(
@@ -147,95 +133,26 @@ export const resolveRound = internalMutation({
       return { skipped: true, reason: "token_mismatch" as const };
     }
 
-    const roundEvents = await ctx.db
-      .query("gameEvents")
-      .withIndex("by_gameId_round", (q) =>
-        q.eq("gameId", args.gameId).eq("round", game.round),
-      )
+    const allPlayers = await ctx.db
+      .query("players")
+      .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
       .collect();
 
-    const alreadyApplied = roundEvents.some(
-      (event) => event.type === "round_resolution_applied",
+    const eliminatedThisRound = allPlayers.filter(
+      (player) => player.eliminatedAtRound === game.round,
     );
-    if (alreadyApplied) {
-      return { skipped: true, reason: "already_applied" as const };
-    }
-
-    const causesByPlayer = new Map<string, Set<EliminationCause>>();
-
-    for (const event of roundEvents) {
-      if (event.type === "public_elimination") {
-        const payload = parseJson<{ eliminatedPlayerId?: string }>(
-          event.payload,
-        );
-        if (payload?.eliminatedPlayerId) {
-          const causes =
-            causesByPlayer.get(payload.eliminatedPlayerId) ??
-            new Set<EliminationCause>();
-          causes.add("publicVote");
-          causesByPlayer.set(payload.eliminatedPlayerId, causes);
-        }
-      }
-
-      if (event.type === "mafia_vote_result") {
-        const payload = parseJson<{ eliminatedPlayerId?: string | null }>(
-          event.payload,
-        );
-        if (payload?.eliminatedPlayerId) {
-          const causes =
-            causesByPlayer.get(payload.eliminatedPlayerId) ??
-            new Set<EliminationCause>();
-          causes.add("mafiaVote");
-          causesByPlayer.set(payload.eliminatedPlayerId, causes);
-        }
-      }
-    }
-
-    const eliminatedPlayerIds = [...causesByPlayer.keys()];
-    const boyPendingIds: string[] = [];
+    const eliminatedPlayerIds = eliminatedThisRound.map((player) => String(player._id));
+    const boyPendingIds = eliminatedThisRound
+      .filter((player) => player.role === "boy")
+      .map((player) => String(player._id));
     const now = Date.now();
 
-    for (const playerId of eliminatedPlayerIds) {
-      const playerDoc = await ctx.db.get(playerId as Id<"players">);
-      if (!playerDoc || playerDoc.gameId !== args.gameId) continue;
-
-      if (playerDoc.isAlive) {
-        await ctx.db.patch(playerDoc._id, {
-          isAlive: false,
-          eliminatedAtRound: game.round,
-        });
-      }
-
-      if (playerDoc.role === "boy") {
-        boyPendingIds.push(String(playerDoc._id));
-      }
-
-      await ctx.db.insert("gameEvents", {
-        gameId: args.gameId,
-        round: game.round,
-        type: "elimination_applied",
-        payload: JSON.stringify({
-          playerId,
-          causes: [
-            ...(causesByPlayer.get(playerId) ?? new Set<EliminationCause>()),
-          ],
-        }),
-        timestamp: now,
-      });
-    }
-
     const uniqueBoyPendingIds = unique(boyPendingIds);
-
-    await ctx.db.insert("gameEvents", {
-      gameId: args.gameId,
-      round: game.round,
-      type: "round_resolution_applied",
-      payload: JSON.stringify({
-        eliminatedPlayerIds,
-        boyPendingIds: uniqueBoyPendingIds,
-      }),
-      timestamp: now,
-    });
+    const boyActions = await getBoyActionsForRound(ctx, args.gameId, game.round);
+    const actedBoyIds = new Set(boyActions.map((action) => String(action.actorId)));
+    const unresolvedBoyIds = uniqueBoyPendingIds.filter(
+      (id) => !actedBoyIds.has(id),
+    );
 
     // T13: Check win condition immediately after applying eliminations
     const winnerDetected = await checkAndTriggerWinCondition(
@@ -252,7 +169,7 @@ export const resolveRound = internalMutation({
       };
     }
 
-    if (uniqueBoyPendingIds.length === 0) {
+    if (unresolvedBoyIds.length === 0) {
       await advanceFromResolution(ctx, args.gameId);
       return {
         skipped: false,
@@ -261,20 +178,19 @@ export const resolveRound = internalMutation({
       };
     }
 
+    if (game.phaseDeadlineAt && Date.now() < game.phaseDeadlineAt) {
+      return {
+        skipped: false,
+        waitingForBoyRevenge: true,
+        eliminatedPlayerIds,
+        boyPendingIds: unresolvedBoyIds,
+        deadlineAt: game.phaseDeadlineAt,
+      };
+    }
+
     const deadlineAt = now + BOY_REVENGE_MS;
     await ctx.db.patch(game._id, {
       phaseDeadlineAt: deadlineAt,
-    });
-
-    await ctx.db.insert("gameEvents", {
-      gameId: args.gameId,
-      round: game.round,
-      type: "boy_revenge_window_opened",
-      payload: JSON.stringify({
-        boyPlayerIds: uniqueBoyPendingIds,
-        deadlineAt,
-      }),
-      timestamp: now,
     });
 
     await ctx.scheduler.runAfter(
@@ -291,7 +207,7 @@ export const resolveRound = internalMutation({
       skipped: false,
       waitingForBoyRevenge: true,
       eliminatedPlayerIds,
-      boyPendingIds: uniqueBoyPendingIds,
+      boyPendingIds: unresolvedBoyIds,
       deadlineAt,
     };
   },
@@ -376,17 +292,6 @@ export const useBoyRevenge = mutation({
       eliminatedAtRound: game.round,
     });
 
-    await ctx.db.insert("gameEvents", {
-      gameId: args.gameId,
-      round: game.round,
-      type: "boy_revenge_elimination",
-      payload: JSON.stringify({
-        boyPlayerId: me._id,
-        targetPlayerId: target._id,
-      }),
-      timestamp: now,
-    });
-
     // T13: Check win condition immediately after boy revenge elimination
     const winnerDetected = await checkAndTriggerWinCondition(
       ctx,
@@ -442,16 +347,6 @@ export const autoForfeitBoyRevenge = internalMutation({
     const acted = new Set(boyActions.map((action) => String(action.actorId)));
     const forfeitedBoyIds = pendingBoyIds.filter((id) => !acted.has(id));
 
-    if (forfeitedBoyIds.length > 0) {
-      await ctx.db.insert("gameEvents", {
-        gameId: args.gameId,
-        round: game.round,
-        type: "boy_revenge_forfeited",
-        payload: JSON.stringify({ boyPlayerIds: forfeitedBoyIds }),
-        timestamp: Date.now(),
-      });
-    }
-
     await advanceFromResolution(ctx, args.gameId);
 
     return {
@@ -492,36 +387,31 @@ export const getResolutionState = query({
         .map((u) => [u._id, u]),
     );
 
+    const eliminatedThisRound = allPlayers.filter(
+      (player) => player.eliminatedAtRound === game.round,
+    );
     const roundEvents = await ctx.db
       .query("gameEvents")
-      .withIndex("by_gameId_round", (q) =>
-        q.eq("gameId", args.gameId).eq("round", game.round),
-      )
+      .withIndex("by_gameId_round", (q) => q.eq("gameId", args.gameId).eq("round", game.round))
       .collect();
-
-    const eliminationEvents = roundEvents.filter(
-      (event) => event.type === "elimination_applied",
+    const hasPublicElimination = roundEvents.some(
+      (event) => event.eventType === "VOTE_ELIMINATION",
+    );
+    const hasMafiaElimination = roundEvents.some(
+      (event) => event.eventType === "MAFIA_ELIMINATION",
     );
 
-    const eliminated = eliminationEvents
-      .map((event) =>
-        parseJson<{ playerId?: string; causes?: EliminationCause[] }>(
-          event.payload,
-        ),
-      )
-      .filter(
-        (item): item is { playerId: string; causes?: EliminationCause[] } =>
-          Boolean(item?.playerId),
-      )
-      .map((item) => {
-        const player = allPlayers.find((p) => String(p._id) === item.playerId);
-        const user = player ? userById.get(player.userId) : null;
-        return {
-          playerId: item.playerId,
-          username: user?.username ?? "Unknown",
-          causes: item.causes ?? [],
-        };
-      });
+    const eliminated = eliminatedThisRound.map((player) => {
+      const user = userById.get(player.userId);
+      const causes: EliminationCause[] = [];
+      if (hasPublicElimination) causes.push("publicVote");
+      if (hasMafiaElimination) causes.push("mafiaVote");
+      return {
+        playerId: String(player._id),
+        username: user?.username ?? "Unknown",
+        causes,
+      };
+    });
 
     const pendingBoyIds = await getPendingBoyIdsForRound(
       ctx,

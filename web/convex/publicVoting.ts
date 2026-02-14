@@ -10,6 +10,7 @@ import {
   query,
 } from "./_generated/server";
 import { requireAuthUserId } from "./lib/auth";
+import { logGameEvent } from "./gameEvents";
 
 const PUBLIC_VOTING_MS = 45_000;
 const MAX_PUBLIC_RUNOFF_SUBROUNDS = 1;
@@ -348,17 +349,17 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
           phaseToken: nextPhaseToken,
         });
 
-        await ctx.db.insert("gameEvents", {
+        const tiedCandidatesDocs = await Promise.all(tiedCandidates.map(id => ctx.db.get(id)));
+        const tiedInfo = await Promise.all(tiedCandidatesDocs.map(async p => {
+          if (!p) return "Unknown";
+          const u = await ctx.db.get(p.userId);
+          return u?.displayName ?? u?.username ?? "Unknown";
+        }));
+
+        await logGameEvent(ctx, {
           gameId,
-          round: game.round,
-          type: "public_vote_tie",
-          payload: JSON.stringify({
-            subRound: nextSubRound,
-            tiedCandidates,
-            tally,
-            skipCount,
-          }),
-          timestamp: now,
+          eventType: "VOTE_TIE",
+          params: { players: tiedInfo.join(", ") },
         });
 
         await ctx.scheduler.runAfter(
@@ -397,29 +398,19 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
       eliminatedAtRound: game.round,
     });
 
-    await ctx.db.insert("gameEvents", {
+    const eliminatedPlayer = await ctx.db.get(eliminatedPlayerId as Id<"players">);
+    const eliminatedUser = eliminatedPlayer ? await ctx.db.get(eliminatedPlayer.userId) : null;
+    const eliminatedName = eliminatedUser?.displayName ?? eliminatedUser?.username ?? "Unknown";
+
+    await logGameEvent(ctx, {
       gameId,
-      round: game.round,
-      type: "public_elimination",
-      payload: JSON.stringify({
-        eliminatedPlayerId,
-        voteCount: tally[eliminatedPlayerId],
-        totalVotes: votes.length,
-      }),
-      timestamp: now,
+      eventType: "VOTE_ELIMINATION",
+      params: {
+        player: eliminatedName,
+      },
     });
   } else {
-    await ctx.db.insert("gameEvents", {
-      gameId,
-      round: game.round,
-      type: "no_elimination",
-      payload: JSON.stringify({
-        reason: noElimination ? "tie_or_skip" : "no_votes",
-        tally,
-        skipCount,
-      }),
-      timestamp: now,
-    });
+    // No elimination (skip or tie without runoff) - no event logged per current specs
   }
 
   await ctx.db.patch(game._id, {

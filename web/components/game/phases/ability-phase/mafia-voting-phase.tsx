@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { PlayerCard } from "@/components/ui/player-card";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -124,8 +125,8 @@ export function MafiaVotingPhase({
       />
 
       <div className="text-center space-y-1">
-        <h2 className="text-lg font-semibold">{t("title")}</h2>
-        <p className="text-sm text-zinc-500">{t("subtitle")}</p>
+        <h2 className="text-lg font-semibold text-white glow-effect">{t("title")}</h2>
+        <p className="text-sm text-white/60">{t("subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -136,41 +137,34 @@ export function MafiaVotingPhase({
             votesByTarget.find((entry) => entry.targetId === target.playerId)?.voters ?? [];
 
           return (
-            <button
+            <PlayerCard
               key={target.playerId}
-              type="button"
+              username={target.username}
+              isSelected={isSelected}
+              selectable={!acting}
               onClick={() => handleVote(target.playerId)}
+              variant={isSelected ? "selected" : "game-phase"}
+              showVoteCount={tallyCount > 0}
+              voteCount={tallyCount}
               disabled={acting}
-              className={cn(
-                "relative flex flex-col items-center gap-2 rounded-xl border p-3 transition-all",
-                "cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800",
-                isSelected && "ring-2 ring-red-500 bg-red-50 dark:bg-red-950",
-              )}
-            >
-              <span className="text-sm font-medium truncate max-w-full">
-                {target.username}
-              </span>
-              <span className="text-xs text-zinc-500">{t("tapToVote")}</span>
-
-              {tallyCount > 0 && (
-                <Badge variant="vote-count" className="absolute -top-1 -end-1">
-                  {tallyCount}
-                </Badge>
-              )}
-
-              {voters.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-1 mt-1">
-                  {voters.map((voterName) => (
-                    <span
-                      key={`${target.playerId}-${voterName}`}
-                      className="text-[9px] bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded px-1"
-                    >
-                      {voterName}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </button>
+              trailing={
+                <>
+                  <span className="text-[10px] text-white/40 mt-1">{t("tapToVote")}</span>
+                  {voters.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-1 mt-2 w-full">
+                      {voters.map((voterName) => (
+                        <span
+                          key={`${target.playerId}-${voterName}`}
+                          className="text-[9px] bg-white/10 text-white/70 rounded px-1.5 py-0.5"
+                        >
+                          {voterName}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </>
+              }
+            />
           );
         })}
       </div>

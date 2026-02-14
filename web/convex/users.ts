@@ -54,9 +54,74 @@ export const getCurrentUser = query({
         wins: 0,
         losses: 0,
       },
+      musicEnabled: user.musicEnabled ?? true,
     };
   },
 });
+
+export const updateDisplayName = mutation({
+  args: {
+    displayName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+    const displayName = args.displayName.trim();
+
+    if (displayName.length < 3 || displayName.length > 32) {
+      throw new ConvexError(
+        "Display name must be between 3 and 32 characters.",
+      );
+    }
+
+    await ctx.db.patch(userId, {
+      displayName,
+    });
+
+    return { success: true };
+  },
+});
+
+export const toggleMusic = mutation({
+  args: {
+    enabled: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+    await ctx.db.patch(userId, {
+      musicEnabled: args.enabled,
+    });
+    return { success: true };
+  },
+});
+
+export const getAuthMethod = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getOptionalAuthUserId(ctx);
+    if (!userId) return null;
+
+    const account = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) => q.eq("userId", userId))
+      .first();
+
+    if (!account) return { method: "oauth" }; // Default or unknown
+
+    return {
+      method: account.provider === "password" ? "password" : "oauth",
+    };
+  },
+});
+
+/*
+ * Note on changePassword:
+ * Direct password updates are not supported via a simple mutation because
+ * we leverage @convex-dev/auth which handles password hashing internally.
+ * To change a password, the frontend should use the `signIn` flow with
+ * `flow: "reset"` or trigger a password reset email if configured.
+ * Alternatively, use the `signIn` method with `newPassword` if the provider supports
+ * account updates (depends on configuration).
+ */
 
 export const completeProfile = mutation({
   args: {

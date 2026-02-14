@@ -9,20 +9,20 @@ import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
 const playerCardVariants = cva(
-  "relative flex w-full flex-col items-center gap-2 rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  "relative flex w-full flex-col items-center gap-2 rounded-xl border p-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background backdrop-blur-sm",
   {
     variants: {
       variant: {
-        "game-phase": "border-white/10 bg-surface/40",
-        selected: "border-primary bg-primary/10 glow-primary",
+        "game-phase": "border-white/10 bg-surface/40 hover:bg-surface/60",
+        selected: "border-primary bg-primary/20 glow-primary shadow-[0_0_15px_rgba(242,13,51,0.3)]",
         self: "border-warning/60 bg-warning/10",
         speaking: "border-success/60 bg-success/10",
         voting: "border-white/10 bg-surface/30",
-        "mafia-target": "border-danger/40 bg-danger/10",
+        "mafia-target": "border-danger/40 bg-danger/10 shadow-[0_0_15px_rgba(220,38,38,0.2)]",
         ability: "border-white/10 bg-neutral-dark/50",
         protection: "border-success/60 bg-success/10",
         dead: "border-white/5 bg-surface/20 opacity-60 grayscale",
-        lobby: "border-white/10 bg-surface/40",
+        lobby: "border-white/10 bg-surface/40 hover:bg-surface/60",
       },
       selectable: {
         true: "cursor-pointer hover:border-primary/50 hover:bg-primary/10 active:scale-[0.98]",
