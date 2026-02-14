@@ -7,7 +7,6 @@ import { ChatPanel } from "@/components/game/chat-panel";
 import { DiscussionPhase } from "@/components/game/discussion-phase";
 import { GameEventTimeline } from "@/components/game/game-event-timeline";
 import { PhaseHeader } from "@/components/game/phase-header";
-import { VoiceMessagePlayer } from "@/components/providers/voice-message-player";
 import {
   AbilityPhase,
   AbilityPhaseNightTransition,
@@ -20,6 +19,7 @@ import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
 import { RoleLogsPanel } from "@/components/game/role-logs-panel";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
+import { VoiceMessagePlayer } from "@/components/providers/voice-message-player";
 import { Icon } from "@/components/ui/icon";
 import { LoadingState } from "@/components/ui/loading-state";
 import { api } from "@/convex/_generated/api";

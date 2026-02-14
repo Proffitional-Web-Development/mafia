@@ -103,10 +103,16 @@ export function TemplatePickerPopover({
   );
 
   /** Derive a short label from the template key: "chat.template.suspect" -> "suspect" */
-  function templateLabel(key: string): string {
+  function templateLabel(key: string, placeholders: string[]): string {
     const shortKey = key.replace("chat.template.", "");
     try {
-      return t(shortKey);
+      // Provide placeholder defaults so next-intl doesn't throw for templates
+      // like "I suspect {player}" when rendered as labels in the picker.
+      const defaults: Record<string, string> = {};
+      for (const ph of placeholders) {
+        defaults[ph] = "___";
+      }
+      return t(shortKey, defaults);
     } catch {
       return shortKey;
     }
@@ -141,7 +147,7 @@ export function TemplatePickerPopover({
                 <Icon name="arrow_back" variant="round" size="sm" />
               </button>
               <span className="text-xs font-semibold text-text-secondary truncate">
-                {templateLabel(selectedTemplate.key)}
+                {templateLabel(selectedTemplate.key, selectedTemplate.placeholders)}
               </span>
             </div>
 
@@ -193,7 +199,7 @@ export function TemplatePickerPopover({
                       className="shrink-0 text-text-muted"
                     />
                   )}
-                  <span dir="auto">{templateLabel(tmpl.key)}</span>
+                  <span dir="auto">{templateLabel(tmpl.key, tmpl.placeholders)}</span>
                 </button>
               ))
             )}

@@ -87,7 +87,7 @@ export function ChatInput({
                 "px-2 py-0.5 text-[10px] font-medium rounded transition-all",
                 !anonymous
                   ? "bg-primary text-white shadow-sm"
-                  : "text-text-muted hover:text-white"
+                  : "text-text-muted hover:text-white",
               )}
             >
               {tAnon("sendAsYou")}
@@ -99,7 +99,7 @@ export function ChatInput({
                 "px-2 py-0.5 text-[10px] font-medium rounded transition-all",
                 anonymous
                   ? "bg-danger text-white shadow-sm"
-                  : "text-text-muted hover:text-white"
+                  : "text-text-muted hover:text-white",
               )}
             >
               {tAnon("sendAsMafia")}
@@ -162,9 +162,9 @@ export function ChatInput({
             placeholder={t("placeholder")}
             className={cn(
               "h-10 w-full rounded-lg border bg-surface/70 px-3 pe-10 text-sm outline-none transition-all disabled:opacity-40",
-              anonymous 
+              anonymous
                 ? "border-danger/30 focus:border-danger/60 focus:ring-1 focus:ring-danger/30 text-danger placeholder:text-danger/40"
-                : "border-white/10 text-text-primary placeholder:text-text-disabled focus:border-primary/50 focus:ring-1 focus:ring-primary/30"
+                : "border-white/10 text-text-primary placeholder:text-text-disabled focus:border-primary/50 focus:ring-1 focus:ring-primary/30",
             )}
             maxLength={MAX_LENGTH}
             dir="auto"
@@ -184,9 +184,9 @@ export function ChatInput({
           disabled={disabled || !value.trim() || sending}
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none",
-            anonymous 
-              ? "bg-danger hover:bg-danger-dark" 
-              : "bg-primary hover:bg-primary-dark"
+            anonymous
+              ? "bg-danger hover:bg-danger-dark"
+              : "bg-primary hover:bg-primary-dark",
           )}
           aria-label={t("send")}
         >

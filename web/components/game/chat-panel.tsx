@@ -131,11 +131,11 @@ export function ChatPanel({
   const handleSend = useCallback(
     async (content: string) => {
       try {
-        await sendMessage({ 
-          gameId, 
-          channel, 
+        await sendMessage({
+          gameId,
+          channel,
           content,
-          anonymous: isAnonymous && channel === "public" ? true : undefined
+          anonymous: isAnonymous && channel === "public" ? true : undefined,
         });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -171,9 +171,9 @@ export function ChatPanel({
 
     const audio = new Audio(clip.file);
     audio.volume = 0.5;
-    
+
     setPlayingClip(key);
-    
+
     audio.onended = () => setPlayingClip(null);
     audio.play().catch(() => setPlayingClip(null));
   }, []);
@@ -294,29 +294,36 @@ export function ChatPanel({
             const isMe = msg.senderId === currentUserId;
             // Note: server sends isAnonymous=true effectively, but we check prop here too
             // If anonymous, render with mafia style
-            const isAnon = msg.isAnonymous; 
+            const isAnon = msg.isAnonymous;
             const isVoice = msg.isVoice;
             const voiceKey = msg.voiceClipKey;
 
             // Resolve voice label
             let voiceLabel = null;
             if (isVoice && voiceKey) {
-               try {
-                 voiceLabel = tVoice(voiceKey);
-               } catch {
-                 voiceLabel = tVoice("fallback");
-               }
+              try {
+                voiceLabel = tVoice(voiceKey);
+              } catch {
+                voiceLabel = tVoice("fallback");
+              }
             }
-            
+
             return (
               <div
                 key={msg._id}
-                className={cn("flex gap-2", isMe && !isAnon && "flex-row-reverse")}
+                className={cn(
+                  "flex gap-2",
+                  isMe && !isAnon && "flex-row-reverse",
+                )}
               >
                 {isAnon ? (
-                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-danger text-white">
-                      <Icon name="visibility_off" size="sm" className="text-[14px]" />
-                   </div>
+                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-danger text-white">
+                    <Icon
+                      name="visibility_off"
+                      size="sm"
+                      className="text-[14px]"
+                    />
+                  </div>
                 ) : (
                   <AvatarCircle
                     username={msg.senderUsername}
@@ -324,7 +331,7 @@ export function ChatPanel({
                     className="shrink-0 mt-0.5"
                   />
                 )}
-                
+
                 <div
                   className={cn(
                     "max-w-[75%] rounded-xl px-3 py-1.5 transition-colors", // Added transition
@@ -334,34 +341,50 @@ export function ChatPanel({
                         ? "bg-primary/20 text-white"
                         : "bg-white/5 text-text-secondary",
                     msg.isTemplate && !isAnon && "border border-white/10",
-                    isVoice && "cursor-pointer hover:bg-white/10" // Add cursor pointer for voice
+                    isVoice && "cursor-pointer hover:bg-white/10", // Add cursor pointer for voice
                   )}
-                  onClick={isVoice && voiceKey ? () => playVoiceClip(voiceKey) : undefined}
+                  onClick={
+                    isVoice && voiceKey
+                      ? () => playVoiceClip(voiceKey)
+                      : undefined
+                  }
                 >
-                  <p className={cn(
-                    "text-[10px] font-semibold mb-0.5",
-                    isAnon ? "text-danger" : "text-text-muted"
-                  )}>
+                  <p
+                    className={cn(
+                      "text-[10px] font-semibold mb-0.5",
+                      isAnon ? "text-danger" : "text-text-muted",
+                    )}
+                  >
                     {isAnon ? t("anonymous.alias") : msg.senderUsername}
                   </p>
-                  
+
                   {isVoice ? (
                     <div className="flex items-center gap-2">
-                       <button 
-                         type="button"
-                         className={cn(
-                           "flex h-6 w-6 items-center justify-center rounded-full transition-colors",
-                           playingClip === voiceKey 
-                             ? "bg-primary text-white" 
-                             : "bg-white/10 text-white group-hover:bg-white/20"
-                         )}
-                       >
-                         <Icon name={playingClip === voiceKey ? "stop" : "play_arrow"} size="sm" />
-                       </button>
-                       <span className="text-xs italic select-none">{voiceLabel}</span>
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex h-6 w-6 items-center justify-center rounded-full transition-colors",
+                          playingClip === voiceKey
+                            ? "bg-primary text-white"
+                            : "bg-white/10 text-white group-hover:bg-white/20",
+                        )}
+                      >
+                        <Icon
+                          name={
+                            playingClip === voiceKey ? "stop" : "play_arrow"
+                          }
+                          size="sm"
+                        />
+                      </button>
+                      <span className="text-xs italic select-none">
+                        {voiceLabel}
+                      </span>
                     </div>
                   ) : (
-                    <p className="text-xs leading-relaxed break-words" dir="auto">
+                    <p
+                      className="text-xs leading-relaxed break-words"
+                      dir="auto"
+                    >
                       {msg.isTemplate && (
                         <Icon
                           name="bolt"
@@ -373,11 +396,13 @@ export function ChatPanel({
                       {resolveContent(msg)}
                     </p>
                   )}
-                  
-                  <p className={cn(
-                    "mt-0.5 text-end text-[9px]",
-                    isAnon ? "text-danger/60" : "text-text-muted"
-                  )}>
+
+                  <p
+                    className={cn(
+                      "mt-0.5 text-end text-[9px]",
+                      isAnon ? "text-danger/60" : "text-text-muted",
+                    )}
+                  >
                     {formatRelativeTime(msg.timestamp, locale)}
                   </p>
                 </div>
@@ -395,10 +420,10 @@ export function ChatPanel({
             channel={channel}
             players={templatePlayers}
             onClose={() => setTemplatePickerOpen(false)}
-            anonymous={isAnonymous} 
+            anonymous={isAnonymous}
           />
         )}
-        
+
         {voicePickerOpen && (
           <VoicePickerPopover
             gameId={gameId}
@@ -413,14 +438,20 @@ export function ChatPanel({
           disabled={!canSend}
           disabledReason={disabledReason}
           onOpenTemplates={
-            canSend 
-              ? () => { setTemplatePickerOpen((o) => !o); setVoicePickerOpen(false); } 
+            canSend
+              ? () => {
+                  setTemplatePickerOpen((o) => !o);
+                  setVoicePickerOpen(false);
+                }
               : undefined
           }
-           onOpenVoice={
-             canSend 
-               ? () => { setVoicePickerOpen((o) => !o); setTemplatePickerOpen(false); }
-               : undefined
+          onOpenVoice={
+            canSend
+              ? () => {
+                  setVoicePickerOpen((o) => !o);
+                  setTemplatePickerOpen(false);
+                }
+              : undefined
           }
           anonymous={showAnonymousToggle ? isAnonymous : undefined}
           onToggleAnonymous={showAnonymousToggle ? setIsAnonymous : undefined}
