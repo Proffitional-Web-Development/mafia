@@ -79,6 +79,8 @@ export const sendChatMessage = mutation({
     // Template message
     templateKey: v.optional(v.string()),
     templateParams: v.optional(v.any()),
+    // Anonymous mode
+    anonymous: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
@@ -101,6 +103,10 @@ export const sendChatMessage = mutation({
       if (player.role !== "mafia") {
         throw new ConvexError("NOT_MAFIA_MEMBER");
       }
+      // Anonymous not allowed in mafia channel
+      if (args.anonymous) {
+        throw new ConvexError("ANONYMOUS_NOT_ALLOWED");
+      }
     }
 
     if (args.channel === "public") {
@@ -113,6 +119,17 @@ export const sendChatMessage = mutation({
       const room = await ctx.db.get(game.roomId);
       if (room && room.settings.chatEnabled === false) {
         throw new ConvexError("Chat is disabled by the room owner.");
+      }
+    }
+
+    // ── Anonymous Validation ────────────────────────────────────────────
+    if (args.anonymous) {
+      if (player.role !== "mafia") {
+        throw new ConvexError("ANONYMOUS_NOT_ALLOWED");
+      }
+      if (args.channel !== "public") {
+        // redundancy check, already covered above but good for safety
+        throw new ConvexError("ANONYMOUS_NOT_ALLOWED");
       }
     }
 
@@ -158,20 +175,33 @@ export const sendChatMessage = mutation({
       throw new ConvexError("Either content or templateKey must be provided.");
     }
 
-    // ── Denormalize sender username ─────────────────────────────────────
-    const user = await ctx.db.get(userId);
-    const senderUsername = user?.username ?? "Unknown";
+    // ── Resolve Sender Info ─────────────────────────────────────────────
+    let senderUsername: string;
+    let isAnonymous = false;
+    let anonymousAlias: string | undefined;
+
+    if (args.anonymous) {
+      senderUsername = "MAFIA";
+      isAnonymous = true;
+      anonymousAlias = "MAFIA";
+    } else {
+      const user = await ctx.db.get(userId);
+      senderUsername = user?.username ?? "Unknown";
+    }
 
     // ── Insert message ──────────────────────────────────────────────────
     const messageId = await ctx.db.insert("chatMessages", {
       gameId: args.gameId,
       channel: args.channel,
-      senderId: userId,
+      senderId: userId, // Real sender ID as per Option A
+      realSenderId: userId, // Redundant but requested
       senderUsername,
       content,
       isTemplate: isTemplate || undefined,
       templateKey,
       templateParams,
+      isAnonymous: isAnonymous || undefined,
+      anonymousAlias,
       timestamp: Date.now(),
     });
 
@@ -214,17 +244,38 @@ export const getChatMessages = query({
       .order("asc")
       .take(MAX_MESSAGES_RETURNED);
 
-    return messages.map((msg) => ({
-      _id: msg._id,
-      senderId: msg.senderId,
-      senderUsername: msg.senderUsername,
-      content: msg.content,
-      isTemplate: msg.isTemplate,
-      templateKey: msg.templateKey,
-      templateParams: msg.templateParams,
-      timestamp: msg.timestamp,
-      channel: msg.channel,
-    }));
+    return messages.map((msg) => {
+      // Hide identity for anonymous messages in public channel
+      if (msg.isAnonymous && msg.channel === "public") {
+        return {
+          _id: msg._id,
+          senderId: null, // Hide real sender
+          senderUsername: msg.anonymousAlias ?? "MAFIA",
+          content: msg.content,
+          isTemplate: msg.isTemplate,
+          templateKey: msg.templateKey,
+          templateParams: msg.templateParams,
+          timestamp: msg.timestamp,
+          channel: msg.channel,
+          isAnonymous: true,
+          anonymousAlias: msg.anonymousAlias,
+        };
+      }
+
+      return {
+        _id: msg._id,
+        senderId: msg.senderId,
+        senderUsername: msg.senderUsername,
+        content: msg.content,
+        isTemplate: msg.isTemplate,
+        templateKey: msg.templateKey,
+        templateParams: msg.templateParams,
+        timestamp: msg.timestamp,
+        channel: msg.channel,
+        isAnonymous: msg.isAnonymous, // Just validation, likely undefined or false
+        anonymousAlias: msg.anonymousAlias,
+      };
+    });
   },
 });
 

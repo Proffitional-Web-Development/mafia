@@ -511,6 +511,14 @@
       "mafiaAvoid": "لا تستهدفوا {player}",
       "mafiaBlend": "تصرفوا بشكل طبيعي",
       "mafiaAgree": "موافق"
+    },
+    "anonymous": {
+      "alias": "مافيا",
+      "sendAs": "أرسل كـ",
+      "sendAsYou": "أنت",
+      "sendAsMafia": "مافيا",
+      "active": "الإرسال كمافيا",
+      "notAllowed": "فقط أعضاء المافيا يمكنهم إرسال رسائل مجهولة"
     }
   }
 }

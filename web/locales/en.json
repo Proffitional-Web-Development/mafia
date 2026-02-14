@@ -511,6 +511,14 @@
       "mafiaAvoid": "Don't target {player}",
       "mafiaBlend": "Act normal, blend in",
       "mafiaAgree": "Agreed"
+    },
+    "anonymous": {
+      "alias": "MAFIA",
+      "sendAs": "Send as",
+      "sendAsYou": "You",
+      "sendAsMafia": "MAFIA",
+      "active": "Sending as MAFIA",
+      "notAllowed": "Only Mafia members can send anonymous messages"
     }
   }
 }

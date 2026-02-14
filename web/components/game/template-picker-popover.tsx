@@ -21,6 +21,7 @@ interface TemplatePickerPopoverProps {
     avatarUrl?: string;
   }>;
   onClose: () => void;
+  anonymous?: boolean;
   className?: string;
 }
 
@@ -33,6 +34,7 @@ export function TemplatePickerPopover({
   channel,
   players,
   onClose,
+  anonymous,
   className,
 }: TemplatePickerPopoverProps) {
   const t = useTranslations("chat.template");
@@ -65,6 +67,7 @@ export function TemplatePickerPopover({
             channel,
             templateKey: key,
             templateParams: {},
+            anonymous,
           });
           onClose();
         } catch {
@@ -74,7 +77,7 @@ export function TemplatePickerPopover({
         }
       }
     },
-    [gameId, channel, sendMessage, onClose],
+    [gameId, channel, sendMessage, onClose, anonymous],
   );
 
   const handleSelectPlayer = useCallback(
@@ -87,6 +90,7 @@ export function TemplatePickerPopover({
           channel,
           templateKey: selectedTemplateKey,
           templateParams: { player: username },
+          anonymous,
         });
         onClose();
       } catch {
@@ -95,7 +99,7 @@ export function TemplatePickerPopover({
         setSending(false);
       }
     },
-    [gameId, channel, selectedTemplateKey, sendMessage, onClose],
+    [gameId, channel, selectedTemplateKey, sendMessage, onClose, anonymous],
   );
 
   /** Derive a short label from the template key: "chat.template.suspect" -> "suspect" */

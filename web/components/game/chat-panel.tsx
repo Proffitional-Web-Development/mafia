@@ -61,6 +61,7 @@ export function ChatPanel({
   const [channel, setChannel] = useState<Channel>("public");
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [rateLimited, setRateLimited] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // ── Queries ───────────────────────────────────────────────────────────
@@ -76,9 +77,18 @@ export function ChatPanel({
   const chatEnabled = chatState?.chatEnabled ?? true;
   const chatMuted = chatState?.chatMuted ?? false;
 
+  // Reset anonymous mode if switching channels or losing mafia status
+  useEffect(() => {
+    if (channel !== "public" || !isMafia) {
+      setIsAnonymous(false);
+    }
+  }, [channel, isMafia]);
+
   // ── Derived ───────────────────────────────────────────────────────────
   const canSend =
     isAlive && (channel === "mafia" || (chatEnabled && !chatMuted));
+
+  const showAnonymousToggle = isMafia && channel === "public";
 
   const disabledReason:
     | "muted"
@@ -110,13 +120,18 @@ export function ChatPanel({
     if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [open]);
+  }, [open, messages?.length]);
 
   // ── Handlers ──────────────────────────────────────────────────────────
   const handleSend = useCallback(
     async (content: string) => {
       try {
-        await sendMessage({ gameId, channel, content });
+        await sendMessage({ 
+          gameId, 
+          channel, 
+          content,
+          anonymous: isAnonymous && channel === "public" ? true : undefined
+        });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         if (msg.includes("RATE_LIMITED")) {
@@ -126,7 +141,7 @@ export function ChatPanel({
         throw err;
       }
     },
-    [gameId, channel, sendMessage],
+    [gameId, channel, sendMessage, isAnonymous],
   );
 
   const handleToggleChat = useCallback(async () => {
@@ -259,27 +274,43 @@ export function ChatPanel({
         ) : (
           messages.map((msg) => {
             const isMe = msg.senderId === currentUserId;
+            // Note: server sends isAnonymous=true effectively, but we check prop here too
+            // If anonymous, render with mafia style
+            const isAnon = msg.isAnonymous; 
+            
             return (
               <div
                 key={msg._id}
-                className={cn("flex gap-2", isMe && "flex-row-reverse")}
+                className={cn("flex gap-2", isMe && !isAnon && "flex-row-reverse")}
               >
-                <AvatarCircle
-                  username={msg.senderUsername}
-                  size={24}
-                  className="shrink-0 mt-0.5"
-                />
+                {isAnon ? (
+                   <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-danger text-white">
+                      <Icon name="visibility_off" size="sm" className="text-[14px]" />
+                   </div>
+                ) : (
+                  <AvatarCircle
+                    username={msg.senderUsername}
+                    size={24}
+                    className="shrink-0 mt-0.5"
+                  />
+                )}
+                
                 <div
                   className={cn(
                     "max-w-[75%] rounded-xl px-3 py-1.5",
-                    isMe
-                      ? "bg-primary/20 text-white"
-                      : "bg-white/5 text-text-secondary",
-                    msg.isTemplate && "border border-white/10",
+                    isAnon
+                      ? "bg-danger/20 text-danger-light border border-danger/30"
+                      : isMe
+                        ? "bg-primary/20 text-white"
+                        : "bg-white/5 text-text-secondary",
+                    msg.isTemplate && !isAnon && "border border-white/10",
                   )}
                 >
-                  <p className="text-[10px] font-semibold text-text-muted mb-0.5">
-                    {msg.senderUsername}
+                  <p className={cn(
+                    "text-[10px] font-semibold mb-0.5",
+                    isAnon ? "text-danger" : "text-text-muted"
+                  )}>
+                    {isAnon ? t("anonymous.alias") : msg.senderUsername}
                   </p>
                   <p className="text-xs leading-relaxed break-words" dir="auto">
                     {msg.isTemplate && (
@@ -292,7 +323,10 @@ export function ChatPanel({
                     )}
                     {resolveContent(msg)}
                   </p>
-                  <p className="mt-0.5 text-end text-[9px] text-text-muted">
+                  <p className={cn(
+                    "mt-0.5 text-end text-[9px]",
+                    isAnon ? "text-danger/60" : "text-text-muted"
+                  )}>
                     {formatRelativeTime(msg.timestamp, locale)}
                   </p>
                 </div>
@@ -310,6 +344,7 @@ export function ChatPanel({
             channel={channel}
             players={templatePlayers}
             onClose={() => setTemplatePickerOpen(false)}
+            anonymous={isAnonymous} 
           />
         )}
 
@@ -320,6 +355,8 @@ export function ChatPanel({
           onOpenTemplates={
             canSend ? () => setTemplatePickerOpen((o) => !o) : undefined
           }
+          anonymous={showAnonymousToggle ? isAnonymous : undefined}
+          onToggleAnonymous={showAnonymousToggle ? setIsAnonymous : undefined}
         />
       </div>
     </div>

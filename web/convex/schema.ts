@@ -233,6 +233,9 @@ export default defineSchema({
     isTemplate: v.optional(v.boolean()),
     templateKey: v.optional(v.string()),
     templateParams: v.optional(v.any()),
+    isAnonymous: v.optional(v.boolean()),
+    anonymousAlias: v.optional(v.string()),
+    realSenderId: v.optional(v.id("users")),
     timestamp: v.number(),
   })
     .index("by_gameId_channel", ["gameId", "channel"])
