@@ -3,21 +3,33 @@
 ## Architecture
 
 ```
-┌─────────────┐      ┌─────────────────┐      ┌──────────────────┐
-│   Vercel     │◄────►│   Convex Cloud  │      │   Sentry         │
-│  (Next.js)   │      │  (Backend/DB)   │      │  (Error Track.)  │
-└──────┬───────┘      └────────┬────────┘      └──────────────────┘
-       │                       │
-       └───── Custom Domain ───┘
+┌────────────────────┐      ┌─────────────────┐      ┌──────────────────┐
+│ Docker Compose Host │◄────►│   Convex Cloud  │      │   Sentry         │
+│ (Next.js container) │      │  (Backend/DB)   │      │  (Error Track.)  │
+└──────────┬──────────┘      └────────┬────────┘      └──────────────────┘
+           │                           │
+           └────── Custom Domain ──────┘
 ```
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) ≥ 20
 - A [Convex](https://convex.dev/) account with a production project
-- A [Vercel](https://vercel.com/) account
+- A Linux server with Docker Engine + Docker Compose plugin
 - A [Sentry](https://sentry.io/) project (optional but recommended)
 - A [GitHub](https://github.com/) repository with this codebase
+
+---
+
+## Docker Compose + GHCR (Current Production Path)
+
+- Frontend image is built from `web/Dockerfile`.
+- Image is pushed to GitHub Container Registry as `ghcr.io/<owner>/mafia-web`.
+- Server deploy uses `docker-compose.prod.yml` with `APP_TAG=<git_sha>`.
+- The workflow `.github/workflows/deploy.yml` performs:
+       1) Convex production deploy,
+       2) Docker build + GHCR push,
+       3) SSH compose rollout (when SSH secrets are configured).
 
 ---
 
@@ -50,35 +62,34 @@ After deployment, check **Convex Dashboard → Cron Jobs** to confirm:
 
 ---
 
-## 2. Vercel Deployment
+## 2. Docker Host Deployment
 
-### Link Repository
+### Prepare Server
 
-1. Go to [vercel.com/new](https://vercel.com/new)
-2. Import your GitHub repository
-3. Set **Root Directory** to `web`
-4. Framework Preset: **Next.js**
+Install Docker and Docker Compose plugin, then create deployment directory:
 
-### Environment Variables in Vercel
+```bash
+sudo mkdir -p /opt/mafia
+sudo chown -R $USER:$USER /opt/mafia
+```
 
-Add these in **Vercel → Project Settings → Environment Variables**:
+Create `/opt/mafia/.env.production` from `.env.production.example` and fill values.
+
+### Runtime Environment Variables
+
+Set these in `.env.production` on the server:
 
 | Variable                  | Scope       | Value                                    |
 |---------------------------|-------------|------------------------------------------|
 | `NEXT_PUBLIC_CONVEX_URL`  | All         | `https://<slug>.convex.cloud`            |
-| `CONVEX_DEPLOY_KEY`       | Production  | From Convex Dashboard → Deploy Keys      |
+| `NODE_ENV`                | All         | `production`                             |
 | `NEXT_PUBLIC_SENTRY_DSN`  | All         | Sentry DSN (optional)                    |
 | `SENTRY_ORG`              | All         | Sentry org slug (optional)               |
 | `SENTRY_PROJECT`          | All         | Sentry project slug (optional)           |
 | `SENTRY_AUTH_TOKEN`       | All         | Sentry auth token (optional)             |
 | `NEXT_PUBLIC_APP_VERSION` | All         | e.g., `1.0.0`                            |
 
-### Custom Domain
-
-1. Go to **Vercel → Project Settings → Domains**
-2. Add your custom domain
-3. Configure DNS records as instructed by Vercel
-4. SSL is automatically provisioned
+Use Nginx/Caddy/Traefik in front of the container for TLS + domain.
 
 ---
 
@@ -92,15 +103,18 @@ Go to **GitHub → Repository → Settings → Secrets → Actions** and add:
 |----------------------|---------------------------------------------|
 | `CONVEX_DEPLOY_KEY`  | Production deploy key from Convex Dashboard |
 | `NEXT_PUBLIC_CONVEX_URL` | Convex production URL                  |
-| `VERCEL_ORG_ID`      | From `.vercel/project.json` or dashboard    |
-| `VERCEL_PROJECT_ID`  | From `.vercel/project.json` or dashboard    |
-| `VERCEL_TOKEN`       | Vercel personal access token                |
+| `GHCR_PULL_USER`     | Username with read access to GHCR           |
+| `GHCR_PULL_TOKEN`    | PAT with `read:packages`                    |
+| `DEPLOY_SSH_HOST`    | Target server hostname/IP                    |
+| `DEPLOY_SSH_PORT`    | SSH port (optional, default 22)             |
+| `DEPLOY_SSH_USER`    | SSH user                                     |
+| `DEPLOY_SSH_KEY`     | Private key for SSH deploy                   |
 | `PRODUCTION_URL`     | Your production URL (for health checks)     |
 
 ### How CI/CD Works
 
 - **On PR**: Runs lint + typecheck + build. Deploys Convex preview.
-- **On merge to `main`**: Deploys Convex functions first, then Vercel production, then runs a health check.
+- **On merge to `main`**: Deploys Convex, builds and pushes GHCR image, then performs `docker compose pull && up -d` over SSH.
 
 ### Branch Protection (Recommended)
 
@@ -146,7 +160,7 @@ Monitor in the [Convex Dashboard](https://dashboard.convex.dev/):
 ## 5. Pre-Launch Checklist
 
 - [ ] Production Convex deployment created and functions deployed
-- [ ] Vercel project linked, builds passing
+- [ ] Docker host reachable over SSH from GitHub Actions
 - [ ] Custom domain + SSL configured
 - [ ] All environment variables set in Vercel and Convex
 - [ ] GitHub Secrets configured for CI/CD

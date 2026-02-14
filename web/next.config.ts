@@ -5,6 +5,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  output: "standalone",
   async headers() {
     return [
       {
