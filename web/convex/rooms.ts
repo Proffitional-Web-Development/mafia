@@ -15,6 +15,7 @@ import {
   validateMafiaCount,
 } from "./lib/gameRules";
 import { requireAuthUserId } from "./lib/auth";
+import { rateLimit } from "./lib/rateLimiter";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -103,6 +104,13 @@ export const createRoom = mutation({
     const userId = await requireAuthUserId(ctx);
     const now = Date.now();
 
+    // Rate limit: max 5 rooms per minute per user
+    await rateLimit(ctx, {
+      key: `${userId}:createRoom`,
+      limit: 5,
+      windowMs: 60_000,
+    });
+
     // Generate unique code with retry
     let code = generateRoomCode();
     let attempts = 0;
@@ -169,6 +177,14 @@ export const joinRoom = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
+
+    // Rate limit: max 10 join attempts per minute per user
+    await rateLimit(ctx, {
+      key: `${userId}:joinRoom`,
+      limit: 10,
+      windowMs: 60_000,
+    });
+
     let room = args.roomId ? await ctx.db.get(args.roomId) : null;
     const normalizedCode = args.code?.trim().toUpperCase();
 

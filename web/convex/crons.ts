@@ -18,4 +18,11 @@ crons.interval(
   internal.cleanup.cleanupExpiredRooms,
 );
 
+// Every hour, purge expired rate-limit entries to keep the table small.
+crons.interval(
+  "cleanup expired rate limits",
+  { hours: 1 },
+  internal.cleanup.cleanupExpiredRateLimits,
+);
+
 export default crons;

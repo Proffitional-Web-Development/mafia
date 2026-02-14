@@ -11,6 +11,7 @@ import {
 } from "./_generated/server";
 import { requireAuthUserId } from "./lib/auth";
 import { logGameEvent } from "./gameEvents";
+import { logger } from "./lib/logger";
 
 const PHASE_ORDER = [
   "lobby",
@@ -194,8 +195,11 @@ async function finishGame(
   reason: string,
 ) {
   if (game.phase === "finished") {
+    logger.warn("game.finish.skipped", { gameId: game._id, reason: "already finished" });
     return { phase: "finished" as const, round: game.round };
   }
+
+  logger.info("game.finish", { gameId: game._id, winnerFaction, reason, round: game.round });
 
   const players = await getPlayersByGame(ctx, game._id);
   for (const player of players) {
@@ -236,6 +240,8 @@ async function finishGame(
     cleanupScheduledId,
   });
 
+  logger.info("game.cleanup.scheduled", { gameId: game._id, cleanupScheduledId, delayMs: 60 * 60 * 1000 });
+
   /*
   await appendTransitionEvent(...);
   await appendGameFinishedEvent(...);
@@ -256,6 +262,13 @@ async function transitionCore(
   const game = await getGameOrThrow(ctx, args.gameId);
   assertOrThrow(game.phase !== "finished", "Game is already finished.");
   const currentPhase = game.phase as CorePhase;
+
+  logger.info("game.transition.start", {
+    gameId: String(args.gameId),
+    from: currentPhase,
+    reason: args.reason,
+    round: game.round,
+  });
 
   const room = await getRoomOrThrow(ctx, game.roomId);
   const players = await getPlayersByGame(ctx, game._id);

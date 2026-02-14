@@ -17,7 +17,6 @@ Deploy the application to production with monitoring, error tracking, and CI/CD.
 
 1. Set up GitHub Actions (or equivalent):
    - Lint + type-check on PR
-   - Run E2E tests on PR
    - Auto-deploy to preview on PR (Vercel preview + Convex dev)
    - Auto-deploy to production on merge to `main`
 2. Branch protection: require passing checks before merge

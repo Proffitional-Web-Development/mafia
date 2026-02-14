@@ -233,4 +233,10 @@ export default defineSchema({
   })
     .index("by_gameId_channel", ["gameId", "channel"])
     .index("by_gameId_timestamp", ["gameId", "timestamp"]),
+
+  rateLimits: defineTable({
+    key: v.string(),
+    count: v.number(),
+    windowStart: v.number(),
+  }).index("by_key", ["key"]),
 });

@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import { internalMutation, type MutationCtx } from "./_generated/server";
+import { logger } from "./lib/logger";
 
 const BATCH_SIZE = 100;
 const EXPIRED_ROOM_MS = 3 * 60 * 60 * 1000;
@@ -87,10 +88,12 @@ export const cleanupFinishedGame = internalMutation({
   handler: async (ctx, args) => {
     const game = await ctx.db.get(args.gameId);
     if (!game) {
+      logger.warn("cleanup.game.notFound", { gameId: args.gameId });
       return { cleaned: false, reason: "GAME_NOT_FOUND" as const };
     }
 
     if (game.phase !== "finished") {
+      logger.warn("cleanup.game.notFinished", { gameId: args.gameId, phase: game.phase });
       return { cleaned: false, reason: "GAME_NOT_FINISHED" as const };
     }
 
@@ -100,9 +103,14 @@ export const cleanupFinishedGame = internalMutation({
       await ctx.scheduler.runAfter(0, internal.cleanup.cleanupFinishedGame, {
         gameId: game._id,
       });
-      console.log(
-        `cleanupFinishedGame (batched) game=${String(game._id)} players=${deleted.players} votes=${deleted.votes} actions=${deleted.actions} events=${deleted.events} chat=${deleted.chatMessages}`,
-      );
+      logger.info("cleanup.game.batch", {
+        gameId: String(game._id),
+        players: deleted.players,
+        votes: deleted.votes,
+        actions: deleted.actions,
+        events: deleted.events,
+        chat: deleted.chatMessages,
+      });
       return {
         cleaned: false,
         scheduledContinuation: true,
@@ -128,6 +136,14 @@ export const cleanupFinishedGame = internalMutation({
     console.log(
       `Cleaned up game ${String(game._id)} — deleted ${deleted.players} players, ${deleted.votes} votes, ${deleted.actions} actions, ${deleted.events} events, ${deleted.chatMessages} chat messages`,
     );
+    logger.info("cleanup.game.done", {
+      gameId: String(game._id),
+      players: deleted.players,
+      votes: deleted.votes,
+      actions: deleted.actions,
+      events: deleted.events,
+      chat: deleted.chatMessages,
+    });
 
     return {
       cleaned: true,
@@ -245,9 +261,11 @@ export const cleanupExpiredRooms = internalMutation({
       });
 
       const hoursAgo = ((Date.now() - room.createdAt) / (60 * 60 * 1000)).toFixed(2);
-      console.log(
-        `Cleaned up expired room ${String(room._id)} (created ${hoursAgo}h ago)`,
-      );
+      logger.info("cleanup.room.expired", {
+        roomId: String(room._id),
+        hoursAgo: Number(hoursAgo),
+        hadGame: !!room.currentGameId,
+      });
     }
 
     const scheduledContinuation = expiredRooms.length === EXPIRED_ROOM_BATCH;
@@ -259,5 +277,35 @@ export const cleanupExpiredRooms = internalMutation({
       cleaned: expiredRooms.length,
       scheduledContinuation,
     };
+  },
+});
+
+/**
+ * Purge rate-limit records whose window has expired (older than 5 minutes).
+ * Runs via cron to keep the rateLimits table small.
+ */
+const RATE_LIMIT_TTL_MS = 5 * 60 * 1000;
+
+export const cleanupExpiredRateLimits = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const cutoff = Date.now() - RATE_LIMIT_TTL_MS;
+
+    const expired = await ctx.db
+      .query("rateLimits")
+      .filter((q) => q.lt(q.field("windowStart"), cutoff))
+      .take(BATCH_SIZE);
+
+    for (const entry of expired) {
+      await ctx.db.delete(entry._id);
+    }
+
+    if (expired.length === BATCH_SIZE) {
+      await ctx.scheduler.runAfter(0, internal.cleanup.cleanupExpiredRateLimits, {});
+    }
+
+    logger.info("cleanup.rateLimits", { deleted: expired.length, hasMore: expired.length === BATCH_SIZE });
+
+    return { deleted: expired.length };
   },
 });
