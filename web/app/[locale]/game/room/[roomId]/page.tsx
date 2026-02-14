@@ -16,6 +16,7 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { RoomCodeCard } from "@/components/ui/room-code-card";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
+import { TextInput } from "@/components/ui/text-input";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
@@ -43,15 +44,31 @@ export default function RoomPage({
 
   // If room is in-game and has a currentGameId, show the game view
   if (roomState.status === "in-game" && roomState.currentGameId) {
-    return (
-      <GameRouter
-        gameId={roomState.currentGameId}
-        currentUserId={currentUser.id}
-      />
-    );
+    // Check if user is a member/player? If not, they shouldn't see GameRouter yet?
+    // GameRouter loads game state. If not a player, query fails?
+    // But roomState returned currentGameId.
+    // If not a member, we should probably redirect or error in RoomPage logic earlier?
+    // But let's stick to RoomPage logic -> LobbyView handles joining if waiting.
+    // If in-game, and user is NOT a member...
+    const isMember = roomState.members.some((m) => m.userId === currentUser.id);
+    if (!isMember) {
+       // Cannot join in-game room via this route currently
+       // Show error or redirect
+       // For now, let's render LobbyView which will show "Game started" via auto-join logic?
+       // But LobbyView expects roomState.
+       // If status is in-game, joinRoomByLink will return GAME_STARTED.
+       // So we can fall through to LobbyView logic if !isMember?
+    } else {
+        return (
+          <GameRouter
+            gameId={roomState.currentGameId}
+            currentUserId={currentUser.id}
+          />
+        );
+    }
   }
 
-  // Otherwise show the lobby
+  // Otherwise show the lobby (or handle join if game started but not member)
   return (
     <LobbyView
       roomId={roomId as Id<"rooms">}
@@ -88,6 +105,7 @@ function LobbyView({
   const kickPlayer = useMutation(api.rooms.kickPlayer);
   const leaveRoom = useMutation(api.rooms.leaveRoom);
   const startGame = useMutation(api.rooms.startGame);
+  const joinRoomByLink = useMutation(api.rooms.joinRoomByLink);
   const mafiaInfo = useQuery(api.rooms.getMaxAllowedMafiaInfo, { roomId });
 
   const [starting, setStarting] = useState(false);
@@ -103,9 +121,53 @@ function LobbyView({
     username: string;
   } | null>(null);
 
+  // Auto-join state
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [joining, setJoining] = useState(false);
+  const [hasAttemptedAutoJoin, setHasAttemptedAutoJoin] = useState(false);
+
   const isOwner = roomState.ownerId === currentUserId;
   const memberCount = roomState.members.length;
   const canStart = memberCount >= 4;
+  const isMember = roomState.members.some((m) => m.userId === currentUserId);
+
+  function redirectToLobbyWithJoinError(
+    key: "gameStarted" | "roomFull" | "notFound" | "passwordRequired",
+  ) {
+    router.replace(`/game?joinError=${key}`);
+  }
+
+  useEffect(() => {
+    if (isMember || hasAttemptedAutoJoin || joining || passwordDialogOpen) return;
+
+    const autoJoin = async () => {
+      setJoining(true);
+      setHasAttemptedAutoJoin(true);
+      try {
+        const result = await joinRoomByLink({ roomId });
+        if (!result.success) {
+          if (result.error === "PASSWORD_REQUIRED") {
+            setPasswordDialogOpen(true);
+          } else if (result.error === "GAME_STARTED") {
+            redirectToLobbyWithJoinError("gameStarted");
+          } else if (result.error === "ROOM_FULL") {
+            redirectToLobbyWithJoinError("roomFull");
+          } else if (result.error === "ROOM_NOT_FOUND") {
+            redirectToLobbyWithJoinError("notFound");
+          } else if (result.error === "INVALID_PASSWORD") {
+            setError(t("join.passwordRequired")); // Should not happen on auto-join
+          }
+        }
+      } catch (e) {
+        setError(et(mapAppErrorKey(e)));
+      } finally {
+        setJoining(false);
+      }
+    };
+    
+    autoJoin();
+  }, [isMember, roomId, joinRoomByLink, hasAttemptedAutoJoin, joining, passwordDialogOpen, et, t]);
 
   useEffect(() => {
     if (
@@ -276,6 +338,33 @@ function LobbyView({
       setError(et(mapAppErrorKey(e)));
     } finally {
       setMemeUpdating(false);
+    }
+  }
+
+  async function handlePasswordJoin() {
+    setJoining(true);
+    setError(null);
+    try {
+      const result = await joinRoomByLink({ roomId, password: passwordInput });
+      if (result.success) {
+        setPasswordDialogOpen(false);
+      } else {
+        if (result.error === "INVALID_PASSWORD" || result.error === "PASSWORD_REQUIRED") {
+          setError(t("join.passwordRequired"));
+        } else if (result.error === "GAME_STARTED") {
+          redirectToLobbyWithJoinError("gameStarted");
+        } else if (result.error === "ROOM_FULL") {
+          redirectToLobbyWithJoinError("roomFull");
+        } else if (result.error === "ROOM_NOT_FOUND") {
+          redirectToLobbyWithJoinError("notFound");
+        } else {
+          setError(result.error ?? "Unknown error");
+        }
+      }
+    } catch(e) {
+      setError(et(mapAppErrorKey(e)));
+    } finally {
+      setJoining(false);
     }
   }
 
@@ -472,34 +561,6 @@ function LobbyView({
             </section>
 
             <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
-              <p className="mb-2 text-sm font-medium text-white">
-                {t("enabledRoles")}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {(["sheikh", "girl", "boy"] as const).map((role) => (
-                  <label
-                    key={role}
-                    className="flex items-center gap-1.5 text-sm text-text-secondary"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={roomState.settings.enabledRoles[role]}
-                      disabled={!isOwner}
-                      onChange={(e) =>
-                        handleSettingChange("enabledRoles", {
-                          ...roomState.settings.enabledRoles,
-                          [role]: e.target.checked,
-                        })
-                      }
-                      className="accent-primary"
-                    />
-                    <RoleName role={role} />
-                  </label>
-                ))}
-              </div>
-            </section>
-
-            <section className="rounded-2xl border border-white/10 bg-surface/60 p-4">
               <p className="mb-2 text-sm font-medium text-white">{t("memeLevel.title")}</p>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:grid-cols-1">
                 {([
@@ -592,6 +653,29 @@ function LobbyView({
         onConfirm={handleKick}
         onCancel={() => setKickTarget(null)}
       />
+
+       {/* Password Dialog */}
+       {passwordDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+           <div className="w-full max-w-sm rounded-xl border border-white/10 bg-surface p-6 shadow-xl space-y-4">
+             <h3 className="text-lg font-semibold text-white">{t("enterPrivateRoomPassword")}</h3>
+             <TextInput 
+                value={passwordInput}
+               onChange={(event) => setPasswordInput(event.target.value)}
+                placeholder={t("optionalRoomPassword")}
+                type="password"
+             />
+             <div className="flex justify-end gap-3">
+               <SecondaryButton onClick={() => router.push("/game")} disabled={joining}>
+                 {ct("cancel")}
+               </SecondaryButton>
+               <PrimaryButton onClick={handlePasswordJoin} loading={joining}>
+                 {ct("confirm")}
+               </PrimaryButton>
+             </div>
+           </div>
+        </div>
+      )}
     </main>
   );
 }

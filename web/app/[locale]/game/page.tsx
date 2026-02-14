@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { UserStatusCard } from "@/components/game/user-status-card";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -35,6 +36,7 @@ export default function GamePage() {
   const ct = useTranslations("common");
   const et = useTranslations("errors");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const currentUser = useQuery(api.users.getCurrentUser);
   const activeRooms = useQuery(api.rooms.listActiveRooms, { limit: 50 });
   const createRoom = useMutation(api.rooms.createRoom);
@@ -53,6 +55,18 @@ export default function GamePage() {
   const [joining, setJoining] = useState(false);
   const [joiningRoomId, setJoiningRoomId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const joinError = searchParams.get("joinError");
+  const joinErrorMessage =
+    joinError === "gameStarted"
+      ? t("join.gameStarted")
+      : joinError === "roomFull"
+        ? t("join.roomFull")
+        : joinError === "notFound"
+          ? t("join.notFound")
+          : joinError === "passwordRequired"
+            ? t("join.passwordRequired")
+            : null;
 
   if (!currentUser) {
     return (
@@ -394,6 +408,14 @@ export default function GamePage() {
           <StatusBanner
             message={error}
             variant="error"
+            className="text-center"
+          />
+        ) : null}
+
+        {joinErrorMessage ? (
+          <StatusBanner
+            message={joinErrorMessage}
+            variant="warning"
             className="text-center"
           />
         ) : null}

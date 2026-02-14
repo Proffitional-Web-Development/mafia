@@ -11,4 +11,11 @@ crons.interval(
   internal.rooms.cleanupStaleRooms,
 );
 
+// Every 30 minutes, clean up rooms that are older than 3 hours.
+crons.interval(
+  "cleanup expired rooms (3h)",
+  { minutes: 30 },
+  internal.cleanup.cleanupExpiredRooms,
+);
+
 export default crons;

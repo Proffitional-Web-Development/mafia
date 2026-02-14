@@ -7,9 +7,9 @@ import { Id } from "./_generated/dataModel";
 type EventParamsByType = {
     VOTE_ELIMINATION: { player: string };
     MAFIA_ELIMINATION: { player: string };
-    MAFIA_FAILED_ELIMINATION: { player: string };
-    SHEIKH_INVESTIGATION_CITIZEN: { player: string };
-    SHEIKH_INVESTIGATION_MAFIA: { player: string };
+    MAFIA_FAILED_ELIMINATION: Record<string, never>;
+    SHEIKH_INVESTIGATION_CITIZEN: Record<string, never>;
+    SHEIKH_INVESTIGATION_MAFIA: Record<string, never>;
     ROUND_END: { round: number };
     VOTE_TIE: { players: string };
     MAFIA_VOTE_TIE_RANDOM: { player: string };
@@ -21,14 +21,10 @@ type PublicGameEventType = Exclude<
 > | "SHEIKH_INVESTIGATION";
 
 function getPublicMessageKey(eventType: GameEventType, messageKey: string) {
-    if (
-        eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
-        eventType === "SHEIKH_INVESTIGATION_MAFIA"
-    ) {
-        return messageKey.replace(
-            "SHEIKH_INVESTIGATION_MAFIA",
-            "SHEIKH_INVESTIGATION_CITIZEN",
-        );
+    if (eventType === "SHEIKH_INVESTIGATION_CITIZEN" || eventType === "SHEIKH_INVESTIGATION_MAFIA") {
+        return messageKey
+            .replace("SHEIKH_INVESTIGATION_CITIZEN", "SHEIKH_INVESTIGATION")
+            .replace("SHEIKH_INVESTIGATION_MAFIA", "SHEIKH_INVESTIGATION");
     }
     return messageKey;
 }
@@ -40,32 +36,28 @@ function sanitizePublicParams(
     if (!params || typeof params !== "object") return undefined;
     const payload = params as Record<string, unknown>;
 
-    if (
-        eventType === "VOTE_ELIMINATION" ||
-        eventType === "MAFIA_ELIMINATION" ||
-        eventType === "MAFIA_FAILED_ELIMINATION" ||
-        eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
-        eventType === "SHEIKH_INVESTIGATION_MAFIA" ||
-        eventType === "MAFIA_VOTE_TIE_RANDOM"
-    ) {
-        return typeof payload.player === "string"
-            ? { player: payload.player }
-            : undefined;
+    const safeKeysByEvent: Partial<Record<GameEventType, string[]>> = {
+        VOTE_ELIMINATION: ["player"],
+        MAFIA_ELIMINATION: ["player"],
+        MAFIA_VOTE_TIE_RANDOM: ["player"],
+        ROUND_END: ["round"],
+        VOTE_TIE: ["players"],
+    };
+
+    const safeKeys = safeKeysByEvent[eventType] ?? [];
+    if (safeKeys.length === 0) {
+        return undefined;
     }
 
-    if (eventType === "ROUND_END") {
-        return typeof payload.round === "number"
-            ? { round: payload.round }
-            : undefined;
+    const sanitized: Record<string, unknown> = {};
+    for (const key of safeKeys) {
+        const value = payload[key];
+        if (typeof value === "string" || typeof value === "number") {
+            sanitized[key] = value;
+        }
     }
 
-    if (eventType === "VOTE_TIE") {
-        return typeof payload.players === "string"
-            ? { players: payload.players }
-            : undefined;
-    }
-
-    return undefined;
+    return Object.keys(sanitized).length > 0 ? sanitized : undefined;
 }
 
 function warnIfPotentialLeak(
@@ -125,14 +117,15 @@ export async function logGameEvent(
     const memeLevel = room.memeLevel || "FUN";
     const messageKey = pickRandomTemplate(eventType, memeLevel);
     const publicMessageKey = getPublicMessageKey(eventType, messageKey);
-    warnIfPotentialLeak(eventType, publicMessageKey, params);
+    const safeParams = sanitizePublicParams(eventType, params);
+    warnIfPotentialLeak(eventType, publicMessageKey, safeParams);
 
     await ctx.db.insert("gameEvents", {
         gameId,
         eventType,
         resolvedMessage: publicMessageKey,
         messageKey: publicMessageKey,
-        messageParams: params,
+        messageParams: safeParams,
         round: game.round,
         timestamp: Date.now(),
         memeLevel,
@@ -165,24 +158,25 @@ export const getGameEvents = query({
             .collect();
 
         return events
-            .filter((e) => Boolean(e.eventType) && Boolean(e.messageKey))
+            .filter(
+                (e): e is typeof e & { eventType: GameEventType; messageKey: string } =>
+                    Boolean(e.eventType) && Boolean(e.messageKey),
+            )
             .map((e) => {
-            let safeType: PublicGameEventType = e.eventType;
-            if (
-                e.eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
-                e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
-            ) {
-                safeType = "SHEIKH_INVESTIGATION";
-            }
-            return {
-                eventType: safeType,
-                messageKey: getPublicMessageKey(e.eventType, e.messageKey),
-                messageParams: sanitizePublicParams(e.eventType, e.messageParams),
-                round: e.round,
-                timestamp: e.timestamp,
-                memeLevel: e.memeLevel ?? "FUN",
-                _id: e._id,
-            };
-        });
+                const safeType: PublicGameEventType =
+                    e.eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
+                    e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
+                        ? "SHEIKH_INVESTIGATION"
+                        : e.eventType;
+                return {
+                    eventType: safeType,
+                    messageKey: getPublicMessageKey(e.eventType, e.messageKey),
+                    messageParams: sanitizePublicParams(e.eventType, e.messageParams),
+                    round: e.round,
+                    timestamp: e.timestamp,
+                    memeLevel: e.memeLevel ?? "FUN",
+                    _id: e._id,
+                };
+            });
     },
 });

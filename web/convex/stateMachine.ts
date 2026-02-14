@@ -226,6 +226,16 @@ async function finishGame(
     endedAt: Date.now(),
   });
 
+  const cleanupScheduledId = await ctx.scheduler.runAfter(
+    60 * 60 * 1000,
+    internal.cleanup.cleanupFinishedGame,
+    { gameId: game._id },
+  );
+
+  await ctx.db.patch(game._id, {
+    cleanupScheduledId,
+  });
+
   /*
   await appendTransitionEvent(...);
   await appendGameFinishedEvent(...);

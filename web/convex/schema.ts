@@ -98,6 +98,7 @@ export default defineSchema({
     .index("by_ownerId", ["ownerId"])
     .index("by_status", ["status"])
     .index("by_status_visibility", ["status", "visibility"])
+    .index("by_createdAt", ["createdAt"])
     .index("by_lastActivityAt", ["lastActivityAt"]),
 
   roomMembers: defineTable({
@@ -134,6 +135,7 @@ export default defineSchema({
       v.union(v.literal("mafia"), v.literal("citizens"))
     ),
     chatMuted: v.optional(v.boolean()),
+    cleanupScheduledId: v.optional(v.id("_scheduled_functions")),
   })
     .index("by_roomId", ["roomId"])
     .index("by_phase", ["phase"]),

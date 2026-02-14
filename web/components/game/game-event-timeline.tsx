@@ -183,7 +183,7 @@ export function GameEventTimeline({
       <header className="flex items-center justify-between border-b border-white/10 px-3 py-2">
         <h3 className="text-sm font-semibold text-white">{t("timeline.title")}</h3>
       </header>
-      <div className="max-h-64 overflow-y-auto">{content}</div>
+      <div className="max-h-64 overflow-y-auto pb-2">{content}</div>
     </section>
   );
 }

@@ -169,9 +169,7 @@ async function resolveMafiaVoting(
       await logGameEvent(ctx, {
         gameId,
         eventType: "MAFIA_FAILED_ELIMINATION",
-        params: {
-          player: targetName,
-        },
+        params: {},
       });
 
     } else {

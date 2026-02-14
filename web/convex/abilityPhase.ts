@@ -161,13 +161,10 @@ export const useSheikhAbility = mutation({
       timestamp: now,
     });
 
-    const targetUser = await ctx.db.get(target.userId);
-    const targetName = targetUser?.displayName ?? targetUser?.username ?? "Unknown";
-
     await logGameEvent(ctx, {
       gameId: args.gameId,
       eventType: faction === "mafia" ? "SHEIKH_INVESTIGATION_MAFIA" : "SHEIKH_INVESTIGATION_CITIZEN",
-      params: { player: targetName },
+      params: {},
     });
 
     return { success: true, faction };

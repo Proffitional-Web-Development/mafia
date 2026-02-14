@@ -181,6 +181,12 @@ export const joinRoom = mutation({
 
     if (!room) throw new ConvexError("Room not found.");
     if (room.status !== "waiting") {
+      // Allow re-joining if already a member? handled by checking membership first?
+      // But standard joinRoom usually implies "new join".
+      // Let's check membership strictly first.
+      const existing = await getMembership(ctx, room._id, userId);
+      if (existing) return { roomId: room._id, code: room.code };
+
       throw new ConvexError("Room is not accepting new players.");
     }
 
@@ -216,6 +222,71 @@ export const joinRoom = mutation({
     await ctx.db.patch(room._id, { lastActivityAt: Date.now() });
 
     return { roomId: room._id, code: room.code };
+  },
+});
+
+export const joinRoomByLink = mutation({
+  args: {
+    roomId: v.optional(v.id("rooms")),
+    code: v.optional(v.string()),
+    password: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+
+    let room: Awaited<ReturnType<typeof ctx.db.get>> | null = null;
+    if (args.roomId) {
+      room = await ctx.db.get(args.roomId);
+    } else if (args.code) {
+      room = await ctx.db
+        .query("rooms")
+        .withIndex("by_code", (q) => q.eq("code", args.code!.trim().toUpperCase()))
+        .first();
+    }
+
+    if (!room) {
+      return { success: false, error: "ROOM_NOT_FOUND" as const };
+    }
+
+    // 1. Check if already a member
+    const existing = await getMembership(ctx, room._id, userId);
+    if (existing) {
+      return { success: true, joined: false }; // Already joined
+    }
+
+    // 2. Check room status
+    if (room.status !== "waiting") {
+      return { success: false, error: "GAME_STARTED" as const };
+    }
+
+    // 3. Check password if private
+    const visibility = room.visibility ?? "private";
+    if (visibility === "private" && room.password) {
+      const password = args.password?.trim();
+      if (!password) {
+        return { success: false, error: "PASSWORD_REQUIRED" as const };
+      }
+      if (hashRoomPassword(password) !== room.password) {
+        return { success: false, error: "INVALID_PASSWORD" as const };
+      }
+    }
+
+    // 4. Check capacity
+    const members = await getRoomMembers(ctx, room._id);
+    if (members.length >= room.settings.maxPlayers) {
+      return { success: false, error: "ROOM_FULL" as const };
+    }
+
+    // 5. Join
+    await ctx.db.insert("roomMembers", {
+      roomId: room._id,
+      userId,
+      joinedAt: Date.now(),
+    });
+
+    await ctx.db.patch(room._id, { lastActivityAt: Date.now() });
+
+    return { success: true, joined: true };
   },
 });
 

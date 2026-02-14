@@ -109,6 +109,12 @@
       "mafiaDisplayAuto": "Mafia: Auto ({count})",
       "mafiaDisplayCustom": "Mafia: {count} (custom)"
     },
+    "join": {
+      "gameStarted": "This game has already started",
+      "roomFull": "This room is full",
+      "notFound": "Room not found",
+      "passwordRequired": "This room requires a password"
+    },
     "memeLevel": {
       "title": "Meme Level",
       "normal": "Normal",
@@ -325,49 +331,65 @@
     "MAFIA_FAILED_ELIMINATION": {
       "normal": {
         "1": "The mafia attempted an elimination, but the target was protected.",
-        "2": "A night attack was made, but {player} survived."
+        "2": "A night attack was made, but the target survived."
       },
       "fun": {
-        "1": "🛡️ The mafia swung and missed. {player} is still here.",
-        "2": "✨ Plot armor activated. {player} survived the night.",
-        "3": "😮 The mafia had a plan. The night had other ideas for {player}."
+        "1": "🛡️ The mafia swung and missed. The target is safe.",
+        "2": "✨ Plot armor activated. Someone survived the night.",
+        "3": "😮 The mafia had a plan. The night had other ideas."
       },
       "chaos": {
-        "1": "🌀 Night chaos: elimination attempt blocked. {player} remains alive.",
-        "2": "🚫 The mafia got denied at the final step. {player} stays in the game.",
-        "3": "⚡ Unexpected twist: {player} dodged elimination."
+        "1": "🌀 Night chaos: elimination attempt blocked.",
+        "2": "🚫 The mafia got denied at the final step.",
+        "3": "⚡ Unexpected twist: someone dodged elimination."
       }
     },
     "SHEIKH_INVESTIGATION_CITIZEN": {
       "normal": {
-        "1": "The Sheikh investigated {player} this round.",
-        "2": "An investigation was conducted on {player}."
+        "1": "The Sheikh completed an investigation.",
+        "2": "An investigation was conducted."
       },
       "fun": {
-        "1": "🔍 The Sheikh did detective work on {player}.",
-        "2": "🧠 Case notes updated: {player} was investigated.",
-        "3": "📜 Quiet night, loud clues — {player} was checked."
+        "1": "🔍 The Sheikh did some detective work.",
+        "2": "🧠 Case notes updated: someone was investigated.",
+        "3": "📜 Quiet night, loud clues — investigation complete."
       },
       "chaos": {
-        "1": "🕯️ Suspicion meter rising. {player} got investigated.",
-        "2": "🧩 Investigation event triggered on {player}.",
-        "3": "⚖️ Night intel move: {player} was put under review."
+        "1": "🕯️ Suspicion meter rising. Investigation triggered.",
+        "2": "🧩 Someone got snooped on.",
+        "3": "⚖️ Night intel move: someone under review."
       }
     },
     "SHEIKH_INVESTIGATION_MAFIA": {
       "normal": {
-        "1": "The Sheikh investigated {player} this round.",
-        "2": "An investigation was conducted on {player}."
+        "1": "The Sheikh completed an investigation.",
+        "2": "An investigation was conducted."
       },
       "fun": {
-        "1": "🔍 The Sheikh did detective work on {player}.",
-        "2": "🧠 Case notes updated: {player} was investigated.",
-        "3": "📜 Quiet night, loud clues — {player} was checked."
+        "1": "🔍 The Sheikh did some detective work.",
+        "2": "🧠 Case notes updated: someone was investigated.",
+        "3": "📜 Quiet night, loud clues — investigation complete."
       },
       "chaos": {
-        "1": "🕯️ Suspicion meter rising. {player} got investigated.",
-        "2": "🧩 Investigation event triggered on {player}.",
-        "3": "⚖️ Night intel move: {player} was put under review."
+        "1": "🕯️ Suspicion meter rising. Investigation triggered.",
+        "2": "🧩 Someone got snooped on.",
+        "3": "⚖️ Night intel move: someone under review."
+      }
+    },
+    "SHEIKH_INVESTIGATION": {
+      "normal": {
+        "1": "The Sheikh completed an investigation.",
+        "2": "An investigation was conducted."
+      },
+      "fun": {
+        "1": "🔍 The Sheikh did some detective work.",
+        "2": "🧠 Case notes updated: someone was investigated.",
+        "3": "📜 Quiet night, loud clues — investigation complete."
+      },
+      "chaos": {
+        "1": "🕯️ Suspicion meter rising. Investigation triggered.",
+        "2": "🧩 Someone got snooped on.",
+        "3": "⚖️ Night intel move: someone under review."
       }
     },
     "ROUND_END": {

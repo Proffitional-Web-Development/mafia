@@ -51,7 +51,9 @@ export default function HomePage() {
           </div>
           {currentUser?.hasCompletedProfile ? (
             <UserStatusCard
-              username={currentUser.displayName || currentUser.username || undefined}
+              username={
+                currentUser.displayName || currentUser.username || undefined
+              }
               avatarUrl={currentUser.avatarUrl ?? undefined}
               subtitle={t("description")}
               className="absolute bottom-3 start-1/2 w-[calc(100%-1.5rem)] -translate-x-1/2"
@@ -85,10 +87,10 @@ export default function HomePage() {
             onClick: () => router.push("/"),
           },
           {
-            key: "profile",
-            label: ct("profile"),
-            icon: "person",
-            onClick: () => router.push("/settings"),
+            key: "lobby",
+            label: ct("lobby"),
+            icon: "meeting_room",
+            onClick: () => router.push("/game"),
           },
           {
             key: "settings",

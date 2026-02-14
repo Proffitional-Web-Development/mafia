@@ -54,15 +54,15 @@ export function PhaseHeader({
         "space-y-2 rounded-2xl border p-3",
         isMafiaVariant
           ? "border-danger/40 bg-danger/10"
-          : "border-white/10 bg-surface/40",
+          : "border-white/10 bg-surface/40"
       )}
     >
       {/* Top bar */}
       <div
         className={cn(
-          "flex items-center justify-between gap-3",
+          "flex items-center justify-between gap-3 flex-wrap",
           (variant === "ability-left" || variant === "ability-split") &&
-            "items-start",
+            "items-start"
         )}
       >
         <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export function PhaseHeader({
               "text-lg",
               isMafiaVariant
                 ? "text-danger"
-                : phaseMeta?.color ?? "text-text-secondary",
+                : (phaseMeta?.color ?? "text-text-secondary")
             )}
             variant="round"
           />
@@ -86,29 +86,11 @@ export function PhaseHeader({
         <div
           className={cn(
             "flex items-center gap-3",
-            variant === "ability-split" && "flex-col items-end gap-1",
+            variant === "ability-split" && "flex-col items-end gap-1"
           )}
         >
           <HeaderControls />
-          {actions ? <div className="self-end">{actions}</div> : null}
-          <span className="text-xs text-zinc-500">
-            {ct("round", { number: round })}
-          </span>
-          {memeLevel ? (
-            <span className="rounded-full border border-primary/40 bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
-              {memeLevel}
-            </span>
-          ) : null}
-          <span
-            className={cn(
-              "text-xs font-medium px-2 py-0.5 rounded-full border",
-              roleColor
-                ? `${roleColor.bg} ${roleColor.text} ${roleColor.border}`
-                : "bg-zinc-800 text-zinc-400 border-zinc-700",
-            )}
-          >
-            {rt(roleKey)}
-          </span>
+
           {deadlineAt ? (
             <TimerDisplay
               deadlineAt={deadlineAt}
@@ -123,6 +105,28 @@ export function PhaseHeader({
               }
             />
           ) : null}
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+          {actions ? <div>{actions}</div> : null}
+          <span className="text-xs text-zinc-500">
+            {ct("round", { number: round })}
+          </span>
+          {memeLevel ? (
+            <span className="rounded-full border border-primary/40 bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light">
+              {memeLevel}
+            </span>
+          ) : null}
+          <span
+            className={cn(
+              "text-xs font-medium px-2 py-0.5 rounded-full border",
+              roleColor
+                ? `${roleColor.bg} ${roleColor.text} ${roleColor.border}`
+                : "bg-zinc-800 text-zinc-400 border-zinc-700"
+            )}
+          >
+            {rt(roleKey)}
+          </span>
         </div>
       </div>
 
