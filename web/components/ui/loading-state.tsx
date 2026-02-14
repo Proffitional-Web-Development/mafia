@@ -18,7 +18,7 @@ export function LoadingState({
       className={cn(
         "flex w-full flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-surface/40 p-6 text-center",
         compact && "p-4 gap-2",
-        className
+        className,
       )}
       aria-live="polite"
     >

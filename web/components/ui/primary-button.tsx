@@ -6,7 +6,8 @@ function isDirectionalIcon(name: string): boolean {
   return name === "arrow_forward" || name === "arrow_back";
 }
 
-interface PrimaryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface PrimaryButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: string;
   iconPosition?: "start" | "end";
   variant?: "primary" | "danger";
@@ -40,7 +41,7 @@ export function PrimaryButton({
           "bg-primary hover:bg-primary-dark shadow-[0_4px_20px_rgba(131,17,212,0.4)]",
         variant === "danger" &&
           "bg-danger hover:bg-danger-dark shadow-[0_0_20px_rgba(236,19,19,0.4)]",
-        className
+        className,
       )}
       {...props}
     >
@@ -56,7 +57,7 @@ export function PrimaryButton({
             loading && "animate-spin",
             !loading &&
               isDirectionalIcon(icon) &&
-              "[html[dir='rtl']_&]:-scale-x-100"
+              "[html[dir='rtl']_&]:-scale-x-100",
           )}
         />
       ) : null}
@@ -67,7 +68,7 @@ export function PrimaryButton({
           variant="round"
           className={cn(
             "transition-transform group-hover:translate-x-1",
-            isDirectionalIcon(icon) && "[html[dir='rtl']_&]:-scale-x-100"
+            isDirectionalIcon(icon) && "[html[dir='rtl']_&]:-scale-x-100",
           )}
         />
       ) : null}

@@ -1,6 +1,6 @@
 import Google from "@auth/core/providers/google";
-import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
+import { convexAuth } from "@convex-dev/auth/server";
 
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
   providers: [
@@ -16,7 +16,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         }
         if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
           throw new Error(
-            "Username can only include letters, numbers, and underscores."
+            "Username can only include letters, numbers, and underscores.",
           );
         }
 

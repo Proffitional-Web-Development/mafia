@@ -24,7 +24,7 @@ export function GraveyardSheet({
     <section
       className={cn(
         "rounded-t-2xl border border-white/10 bg-surface/80 p-4",
-        className
+        className,
       )}
     >
       <div className="mb-3 flex justify-center">

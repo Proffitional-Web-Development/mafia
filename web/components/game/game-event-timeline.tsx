@@ -53,7 +53,7 @@ function getHighlightCandidates(params: unknown) {
       : [];
 
   return [...player, ...players].sort(
-    (left, right) => right.length - left.length
+    (left, right) => right.length - left.length,
   );
 }
 
@@ -64,12 +64,16 @@ function renderHighlightedText(text: string, candidates: string[]) {
   if (!pattern) return text;
 
   const parts = text.split(new RegExp(`(${pattern})`, "g"));
-  return parts.map((part, index) => {
+  const occurrenceCount = new Map<string, number>();
+  return parts.map((part) => {
+    const count = (occurrenceCount.get(part) ?? 0) + 1;
+    occurrenceCount.set(part, count);
+    const key = `${part}-${count}`;
     const highlighted = candidates.some((candidate) => candidate === part);
-    if (!highlighted) return <span key={`${part}-${index}`}>{part}</span>;
+    if (!highlighted) return <span key={key}>{part}</span>;
 
     return (
-      <strong key={`${part}-${index}`} className="font-semibold text-white">
+      <strong key={key} className="font-semibold text-white">
         <bdi>{part}</bdi>
       </strong>
     );
@@ -77,7 +81,7 @@ function renderHighlightedText(text: string, candidates: string[]) {
 }
 
 function toTranslationValues(
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): Record<string, string | number | Date> {
   if (!params) return {};
   const normalized: Record<string, string | number | Date> = {};
@@ -117,9 +121,9 @@ export function GameEventTimeline({
 
     if (events.length === 0) {
       return (
-        <p className="px-3 py-4 text-sm text-text-tertiary" role="status">
+        <output className="px-3 py-4 text-sm text-text-tertiary">
           {t("timeline.empty")}
-        </p>
+        </output>
       );
     }
 
@@ -133,12 +137,12 @@ export function GameEventTimeline({
           const message = t(
             messageKey,
             toTranslationValues(
-              event.messageParams as Record<string, unknown> | undefined
-            )
+              event.messageParams as Record<string, unknown> | undefined,
+            ),
           );
           const highlighted = renderHighlightedText(
             message,
-            getHighlightCandidates(event.messageParams)
+            getHighlightCandidates(event.messageParams),
           );
 
           return (
@@ -173,7 +177,7 @@ export function GameEventTimeline({
       className={cn(
         "overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md transition-all",
         open ? "max-h-64 opacity-100" : "max-h-0 opacity-0",
-        className
+        className,
       )}
     >
       <header className="flex items-center justify-between border-b border-white/10 px-3 py-2">

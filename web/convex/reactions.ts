@@ -59,7 +59,7 @@ export const setEmojiReaction = mutation({
     if (!game) throw new ConvexError("Game not found.");
     if (game.phase !== "publicVoting") {
       throw new ConvexError(
-        "Reactions are only allowed during the voting phase."
+        "Reactions are only allowed during the voting phase.",
       );
     }
 
@@ -67,7 +67,7 @@ export const setEmojiReaction = mutation({
     const player = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId)
+        q.eq("gameId", args.gameId).eq("userId", userId),
       )
       .first();
     if (!player) throw new ConvexError("You are not a player in this game.");

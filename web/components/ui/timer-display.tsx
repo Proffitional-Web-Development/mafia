@@ -30,7 +30,7 @@ export function TimerDisplay({
   const t = useTranslations("discussion");
   const direction = useDirection();
   const [remaining, setRemaining] = useState(() =>
-    deadlineAt ? Math.max(0, deadlineAt - Date.now()) : 0
+    deadlineAt ? Math.max(0, deadlineAt - Date.now()) : 0,
   );
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export function TimerDisplay({
   const totalDuration = durationMs ?? Math.max(remaining, 1);
   const progress = Math.min(
     100,
-    Math.max(0, (remaining / totalDuration) * 100)
+    Math.max(0, (remaining / totalDuration) * 100),
   );
 
   const radius = 34;
@@ -66,7 +66,7 @@ export function TimerDisplay({
       ? "text-danger animate-pulse"
       : isUrgent
         ? "text-warning"
-        : "text-text-primary"
+        : "text-text-primary",
   );
 
   if (variant === "progress-bar") {
@@ -89,7 +89,7 @@ export function TimerDisplay({
                 ? "bg-danger motion-safe:animate-pulse"
                 : isUrgent
                   ? "bg-warning"
-                  : "bg-primary"
+                  : "bg-primary",
             )}
             style={{ width: `${progress}%` }}
           />
@@ -103,7 +103,7 @@ export function TimerDisplay({
       <div
         className={cn(
           "relative inline-flex items-center justify-center",
-          className
+          className,
         )}
         role="timer"
         aria-live="assertive"
@@ -127,7 +127,7 @@ export function TimerDisplay({
                 ? "stroke-danger"
                 : isUrgent
                   ? "stroke-warning"
-                  : "stroke-primary"
+                  : "stroke-primary",
             )}
             strokeWidth="6"
             strokeDasharray={circumference}
@@ -148,7 +148,7 @@ export function TimerDisplay({
         className={cn(
           "inline-flex h-24 w-24 flex-col items-center justify-center rounded-full border border-white/15 bg-surface/40 backdrop-blur-sm",
           "motion-safe:animate-timer-ring motion-reduce:animate-none",
-          className
+          className,
         )}
         role="timer"
         aria-live="assertive"

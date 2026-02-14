@@ -18,7 +18,7 @@ type EliminationCause = "publicVote" | "mafiaVote";
 function getAliveCounts(players: Doc<"players">[]) {
   const alivePlayers = players.filter((player) => player.isAlive);
   const aliveMafia = alivePlayers.filter(
-    (player) => player.role === "mafia"
+    (player) => player.role === "mafia",
   ).length;
   const aliveCitizens = alivePlayers.length - aliveMafia;
   return { aliveMafia, aliveCitizens };
@@ -34,7 +34,7 @@ function getWinnerFaction(players: Doc<"players">[]) {
 async function checkAndTriggerWinCondition(
   ctx: MutationCtx,
   gameId: Id<"games">,
-  reason: string
+  reason: string,
 ): Promise<boolean> {
   const allPlayers = await ctx.db
     .query("players")
@@ -65,7 +65,7 @@ async function advanceFromResolution(ctx: MutationCtx, gameId: Id<"games">) {
 async function getPendingBoyIdsForRound(
   ctx: MutationCtx | QueryCtx,
   gameId: Id<"games">,
-  round: number
+  round: number,
 ) {
   const players = await ctx.db
     .query("players")
@@ -74,7 +74,7 @@ async function getPendingBoyIdsForRound(
 
   return players
     .filter(
-      (player) => player.role === "boy" && player.eliminatedAtRound === round
+      (player) => player.role === "boy" && player.eliminatedAtRound === round,
     )
     .map((player) => String(player._id));
 }
@@ -82,12 +82,12 @@ async function getPendingBoyIdsForRound(
 async function getBoyActionsForRound(
   ctx: MutationCtx | QueryCtx,
   gameId: Id<"games">,
-  round: number
+  round: number,
 ) {
   return ctx.db
     .query("actions")
     .withIndex("by_gameId_round_role", (q) =>
-      q.eq("gameId", gameId).eq("round", round).eq("role", "boy")
+      q.eq("gameId", gameId).eq("round", round).eq("role", "boy"),
     )
     .collect();
 }
@@ -104,7 +104,7 @@ async function maybeFinalizeResolution(ctx: MutationCtx, gameId: Id<"games">) {
 
   const boyActions = await getBoyActionsForRound(ctx, gameId, game.round);
   const actedBoyIds = new Set(
-    boyActions.map((action) => String(action.actorId))
+    boyActions.map((action) => String(action.actorId)),
   );
   const unresolved = pendingBoyIds.filter((boyId) => !actedBoyIds.has(boyId));
 
@@ -141,10 +141,10 @@ export const resolveRound = internalMutation({
       .collect();
 
     const eliminatedThisRound = allPlayers.filter(
-      (player) => player.eliminatedAtRound === game.round
+      (player) => player.eliminatedAtRound === game.round,
     );
     const eliminatedPlayerIds = eliminatedThisRound.map((player) =>
-      String(player._id)
+      String(player._id),
     );
     const boyPendingIds = eliminatedThisRound
       .filter((player) => player.role === "boy")
@@ -155,20 +155,20 @@ export const resolveRound = internalMutation({
     const boyActions = await getBoyActionsForRound(
       ctx,
       args.gameId,
-      game.round
+      game.round,
     );
     const actedBoyIds = new Set(
-      boyActions.map((action) => String(action.actorId))
+      boyActions.map((action) => String(action.actorId)),
     );
     const unresolvedBoyIds = uniqueBoyPendingIds.filter(
-      (id) => !actedBoyIds.has(id)
+      (id) => !actedBoyIds.has(id),
     );
 
     // T13: Check win condition immediately after applying eliminations
     const winnerDetected = await checkAndTriggerWinCondition(
       ctx,
       args.gameId,
-      "elimination_detected_in_resolution"
+      "elimination_detected_in_resolution",
     );
     if (winnerDetected) {
       return {
@@ -210,7 +210,7 @@ export const resolveRound = internalMutation({
         gameId: args.gameId,
         expectedRound: game.round,
         expectedToken: game.phaseToken ?? 0,
-      }
+      },
     );
 
     return {
@@ -240,7 +240,7 @@ export const useBoyRevenge = mutation({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId)
+        q.eq("gameId", args.gameId).eq("userId", userId),
       )
       .first();
     if (!me) throw new ConvexError("You are not a player in this game.");
@@ -249,14 +249,14 @@ export const useBoyRevenge = mutation({
     }
     if (me.isAlive || me.eliminatedAtRound !== game.round) {
       throw new ConvexError(
-        "Boy revenge is only available when eliminated this round."
+        "Boy revenge is only available when eliminated this round.",
       );
     }
 
     const pendingBoyIds = await getPendingBoyIdsForRound(
       ctx,
       args.gameId,
-      game.round
+      game.round,
     );
     if (!pendingBoyIds.includes(String(me._id))) {
       throw new ConvexError("No pending revenge for this player.");
@@ -268,7 +268,7 @@ export const useBoyRevenge = mutation({
         q
           .eq("gameId", args.gameId)
           .eq("round", game.round)
-          .eq("actorId", me._id)
+          .eq("actorId", me._id),
       )
       .first();
     if (existingAction) {
@@ -306,7 +306,7 @@ export const useBoyRevenge = mutation({
     const winnerDetected = await checkAndTriggerWinCondition(
       ctx,
       args.gameId,
-      "elimination_detected_in_boy_revenge"
+      "elimination_detected_in_boy_revenge",
     );
     if (winnerDetected) {
       return { success: true, winnerDetected: true };
@@ -346,13 +346,13 @@ export const autoForfeitBoyRevenge = internalMutation({
     const pendingBoyIds = await getPendingBoyIdsForRound(
       ctx,
       args.gameId,
-      game.round
+      game.round,
     );
 
     const boyActions = await getBoyActionsForRound(
       ctx,
       args.gameId,
-      game.round
+      game.round,
     );
     const acted = new Set(boyActions.map((action) => String(action.actorId)));
     const forfeitedBoyIds = pendingBoyIds.filter((id) => !acted.has(id));
@@ -379,7 +379,7 @@ export const getResolutionState = query({
     const me = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId)
+        q.eq("gameId", args.gameId).eq("userId", userId),
       )
       .first();
     if (!me) throw new ConvexError("You are not a player in this game.");
@@ -389,28 +389,28 @@ export const getResolutionState = query({
       .withIndex("by_gameId", (q) => q.eq("gameId", args.gameId))
       .collect();
     const userDocs = await Promise.all(
-      allPlayers.map((p) => ctx.db.get(p.userId))
+      allPlayers.map((p) => ctx.db.get(p.userId)),
     );
     const userById = new Map(
       userDocs
         .filter((u): u is NonNullable<typeof u> => u !== null)
-        .map((u) => [u._id, u])
+        .map((u) => [u._id, u]),
     );
 
     const eliminatedThisRound = allPlayers.filter(
-      (player) => player.eliminatedAtRound === game.round
+      (player) => player.eliminatedAtRound === game.round,
     );
     const roundEvents = await ctx.db
       .query("gameEvents")
       .withIndex("by_gameId_round", (q) =>
-        q.eq("gameId", args.gameId).eq("round", game.round)
+        q.eq("gameId", args.gameId).eq("round", game.round),
       )
       .collect();
     const hasPublicElimination = roundEvents.some(
-      (event) => event.eventType === "VOTE_ELIMINATION"
+      (event) => event.eventType === "VOTE_ELIMINATION",
     );
     const hasMafiaElimination = roundEvents.some(
-      (event) => event.eventType === "MAFIA_ELIMINATION"
+      (event) => event.eventType === "MAFIA_ELIMINATION",
     );
 
     const eliminated = eliminatedThisRound.map((player) => {
@@ -428,18 +428,18 @@ export const getResolutionState = query({
     const pendingBoyIds = await getPendingBoyIdsForRound(
       ctx,
       args.gameId,
-      game.round
+      game.round,
     );
     const boyActions = await getBoyActionsForRound(
       ctx,
       args.gameId,
-      game.round
+      game.round,
     );
     const actedBoyIds = new Set(
-      boyActions.map((action) => String(action.actorId))
+      boyActions.map((action) => String(action.actorId)),
     );
     const pendingBoyRevengeIds = pendingBoyIds.filter(
-      (id) => !actedBoyIds.has(id)
+      (id) => !actedBoyIds.has(id),
     );
 
     return {

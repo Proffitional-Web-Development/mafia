@@ -58,7 +58,7 @@ export default function AuthPage() {
   }, [awaitingSession, currentUser, et]);
 
   async function submitEmailPasswordAuth(
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
     setLoading(true);

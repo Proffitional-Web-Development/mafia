@@ -66,7 +66,7 @@ export function PlayerGrid({
             const isSelected =
               selectedId === (player.playerId ?? player.userId);
             const canSelect = Boolean(
-              selectable && !isDead && !isMe && onSelect
+              selectable && !isDead && !isMe && onSelect,
             );
 
             return (

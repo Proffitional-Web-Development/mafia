@@ -22,9 +22,8 @@ export function StatusBanner({
         variant === "info" &&
           "border-primary/40 bg-primary/15 text-primary-light",
         variant === "error" && "border-danger/40 bg-danger/15 text-danger",
-        className
+        className,
       )}
-      role="status"
       aria-live="polite"
     >
       {message}

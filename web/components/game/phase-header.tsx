@@ -1,11 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Icon } from "@/components/ui/icon";
-import { TimerDisplay } from "@/components/ui/timer-display";
-import { StatusBanner } from "@/components/ui/status-banner";
-import { PHASE_META, ROLE_COLORS } from "@/lib/design-tokens";
 import { HeaderControls } from "@/components/game/header-controls";
+import { Icon } from "@/components/ui/icon";
+import { StatusBanner } from "@/components/ui/status-banner";
+import { TimerDisplay } from "@/components/ui/timer-display";
+import { PHASE_META, ROLE_COLORS } from "@/lib/design-tokens";
 import { cn } from "@/lib/utils";
 
 interface PhaseHeaderProps {
@@ -54,7 +54,7 @@ export function PhaseHeader({
         "space-y-2 rounded-2xl border p-3",
         isMafiaVariant
           ? "border-danger/40 bg-danger/10"
-          : "border-white/10 bg-surface/40"
+          : "border-white/10 bg-surface/40",
       )}
     >
       {/* Top bar */}
@@ -62,7 +62,7 @@ export function PhaseHeader({
         className={cn(
           "flex items-center justify-between gap-3 flex-wrap",
           (variant === "ability-left" || variant === "ability-split") &&
-            "items-start"
+            "items-start",
         )}
       >
         <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export function PhaseHeader({
               "text-lg",
               isMafiaVariant
                 ? "text-danger"
-                : (phaseMeta?.color ?? "text-text-secondary")
+                : (phaseMeta?.color ?? "text-text-secondary"),
             )}
             variant="round"
           />
@@ -86,7 +86,7 @@ export function PhaseHeader({
         <div
           className={cn(
             "flex items-center gap-3",
-            variant === "ability-split" && "flex-col items-end gap-1"
+            variant === "ability-split" && "flex-col items-end gap-1",
           )}
         >
           <HeaderControls />
@@ -122,7 +122,7 @@ export function PhaseHeader({
               "text-xs font-medium px-2 py-0.5 rounded-full border",
               roleColor
                 ? `${roleColor.bg} ${roleColor.text} ${roleColor.border}`
-                : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                : "bg-zinc-800 text-zinc-400 border-zinc-700",
             )}
           >
             {rt(roleKey)}

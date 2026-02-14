@@ -2,15 +2,15 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
-import { api } from "@/convex/_generated/api";
+import { AvatarCircle } from "@/components/ui/avatar-circle";
+import { Icon } from "@/components/ui/icon";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { TextInput } from "@/components/ui/text-input";
-import { AvatarCircle } from "@/components/ui/avatar-circle";
-import { Id } from "@/convex/_generated/dataModel";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { Icon } from "@/components/ui/icon";
 
 export function SettingsPageContent() {
   const t = useTranslations("settings");
@@ -141,6 +141,7 @@ export function SettingsPageContent() {
     <div className="mx-auto max-w-2xl space-y-8 px-6 py-8 pb-32">
       <div className="flex items-center gap-4">
         <button
+          type="button"
           onClick={() => router.back()}
           className="rounded-full p-2 text-text-secondary hover:bg-white/10"
         >
@@ -233,12 +234,13 @@ export function SettingsPageContent() {
             </p>
           </div>
           <button
+            type="button"
             role="switch"
             aria-checked={user.musicEnabled ?? true}
             onClick={() => handleToggleMusic(!(user.musicEnabled ?? true))}
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-              (user.musicEnabled ?? true) ? "bg-primary" : "bg-zinc-700"
+              (user.musicEnabled ?? true) ? "bg-primary" : "bg-zinc-700",
             )}
           >
             <span className="sr-only">{t("preferences.music")}</span>
@@ -246,7 +248,7 @@ export function SettingsPageContent() {
               aria-hidden="true"
               className={cn(
                 "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
-                (user.musicEnabled ?? true) ? "translate-x-5" : "translate-x-0"
+                (user.musicEnabled ?? true) ? "translate-x-5" : "translate-x-0",
               )}
             />
           </button>

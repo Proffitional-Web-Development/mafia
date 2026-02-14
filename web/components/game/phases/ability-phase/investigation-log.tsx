@@ -24,7 +24,7 @@ export function InvestigationLog({
     <section
       className={cn(
         "rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-md",
-        className
+        className,
       )}
     >
       <h3 className="mb-2 text-sm font-semibold text-white">{title}</h3>

@@ -4,19 +4,19 @@ import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ChatPanel } from "@/components/game/chat-panel";
+import { DiscussionPhase } from "@/components/game/discussion-phase";
 import { GameEventTimeline } from "@/components/game/game-event-timeline";
+import { PhaseHeader } from "@/components/game/phase-header";
 import {
   AbilityPhase,
   AbilityPhaseNightTransition,
 } from "@/components/game/phases/ability-phase";
-import { DiscussionPhase } from "@/components/game/discussion-phase";
-import { FinishedPhase } from "@/components/game/phases/finished-phase";
 import { MafiaVotingPhase } from "@/components/game/phases/ability-phase/mafia-voting-phase";
-import { PhaseHeader } from "@/components/game/phase-header";
+import { ResolutionPhase } from "@/components/game/phases/ability-phase/resolution-phase";
+import { FinishedPhase } from "@/components/game/phases/finished-phase";
 import { PhaseTransitionController } from "@/components/game/phases/phase-transition-controller";
 import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
-import { ResolutionPhase } from "@/components/game/phases/ability-phase/resolution-phase";
 import { RoleLogsPanel } from "@/components/game/role-logs-panel";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
 import { Icon } from "@/components/ui/icon";
@@ -37,7 +37,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
     api.rooms.getRoomState,
     gameState?.game.roomId
       ? { roomId: gameState.game.roomId as Id<"rooms"> }
-      : "skip"
+      : "skip",
   );
   const pt = useTranslations("phases");
   const ct = useTranslations("common");
@@ -89,7 +89,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
               className={cn(
                 "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
                 "hover:bg-white/10 hover:text-white",
-                isChatOpen && "bg-primary/20 border-primary/40 text-primary"
+                isChatOpen && "bg-primary/20 border-primary/40 text-primary",
               )}
             >
               <Icon name="chat" variant="round" size="sm" />
@@ -107,7 +107,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
               aria-label={et("timeline.title")}
               className={cn(
                 "relative inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 transition-colors",
-                "hover:bg-white/10 hover:text-white"
+                "hover:bg-white/10 hover:text-white",
               )}
             >
               <Icon name="history" variant="round" size="sm" />
@@ -185,7 +185,7 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
                 | "abilityPhase"
                 | "mafiaVoting"
                 | "resolution"
-                | "endCheck"
+                | "endCheck",
             )}
             ...
           </p>

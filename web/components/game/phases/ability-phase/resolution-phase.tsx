@@ -2,8 +2,8 @@
 
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { BoyRevenge } from "@/components/game/phases/ability-phase/boy-revenge";
 import { EliminationCard } from "@/components/game/elimination-card";
+import { BoyRevenge } from "@/components/game/phases/ability-phase/boy-revenge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PlayerGrid } from "@/components/ui/player-grid";
 import { StatusBanner } from "@/components/ui/status-banner";
@@ -39,17 +39,17 @@ export function ResolutionPhase({
 
   const eliminatedByMainResolution = resolutionState.eliminated;
   const baseEliminatedSet = new Set(
-    eliminatedByMainResolution.map((item) => item.playerId)
+    eliminatedByMainResolution.map((item) => item.playerId),
   );
 
   const revengeEliminated = resolutionState.players.filter(
     (player) =>
       player.eliminatedAtRound === resolutionState.round &&
-      !baseEliminatedSet.has(String(player.playerId))
+      !baseEliminatedSet.has(String(player.playerId)),
   );
 
   const aliveTargets = resolutionState.players.filter(
-    (player) => player.isAlive && player.userId !== currentUserId
+    (player) => player.isAlive && player.userId !== currentUserId,
   );
 
   const canActAsBoy = resolutionState.isCurrentPlayerPendingBoy;

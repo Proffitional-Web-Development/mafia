@@ -52,7 +52,7 @@ export function BackgroundMusicProvider({
     } else {
       audioRef.current.pause();
     }
-  }, [isMusicEnabled, user]); // Re-run when user loads or preference changes
+  }, [isMusicEnabled]); // Re-run when preference changes
 
   useEffect(() => {
     if (audioRef.current) {
@@ -68,7 +68,15 @@ export function BackgroundMusicProvider({
         loop
         preload="auto"
         className="hidden"
-      />
+      >
+        <track
+          kind="captions"
+          src="/audio/game-ambient.vtt"
+          srcLang="en"
+          label="Ambient audio"
+          default
+        />
+      </audio>
       {children}
     </>
   );

@@ -31,7 +31,7 @@ export function RoomCodeCard({ code, label, className }: RoomCodeCardProps) {
     <section
       className={cn(
         "rounded-2xl border border-white/10 bg-surface/60 p-4",
-        className
+        className,
       )}
     >
       <div className="mb-3 flex items-center justify-between gap-3">

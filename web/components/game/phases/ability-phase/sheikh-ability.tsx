@@ -28,7 +28,7 @@ export function SheikhAbility({
 
   const runSheikhAbility = useMutation(api.abilityPhase.useSheikhAbility);
   const confirmAbilityAction = useMutation(
-    api.abilityPhase.confirmAbilityAction
+    api.abilityPhase.confirmAbilityAction,
   );
 
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);

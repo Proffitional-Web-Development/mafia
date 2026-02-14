@@ -26,7 +26,7 @@ export function SettingsPanel({
     <section
       className={cn(
         "rounded-2xl border border-white/10 bg-surface/60 p-4",
-        className
+        className,
       )}
     >
       <h3 className="mb-3 text-sm font-semibold text-white">

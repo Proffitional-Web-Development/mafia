@@ -37,12 +37,11 @@ const badgeVariants = cva(
       variant: "status",
       size: "sm",
     },
-  }
+  },
 );
 
 export interface BadgeProps
-  extends
-    React.HTMLAttributes<HTMLSpanElement>,
+  extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {
   resultTone?: "mafia" | "innocent";
 }
@@ -64,7 +63,7 @@ export function Badge({
         variant === "investigation-result" &&
           resultTone === "innocent" &&
           "bg-success/20 text-success border-success/40",
-        className
+        className,
       )}
       {...props}
     />

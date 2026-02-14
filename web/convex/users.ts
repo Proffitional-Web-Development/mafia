@@ -52,7 +52,7 @@ export const updateDisplayName = mutation({
 
     if (displayName.length < 3 || displayName.length > 32) {
       throw new ConvexError(
-        "Display name must be between 3 and 32 characters."
+        "Display name must be between 3 and 32 characters.",
       );
     }
 
@@ -116,7 +116,7 @@ export const completeProfile = mutation({
 
     if (displayName.length < 3 || displayName.length > 32) {
       throw new ConvexError(
-        "Display name must be between 3 and 32 characters."
+        "Display name must be between 3 and 32 characters.",
       );
     }
 

@@ -110,7 +110,7 @@ export function ChatPanel({
     if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, open]);
+  }, [open]);
 
   // ── Handlers ──────────────────────────────────────────────────────────
   const handleSend = useCallback(
@@ -126,7 +126,7 @@ export function ChatPanel({
         throw err;
       }
     },
-    [gameId, channel, sendMessage]
+    [gameId, channel, sendMessage],
   );
 
   const handleToggleChat = useCallback(async () => {
@@ -171,7 +171,7 @@ export function ChatPanel({
       className={cn(
         "fixed inset-y-0 end-0 z-50 flex w-full flex-col border-s border-white/10 bg-background/95 backdrop-blur-xl sm:w-80",
         "motion-safe:animate-[slide-in_200ms_ease-out]",
-        className
+        className,
       )}
     >
       {/* ── Header ───────────────────────────────────────────────────── */}
@@ -196,7 +196,7 @@ export function ChatPanel({
             "flex-1 py-2 text-xs font-medium transition-colors",
             channel === "public"
               ? "border-b-2 border-primary text-primary"
-              : "text-text-muted hover:text-white"
+              : "text-text-muted hover:text-white",
           )}
         >
           {t("channel.public")}
@@ -209,7 +209,7 @@ export function ChatPanel({
               "flex-1 py-2 text-xs font-medium transition-colors",
               channel === "mafia"
                 ? "border-b-2 border-danger text-danger"
-                : "text-text-muted hover:text-white"
+                : "text-text-muted hover:text-white",
             )}
           >
             {t("channel.mafia")}
@@ -227,7 +227,7 @@ export function ChatPanel({
               "rounded-lg border px-2.5 py-1 text-[10px] font-medium transition-colors",
               chatEnabled
                 ? "border-success/40 bg-success/15 text-success"
-                : "border-white/15 bg-white/5 text-text-muted"
+                : "border-white/15 bg-white/5 text-text-muted",
             )}
           >
             {t("enableChat")}
@@ -239,7 +239,7 @@ export function ChatPanel({
               "rounded-lg border px-2.5 py-1 text-[10px] font-medium transition-colors",
               chatMuted
                 ? "border-danger/40 bg-danger/15 text-danger"
-                : "border-white/15 bg-white/5 text-text-muted"
+                : "border-white/15 bg-white/5 text-text-muted",
             )}
           >
             {t("muteAll")}
@@ -275,7 +275,7 @@ export function ChatPanel({
                     isMe
                       ? "bg-primary/20 text-white"
                       : "bg-white/5 text-text-secondary",
-                    msg.isTemplate && "border border-white/10"
+                    msg.isTemplate && "border border-white/10",
                   )}
                 >
                   <p className="text-[10px] font-semibold text-text-muted mb-0.5">

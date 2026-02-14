@@ -32,7 +32,7 @@ export function RevengePanel({
     <section
       className={cn(
         "rounded-xl border border-danger/40 bg-surface/30 backdrop-blur-md p-6 shadow-[0_0_20px_rgba(220,38,38,0.15)]",
-        className
+        className,
       )}
     >
       <h3 className="mb-2 text-sm font-bold uppercase tracking-wider text-danger drop-shadow-sm">

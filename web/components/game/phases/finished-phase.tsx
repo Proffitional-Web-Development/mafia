@@ -26,7 +26,7 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
   const gameState = useQuery(api.stateMachine.getGameState, { gameId });
   const roomState = useQuery(
     api.rooms.getRoomState,
-    gameState ? { roomId: gameState.game.roomId } : "skip"
+    gameState ? { roomId: gameState.game.roomId } : "skip",
   );
   const playAgain = useMutation(api.rooms.playAgain);
 
@@ -102,7 +102,7 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
                         | "mafia"
                         | "sheikh"
                         | "girl"
-                        | "boy"
+                        | "boy",
                     )
                   : t("roleHidden")
               }

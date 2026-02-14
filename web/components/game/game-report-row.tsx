@@ -28,7 +28,7 @@ export function GameReportRow({
         !isYou && isMafia && "border-danger/40 bg-danger/10",
         !isYou && !isMafia && "border-white/10 bg-white/5",
         !alive && "opacity-70 grayscale",
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-2 min-w-0">
@@ -44,7 +44,7 @@ export function GameReportRow({
       <span
         className={cn(
           "text-xs font-semibold",
-          alive ? "text-success" : "text-danger"
+          alive ? "text-success" : "text-danger",
         )}
       >
         {alive ? "Alive" : "Dead"}

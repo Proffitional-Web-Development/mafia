@@ -61,7 +61,7 @@ export function ChatInput({
         handleSend();
       }
     },
-    [handleSend]
+    [handleSend],
   );
 
   return (

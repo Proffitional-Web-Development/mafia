@@ -1,6 +1,6 @@
+import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { authTables } from "@convex-dev/auth/server";
 
 export const ROOM_STATUSES = ["waiting", "in-game", "finished"] as const;
 export type RoomStatus = (typeof ROOM_STATUSES)[number];
@@ -58,7 +58,7 @@ export default defineSchema({
         gamesPlayed: v.number(),
         wins: v.number(),
         losses: v.number(),
-      })
+      }),
     ),
   })
     .index("phone", ["phone"])
@@ -72,7 +72,7 @@ export default defineSchema({
     visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
     password: v.optional(v.string()),
     memeLevel: v.optional(
-      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS"))
+      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS")),
     ),
     settings: v.object({
       discussionDuration: v.number(),
@@ -88,7 +88,7 @@ export default defineSchema({
     status: v.union(
       v.literal("waiting"),
       v.literal("in-game"),
-      v.literal("finished")
+      v.literal("finished"),
     ),
     currentGameId: v.optional(v.id("games")),
     createdAt: v.number(),
@@ -121,7 +121,7 @@ export default defineSchema({
       v.literal("mafiaVoting"),
       v.literal("resolution"),
       v.literal("endCheck"),
-      v.literal("finished")
+      v.literal("finished"),
     ),
     round: v.number(),
     startedAt: v.number(),
@@ -132,7 +132,7 @@ export default defineSchema({
     tiedCandidates: v.optional(v.array(v.id("players"))),
     endedAt: v.optional(v.number()),
     winnerFaction: v.optional(
-      v.union(v.literal("mafia"), v.literal("citizens"))
+      v.union(v.literal("mafia"), v.literal("citizens")),
     ),
     chatMuted: v.optional(v.boolean()),
     cleanupScheduledId: v.optional(v.id("_scheduled_functions")),
@@ -148,7 +148,7 @@ export default defineSchema({
       v.literal("citizen"),
       v.literal("sheikh"),
       v.literal("girl"),
-      v.literal("boy")
+      v.literal("boy"),
     ),
     isAlive: v.boolean(),
     isConnected: v.boolean(),
@@ -206,8 +206,8 @@ export default defineSchema({
         v.literal("SHEIKH_INVESTIGATION_MAFIA"),
         v.literal("ROUND_END"),
         v.literal("VOTE_TIE"),
-        v.literal("MAFIA_VOTE_TIE_RANDOM")
-      )
+        v.literal("MAFIA_VOTE_TIE_RANDOM"),
+      ),
     ),
     resolvedMessage: v.optional(v.string()),
     messageKey: v.optional(v.string()),
@@ -215,7 +215,7 @@ export default defineSchema({
     round: v.number(),
     timestamp: v.number(),
     memeLevel: v.optional(
-      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS"))
+      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS")),
     ),
     type: v.optional(v.string()),
     payload: v.optional(v.string()),

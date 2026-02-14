@@ -40,12 +40,11 @@ const playerCardVariants = cva(
       selectable: false,
       compact: false,
     },
-  }
+  },
 );
 
 export interface PlayerCardProps
-  extends
-    Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
     VariantProps<typeof playerCardVariants> {
   username: string;
   avatarUrl?: string;
@@ -108,7 +107,7 @@ export function PlayerCard({
           compact,
         }),
         disabled && "pointer-events-none",
-        className
+        className,
       )}
       {...props}
     >

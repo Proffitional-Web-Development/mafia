@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 
 interface PhaseTransitionControllerProps {
   phase: Doc<"games">["phase"];
@@ -32,7 +32,7 @@ function PhaseFlash({ title }: { title: string }) {
   return (
     <div
       className={cn(
-        "pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200"
+        "pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200",
       )}
       aria-live="polite"
     >

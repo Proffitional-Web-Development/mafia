@@ -30,7 +30,7 @@ export function RoleRevealCard({
       disabled={revealed || !onReveal}
       className={cn(
         "group relative h-80 w-56 rounded-2xl outline-none [perspective:1000px] [transform-style:preserve-3d]",
-        className
+        className,
       )}
       aria-pressed={revealed}
       aria-label={revealed ? (roleName ?? revealLabel) : revealLabel}
@@ -38,7 +38,9 @@ export function RoleRevealCard({
       <span
         className={cn(
           "absolute inset-0 block rounded-2xl transition-transform duration-700 [transform-style:preserve-3d] motion-reduce:transition-none",
-          revealed ? "[transform:rotateY(180deg)]" : "[transform:rotateY(0deg)]"
+          revealed
+            ? "[transform:rotateY(180deg)]"
+            : "[transform:rotateY(0deg)]",
         )}
       >
         <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-surface/80 [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">

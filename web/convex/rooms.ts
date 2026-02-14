@@ -9,12 +9,12 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
+import { requireAuthUserId } from "./lib/auth";
 import {
   getAutoMafiaCount,
   getMaxAllowedMafia,
   validateMafiaCount,
 } from "./lib/gameRules";
-import { requireAuthUserId } from "./lib/auth";
 import { rateLimit } from "./lib/rateLimiter";
 
 // ---------------------------------------------------------------------------
@@ -28,7 +28,7 @@ function generateRoomCode(): string {
   const chars: string[] = [];
   for (let i = 0; i < ROOM_CODE_LENGTH; i++) {
     chars.push(
-      ROOM_CODE_CHARS[Math.floor(Math.random() * ROOM_CODE_CHARS.length)]
+      ROOM_CODE_CHARS[Math.floor(Math.random() * ROOM_CODE_CHARS.length)],
     );
   }
   return chars.join("");
@@ -49,7 +49,7 @@ function hashRoomPassword(password: string) {
 
 async function getRoomMembers(
   ctx: QueryCtx | MutationCtx,
-  roomId: Id<"rooms">
+  roomId: Id<"rooms">,
 ) {
   return ctx.db
     .query("roomMembers")
@@ -60,12 +60,12 @@ async function getRoomMembers(
 async function getMembership(
   ctx: QueryCtx | MutationCtx,
   roomId: Id<"rooms">,
-  userId: Id<"users">
+  userId: Id<"users">,
 ) {
   return ctx.db
     .query("roomMembers")
     .withIndex("by_roomId_userId", (q) =>
-      q.eq("roomId", roomId).eq("userId", userId)
+      q.eq("roomId", roomId).eq("userId", userId),
     )
     .first();
 }
@@ -73,7 +73,7 @@ async function getMembership(
 async function requireRoomOwner(
   ctx: MutationCtx,
   roomId: Id<"rooms">,
-  userId: Id<"users">
+  userId: Id<"users">,
 ) {
   const room = await ctx.db.get(roomId);
   if (!room) throw new ConvexError("Room not found.");
@@ -92,12 +92,12 @@ export const createRoom = mutation({
     visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
     password: v.optional(v.string()),
     memeLevel: v.optional(
-      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS"))
+      v.union(v.literal("NORMAL"), v.literal("FUN"), v.literal("CHAOS")),
     ),
     settings: v.optional(
       v.object({
         mafiaCount: v.optional(v.number()),
-      })
+      }),
     ),
   },
   handler: async (ctx, args) => {
@@ -134,7 +134,7 @@ export const createRoom = mutation({
     if (preliminaryMafiaCount !== undefined) {
       const validation = validateMafiaCount(
         preliminaryMafiaCount,
-        DEFAULT_MAX_PLAYERS
+        DEFAULT_MAX_PLAYERS,
       );
       if (!validation.valid) {
         throw new ConvexError(validation.error ?? "Invalid mafia count.");
@@ -186,7 +186,7 @@ export const joinRoom = mutation({
     });
 
     let room = args.roomId ? await ctx.db.get(args.roomId) : null;
-    const normalizedCode = args.code?.trim().toUpperCase();
+    const normalizedCode = args.code ? args.code.trim().toUpperCase() : null;
 
     if (!room && normalizedCode) {
       room = await ctx.db
@@ -254,11 +254,10 @@ export const joinRoomByLink = mutation({
     if (args.roomId) {
       room = await ctx.db.get(args.roomId);
     } else if (args.code) {
+      const normalizedCode = args.code.trim().toUpperCase();
       room = await ctx.db
         .query("rooms")
-        .withIndex("by_code", (q) =>
-          q.eq("code", args.code!.trim().toUpperCase())
-        )
+        .withIndex("by_code", (q) => q.eq("code", normalizedCode))
         .first();
     }
 
@@ -314,7 +313,7 @@ export const updateMemeLevel = mutation({
     memeLevel: v.union(
       v.literal("NORMAL"),
       v.literal("FUN"),
-      v.literal("CHAOS")
+      v.literal("CHAOS"),
     ),
   },
   handler: async (ctx, args) => {
@@ -346,7 +345,7 @@ export const updateRoomSettings = mutation({
           sheikh: v.boolean(),
           girl: v.boolean(),
           boy: v.boolean(),
-        })
+        }),
       ),
     }),
   },
@@ -375,7 +374,7 @@ export const updateRoomSettings = mutation({
     // Validate
     if (next.discussionDuration < 10 || next.discussionDuration > 600) {
       throw new ConvexError(
-        "Discussion duration must be between 10 and 600 seconds."
+        "Discussion duration must be between 10 and 600 seconds.",
       );
     }
     if (
@@ -383,7 +382,7 @@ export const updateRoomSettings = mutation({
       next.maxPlayers > ABSOLUTE_MAX_PLAYERS
     ) {
       throw new ConvexError(
-        `Max players must be between ${MIN_PLAYERS} and ${ABSOLUTE_MAX_PLAYERS}.`
+        `Max players must be between ${MIN_PLAYERS} and ${ABSOLUTE_MAX_PLAYERS}.`,
       );
     }
 
@@ -504,7 +503,7 @@ export const startGame = mutation({
     const members = await getRoomMembers(ctx, args.roomId);
     if (members.length < MIN_PLAYERS) {
       throw new ConvexError(
-        `At least ${MIN_PLAYERS} players are required to start.`
+        `At least ${MIN_PLAYERS} players are required to start.`,
       );
     }
 
@@ -512,7 +511,7 @@ export const startGame = mutation({
     if (room.settings.mafiaCount !== undefined) {
       const validation = validateMafiaCount(
         room.settings.mafiaCount,
-        members.length
+        members.length,
       );
       if (!validation.valid) {
         mafiaCountReset = true;
@@ -664,12 +663,12 @@ export const getRoomState = query({
 
     const members = await getRoomMembers(ctx, args.roomId);
     const userDocs = await Promise.all(
-      members.map((m) => ctx.db.get(m.userId))
+      members.map((m) => ctx.db.get(m.userId)),
     );
     const userById = new Map(
       userDocs
         .filter((u): u is NonNullable<typeof u> => u !== null)
-        .map((u) => [u._id, u])
+        .map((u) => [u._id, u]),
     );
 
     const memberViews = members.map((m) => {
@@ -744,17 +743,17 @@ export const listActiveRooms = query({
         ctx.db
           .query("roomMembers")
           .withIndex("by_roomId", (q) => q.eq("roomId", room._id))
-          .collect()
-      )
+          .collect(),
+      ),
     );
 
     const ownerDocs = await Promise.all(
-      rooms.map((room) => ctx.db.get(room.ownerId))
+      rooms.map((room) => ctx.db.get(room.ownerId)),
     );
     const ownerById = new Map(
       ownerDocs
         .filter((owner): owner is NonNullable<typeof owner> => owner !== null)
-        .map((owner) => [owner._id, owner])
+        .map((owner) => [owner._id, owner]),
     );
 
     return rooms.map((room, index) => ({
@@ -791,8 +790,8 @@ export const cleanupStaleRooms = internalMutation({
       .filter((q) =>
         q.and(
           q.lt(q.field("lastActivityAt"), thirtyMinutesAgo),
-          q.eq(q.field("status"), "waiting")
-        )
+          q.eq(q.field("status"), "waiting"),
+        ),
       )
       .take(50);
 

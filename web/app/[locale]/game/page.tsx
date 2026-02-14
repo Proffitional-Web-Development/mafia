@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
-import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { UserStatusCard } from "@/components/game/user-status-card";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -45,7 +45,7 @@ export default function GamePage() {
   const [joinCode, setJoinCode] = useState("");
   const [joinPassword, setJoinPassword] = useState("");
   const [roomVisibility, setRoomVisibility] = useState<"public" | "private">(
-    "private"
+    "private",
   );
   const [createPassword, setCreatePassword] = useState("");
   const [memeLevel, setMemeLevel] = useState<"NORMAL" | "FUN" | "CHAOS">("FUN");
@@ -125,7 +125,7 @@ export default function GamePage() {
 
   async function handleJoinActiveRoom(
     roomId: string,
-    requiresPassword: boolean
+    requiresPassword: boolean,
   ) {
     setJoiningRoomId(roomId);
     setError(null);
@@ -294,7 +294,7 @@ export default function GamePage() {
                 </option>
                 {Array.from(
                   { length: creationMaxAllowedMafia },
-                  (_, index) => index + 1
+                  (_, index) => index + 1,
                 ).map((count) => (
                   <option
                     key={count}
@@ -419,7 +419,7 @@ export default function GamePage() {
                       onClick={() =>
                         handleJoinActiveRoom(
                           room.roomId,
-                          room.visibility === "private" && room.hasPassword
+                          room.visibility === "private" && room.hasPassword,
                         )
                       }
                     >

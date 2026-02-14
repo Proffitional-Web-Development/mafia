@@ -7,9 +7,9 @@ import {
 } from "next-intl/server";
 
 import { LocaleProvider } from "@/components/locale-provider";
+import { BackgroundMusicProvider } from "@/components/providers/background-music-provider";
 import { routing } from "@/i18n/routing";
 import { ThemeProvider } from "../../components/theme-provider";
-import { BackgroundMusicProvider } from "@/components/providers/background-music-provider";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

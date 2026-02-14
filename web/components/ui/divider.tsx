@@ -24,14 +24,14 @@ export function Divider({
           "h-px flex-1",
           variant === "gradient"
             ? "bg-gradient-to-r from-transparent via-primary/60 to-transparent"
-            : "bg-white/10"
+            : "bg-white/10",
         )}
       />
       {(label || icon) && (
         <span
           className={cn(
             "inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest",
-            variant === "gradient" ? "gradient-text" : "text-text-tertiary"
+            variant === "gradient" ? "gradient-text" : "text-text-tertiary",
           )}
         >
           {variant === "icon" ? icon : null}
@@ -43,7 +43,7 @@ export function Divider({
           "h-px flex-1",
           variant === "gradient"
             ? "bg-gradient-to-r from-transparent via-primary/60 to-transparent"
-            : "bg-white/10"
+            : "bg-white/10",
         )}
       />
     </div>

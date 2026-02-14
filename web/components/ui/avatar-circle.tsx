@@ -41,7 +41,7 @@ export function AvatarCircle({
           selected &&
             "ring-2 ring-primary ring-offset-2 ring-offset-background",
           glow && "glow-primary rounded-full",
-          dead && "grayscale opacity-60"
+          dead && "grayscale opacity-60",
         )}
       >
         <UserAvatar username={username} avatarUrl={avatarUrl} size={size} />

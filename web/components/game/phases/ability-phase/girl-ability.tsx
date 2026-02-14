@@ -27,7 +27,7 @@ export function GirlAbility({
 
   const runGirlAbility = useMutation(api.abilityPhase.useGirlAbility);
   const confirmAbilityAction = useMutation(
-    api.abilityPhase.confirmAbilityAction
+    api.abilityPhase.confirmAbilityAction,
   );
 
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);

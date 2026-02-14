@@ -21,7 +21,7 @@ export function StepIndicator({
             key={step}
             className={cn(
               "h-1.5 flex-1 rounded-full transition-colors",
-              active ? "bg-primary" : "bg-white/10"
+              active ? "bg-primary" : "bg-white/10",
             )}
             aria-hidden
           />

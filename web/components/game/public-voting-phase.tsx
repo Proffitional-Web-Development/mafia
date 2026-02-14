@@ -3,13 +3,13 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { AvatarCircle } from "@/components/ui/avatar-circle";
-import { Badge } from "@/components/ui/badge";
-import { PlayerCard } from "@/components/ui/player-card";
-import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { EmojiReactionBadge } from "@/components/game/emoji-reaction-badge";
 import { EmojiReactionPicker } from "@/components/game/emoji-reaction-picker";
+import { AvatarCircle } from "@/components/ui/avatar-circle";
+import { Badge } from "@/components/ui/badge";
+import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { LoadingState } from "@/components/ui/loading-state";
+import { PlayerCard } from "@/components/ui/player-card";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
@@ -74,13 +74,13 @@ export function PublicVotingPhase({
     : (myVote?.targetId ?? null);
 
   const tiedCandidateIds = new Set(
-    (runoffState?.tiedCandidates ?? []).map((candidate) => candidate.playerId)
+    (runoffState?.tiedCandidates ?? []).map((candidate) => candidate.playerId),
   );
   const isRunoff = Boolean(runoffState?.isRunoff);
 
   // Filter alive players (excluding self) as vote targets
   const alivePlayers = players.filter(
-    (p) => p.isAlive && p.playerId !== me.playerId
+    (p) => p.isAlive && p.playerId !== me.playerId,
   );
   const voteTargets = isRunoff
     ? alivePlayers.filter((player) => tiedCandidateIds.has(player.playerId))
@@ -212,7 +212,7 @@ export function PublicVotingPhase({
               "hover:bg-white/5 border-white/20",
               mySelectedTargetId === "skip" &&
                 "border-warning bg-warning/20 shadow-[0_0_15px_rgba(234,179,8,0.3)]",
-              mySelectedTargetId !== "skip" && "bg-surface/20"
+              mySelectedTargetId !== "skip" && "bg-surface/20",
             )}
           >
             <span className="text-3xl filter drop-shadow-md">🚫</span>

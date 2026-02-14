@@ -135,13 +135,13 @@ export const cleanupFinishedGame = internalMutation({
           internal.cleanup.deleteRoomAndRelatedData,
           {
             roomId: room._id,
-          }
+          },
         );
       }
     }
 
     console.log(
-      `Cleaned up game ${String(game._id)} — deleted ${deleted.players} players, ${deleted.votes} votes, ${deleted.actions} actions, ${deleted.events} events, ${deleted.chatMessages} chat messages`
+      `Cleaned up game ${String(game._id)} — deleted ${deleted.players} players, ${deleted.votes} votes, ${deleted.actions} actions, ${deleted.events} events, ${deleted.chatMessages} chat messages`,
     );
     logger.info("cleanup.game.done", {
       gameId: String(game._id),
@@ -196,10 +196,10 @@ export const deleteRoomAndRelatedData = internalMutation({
             internal.cleanup.deleteRoomAndRelatedData,
             {
               roomId: room._id,
-            }
+            },
           );
           console.log(
-            `deleteRoomAndRelatedData (batched game cleanup) room=${String(room._id)} game=${String(game._id)}`
+            `deleteRoomAndRelatedData (batched game cleanup) room=${String(room._id)} game=${String(game._id)}`,
           );
           return {
             cleaned: false,
@@ -219,10 +219,10 @@ export const deleteRoomAndRelatedData = internalMutation({
         internal.cleanup.deleteRoomAndRelatedData,
         {
           roomId: room._id,
-        }
+        },
       );
       console.log(
-        `deleteRoomAndRelatedData (batched members) room=${String(room._id)} deletedMembers=${membersDeleted.deleted}`
+        `deleteRoomAndRelatedData (batched members) room=${String(room._id)} deletedMembers=${membersDeleted.deleted}`,
       );
       return {
         cleaned: false,
@@ -235,7 +235,7 @@ export const deleteRoomAndRelatedData = internalMutation({
     await ctx.db.delete(room._id);
 
     console.log(
-      `Cleaned up room ${String(room._id)} — deleted ${membersDeleted.deleted} members`
+      `Cleaned up room ${String(room._id)} — deleted ${membersDeleted.deleted} members`,
     );
 
     return {
@@ -276,7 +276,7 @@ export const cleanupExpiredRooms = internalMutation({
         internal.cleanup.deleteRoomAndRelatedData,
         {
           roomId: room._id,
-        }
+        },
       );
 
       const hoursAgo = (
@@ -326,7 +326,7 @@ export const cleanupExpiredRateLimits = internalMutation({
       await ctx.scheduler.runAfter(
         0,
         internal.cleanup.cleanupExpiredRateLimits,
-        {}
+        {},
       );
     }
 

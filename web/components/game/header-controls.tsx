@@ -2,8 +2,8 @@
 
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { api } from "@/convex/_generated/api";
 import { Icon } from "@/components/ui/icon";
+import { api } from "@/convex/_generated/api";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,7 @@ export function MusicToggle({ className }: { className?: string }) {
       className={cn(
         "rounded-full p-2 transition-colors hover:bg-white/5",
         isEnabled ? "text-primary" : "text-text-tertiary",
-        className
+        className,
       )}
       type="button"
       title={isEnabled ? t("musicEnabled") : t("musicDisabled")}
@@ -51,7 +51,7 @@ export function SettingsLink({ className }: { className?: string }) {
       href="/settings"
       className={cn(
         "rounded-full p-2 text-text-secondary transition-colors hover:bg-white/5 hover:text-white",
-        className
+        className,
       )}
       title={t("title")}
     >

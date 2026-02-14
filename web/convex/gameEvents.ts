@@ -1,8 +1,8 @@
 import { ConvexError, v } from "convex/values";
-import { MutationCtx, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
+import { type MutationCtx, query } from "./_generated/server";
+import { type GameEventType, pickRandomTemplate } from "./gameEventTemplates";
 import { requireAuthUserId } from "./lib/auth";
-import { GameEventType, pickRandomTemplate } from "./gameEventTemplates";
-import { Id } from "./_generated/dataModel";
 
 type EventParamsByType = {
   VOTE_ELIMINATION: { player: string };
@@ -36,7 +36,7 @@ function getPublicMessageKey(eventType: GameEventType, messageKey: string) {
 
 function sanitizePublicParams(
   eventType: GameEventType,
-  params: unknown
+  params: unknown,
 ): Record<string, unknown> | undefined {
   if (!params || typeof params !== "object") return undefined;
   const payload = params as Record<string, unknown>;
@@ -68,12 +68,12 @@ function sanitizePublicParams(
 function warnIfPotentialLeak(
   eventType: GameEventType,
   messageKey: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ) {
   const containsRoleOrFaction = (value: unknown) =>
     typeof value === "string" &&
     /(\bmafia\b|\bcitizen\b|\bsheikh\b|\bgirl\b|مافيا|مواطن|شيخ|فتاة)/i.test(
-      value
+      value,
     );
 
   if (
@@ -82,7 +82,7 @@ function warnIfPotentialLeak(
     /MAFIA/i.test(messageKey)
   ) {
     console.warn(
-      `[gameEvents] Potential leak: Sheikh investigation messageKey may expose faction (${messageKey}).`
+      `[gameEvents] Potential leak: Sheikh investigation messageKey may expose faction (${messageKey}).`,
     );
   }
 
@@ -91,13 +91,13 @@ function warnIfPotentialLeak(
     /girl|فتاة/i.test(messageKey)
   ) {
     console.warn(
-      `[gameEvents] Potential leak: Mafia failed elimination messageKey references Girl (${messageKey}).`
+      `[gameEvents] Potential leak: Mafia failed elimination messageKey references Girl (${messageKey}).`,
     );
   }
 
   if (params && Object.values(params).some(containsRoleOrFaction)) {
     console.warn(
-      `[gameEvents] Potential leak: messageParams contain role/faction keywords for ${eventType}.`
+      `[gameEvents] Potential leak: messageParams contain role/faction keywords for ${eventType}.`,
     );
   }
 }
@@ -114,7 +114,7 @@ export async function logGameEvent(
       eventType: K;
       params: EventParamsByType[K];
     };
-  }[GameEventType]
+  }[GameEventType],
 ) {
   const { gameId, eventType, params } = args;
   const game = await ctx.db.get(gameId);
@@ -152,7 +152,7 @@ export const getGameEvents = query({
     const player = await ctx.db
       .query("players")
       .withIndex("by_gameId_userId", (q) =>
-        q.eq("gameId", args.gameId).eq("userId", userId)
+        q.eq("gameId", args.gameId).eq("userId", userId),
       )
       .first();
 
@@ -170,7 +170,7 @@ export const getGameEvents = query({
     return events
       .filter(
         (e): e is typeof e & { eventType: GameEventType; messageKey: string } =>
-          Boolean(e.eventType) && Boolean(e.messageKey)
+          Boolean(e.eventType) && Boolean(e.messageKey),
       )
       .map((e) => {
         const safeType: PublicGameEventType =

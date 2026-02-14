@@ -31,16 +31,31 @@ export function Icon({
   className,
   ariaLabel,
 }: IconProps) {
+  if (ariaLabel) {
+    return (
+      <span
+        role="img"
+        aria-label={ariaLabel}
+        className={cn(
+          "inline-flex shrink-0 select-none items-center justify-center leading-none",
+          variantClass[variant],
+          sizeClass[size],
+          className,
+        )}
+      >
+        {name}
+      </span>
+    );
+  }
+
   return (
     <span
-      role={ariaLabel ? "img" : undefined}
-      aria-hidden={ariaLabel ? undefined : true}
-      aria-label={ariaLabel}
+      aria-hidden
       className={cn(
         "inline-flex shrink-0 select-none items-center justify-center leading-none",
         variantClass[variant],
         sizeClass[size],
-        className
+        className,
       )}
     >
       {name}

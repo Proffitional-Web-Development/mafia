@@ -3,9 +3,9 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { PlayerCard } from "@/components/ui/player-card";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { LoadingState } from "@/components/ui/loading-state";
+import { PlayerCard } from "@/components/ui/player-card";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { TimerDisplay } from "@/components/ui/timer-display";
@@ -39,7 +39,7 @@ export function MafiaVotingPhase({
 
   const mafiaVotes = useQuery(
     api.mafiaVoting.getMafiaVotes,
-    canSeeMafiaVotes ? { gameId } : "skip"
+    canSeeMafiaVotes ? { gameId } : "skip",
   );
 
   const [acting, setActing] = useState(false);
@@ -77,7 +77,7 @@ export function MafiaVotingPhase({
   }
 
   const playerById = new Map(
-    gameState.players.map((player) => [player.playerId, player])
+    gameState.players.map((player) => [player.playerId, player]),
   );
 
   const myVoteTargetId =
@@ -180,7 +180,7 @@ export function MafiaVotingPhase({
           ? t("yourVote", {
               name:
                 mafiaVotes.aliveTargets.find(
-                  (target) => target.playerId === myVoteTargetId
+                  (target) => target.playerId === myVoteTargetId,
                 )?.username ?? "?",
             })
           : t("noVoteYet")}

@@ -33,7 +33,7 @@ export function LanguageSwitcher({
         onClick={() => onChange(locale === "en" ? "ar" : "en")}
         className={cn(
           "inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 px-3 text-text-secondary transition-colors hover:border-primary/40 hover:text-white",
-          className
+          className,
         )}
       >
         <Icon name="language" variant="round" size="md" />
@@ -45,7 +45,7 @@ export function LanguageSwitcher({
     <fieldset
       className={cn(
         "inline-flex items-center rounded-full border border-white/15 bg-white/5 p-1",
-        className
+        className,
       )}
       aria-label={t("language")}
     >
@@ -57,7 +57,7 @@ export function LanguageSwitcher({
           "rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors",
           locale === "en"
             ? "bg-primary text-white"
-            : "text-text-tertiary hover:text-text-secondary"
+            : "text-text-tertiary hover:text-text-secondary",
         )}
       >
         {t("english")}
@@ -69,7 +69,7 @@ export function LanguageSwitcher({
           "rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors",
           locale === "ar"
             ? "bg-primary text-white"
-            : "text-text-tertiary hover:text-text-secondary"
+            : "text-text-tertiary hover:text-text-secondary",
         )}
       >
         {t("arabic")}

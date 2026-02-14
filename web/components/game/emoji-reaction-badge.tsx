@@ -20,7 +20,7 @@ export function EmojiReactionBadge({
       className={cn(
         "absolute -top-1 -start-1 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-surface/90 text-base shadow-md ring-1 ring-white/15 backdrop-blur-sm",
         "motion-safe:animate-[scale-in_200ms_ease-out] motion-reduce:animate-none",
-        className
+        className,
       )}
       aria-hidden
     >

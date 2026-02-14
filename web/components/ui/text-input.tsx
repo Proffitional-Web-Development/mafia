@@ -1,8 +1,8 @@
 "use client";
 
 import { cva, type VariantProps } from "class-variance-authority";
-import { useId } from "react";
 import * as React from "react";
+import { useId } from "react";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +25,11 @@ const inputVariants = cva(
       variant: "default",
       state: "default",
     },
-  }
+  },
 );
 
 export interface TextInputProps
-  extends
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix">,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix">,
     VariantProps<typeof inputVariants> {
   label?: string;
   icon?: string;
@@ -58,7 +57,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
       onChange,
       ...props
     },
-    ref
+    ref,
   ) => {
     const generatedId = useId();
     const inputId = id ?? generatedId;
@@ -102,7 +101,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
               inputVariants({ variant, state: resolvedState }),
               icon && "ps-10",
               trailingIcon && "pe-10",
-              className
+              className,
             )}
             {...props}
           />
@@ -128,7 +127,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 TextInput.displayName = "TextInput";

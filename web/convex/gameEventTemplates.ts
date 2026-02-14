@@ -137,12 +137,12 @@ const TEMPLATES: Record<GameEventType, Record<MemeLevel, string[]>> = {
 
 export function pickRandomTemplate(
   eventType: GameEventType,
-  memeLevel: MemeLevel = "FUN"
+  memeLevel: MemeLevel = "FUN",
 ): string {
   const templates = TEMPLATES[eventType][memeLevel];
   if (!templates || templates.length === 0) {
     // Fallback to normal if specified level is missing (should verify this doesn't happen)
-    return TEMPLATES[eventType]["NORMAL"][0];
+    return TEMPLATES[eventType].NORMAL[0];
   }
   const index = Math.floor(Math.random() * templates.length);
   return templates[index];

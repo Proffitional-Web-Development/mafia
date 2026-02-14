@@ -136,7 +136,7 @@ function LobbyView({
     (key: "gameStarted" | "roomFull" | "notFound" | "passwordRequired") => {
       router.replace(`/game?joinError=${key}`);
     },
-    [router]
+    [router],
   );
 
   useEffect(() => {
@@ -274,7 +274,7 @@ function LobbyView({
 
   async function handleSettingChange(
     field: string,
-    value: number | boolean | Record<string, boolean>
+    value: number | boolean | Record<string, boolean>,
   ) {
     try {
       setInfoMessage(null);
@@ -470,7 +470,7 @@ function LobbyView({
               {Array.from({
                 length: Math.max(
                   0,
-                  roomState.settings.maxPlayers - memberCount
+                  roomState.settings.maxPlayers - memberCount,
                 ),
               })
                 .slice(0, Math.max(0, 12 - memberCount))
@@ -555,7 +555,7 @@ function LobbyView({
                     </option>
                     {Array.from(
                       { length: mafiaInfo?.maxAllowed ?? 1 },
-                      (_, index) => index + 1
+                      (_, index) => index + 1,
                     ).map((count) => (
                       <option
                         key={count}

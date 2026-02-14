@@ -18,7 +18,7 @@ export function EliminationCard({
     <article
       className={cn(
         "rounded-2xl border border-danger/40 bg-danger/10 p-4 text-center",
-        className
+        className,
       )}
     >
       <div className="mx-auto mb-3 inline-flex">
