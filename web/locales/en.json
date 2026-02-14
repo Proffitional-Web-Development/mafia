@@ -421,6 +421,8 @@
   },
   "errors": {
     "sessionExpired": "Your session has expired. Please sign in again.",
+    "cookiesBlocked": "Sign-in could not be completed because auth cookies were blocked. Enable cookies or use HTTPS.",
+    "mobileCookieHint": "If you are on mobile, open the HTTPS URL and allow cookies. Some in-app browsers block auth cookies on HTTP.",
     "network": "Network error. Please try again.",
     "unknown": "Something went wrong.",
     "roomNotFound": "Room not found.",

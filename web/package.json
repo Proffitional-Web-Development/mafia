@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -k -n NEXT,CONVEX \"next dev\" \"convex dev\"",
+    "dev:https": "concurrently -k -n NEXT,CONVEX \"next dev --experimental-https -H 0.0.0.0 -p 3000\" \"convex dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "npm run lint:eslint && npm run lint:prettier",

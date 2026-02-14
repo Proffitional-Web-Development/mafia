@@ -1,5 +1,6 @@
 export type AppErrorKey =
   | "sessionExpired"
+  | "cookiesBlocked"
   | "network"
   | "roomNotFound"
   | "roomFull"
@@ -15,6 +16,14 @@ function normalizeMessage(input: unknown): string {
 
 export function mapAppErrorKey(input: unknown): AppErrorKey {
   const message = normalizeMessage(input);
+
+  if (
+    message.includes("missing refreshtoken cookie") ||
+    (message.includes("refreshtoken") && message.includes("cookie")) ||
+    message.includes("third-party cookie")
+  ) {
+    return "cookiesBlocked";
+  }
 
   if (
     message.includes("session") ||

@@ -1,14 +1,16 @@
 "use client";
 
 import { useAuthActions } from "@convex-dev/auth/react";
+import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Divider } from "@/components/ui/divider";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { TextInput } from "@/components/ui/text-input";
+import { api } from "@/convex/_generated/api";
 import { useRouter } from "@/i18n/navigation";
 import { mapAppErrorKey } from "@/lib/error-message";
 
@@ -20,12 +22,48 @@ export default function AuthPage() {
   const et = useTranslations("errors");
   const router = useRouter();
   const { signIn } = useAuthActions();
+  const currentUser = useQuery(api.users.getCurrentUser);
 
   const [mode, setMode] = useState<AuthMode>("signIn");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [awaitingSession, setAwaitingSession] = useState(false);
+  const [showCookieHint, setShowCookieHint] = useState(false);
+
+  useEffect(() => {
+    if (currentUser) {
+      router.replace("/onboarding");
+    }
+  }, [currentUser, router]);
+
+  useEffect(() => {
+    if (!awaitingSession) return;
+
+    if (currentUser) {
+      setAwaitingSession(false);
+      setLoading(false);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setAwaitingSession(false);
+      setLoading(false);
+      setErrorMessage(et("cookiesBlocked"));
+    }, 3500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [awaitingSession, currentUser, et]);
+
+  useEffect(() => {
+    const isSecure = window.location.protocol === "https:";
+    const isLocalhost =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    setShowCookieHint(!isSecure && !isLocalhost);
+  }, []);
 
   async function submitEmailPasswordAuth(
     event: React.FormEvent<HTMLFormElement>,
@@ -40,10 +78,10 @@ export default function AuthPage() {
         password,
         flow: mode,
       });
-      router.replace("/onboarding");
+      setAwaitingSession(true);
     } catch (error) {
       setErrorMessage(et(mapAppErrorKey(error)));
-    } finally {
+      setAwaitingSession(false);
       setLoading(false);
     }
   }
@@ -58,6 +96,7 @@ export default function AuthPage() {
       });
     } catch (error) {
       setErrorMessage(et(mapAppErrorKey(error)));
+      setAwaitingSession(false);
       setLoading(false);
     }
   }
@@ -77,7 +116,15 @@ export default function AuthPage() {
         </div>
         <p className="mb-5 text-sm text-text-tertiary">{t("noGuestAccess")}</p>
 
-        <form className="space-y-4" onSubmit={submitEmailPasswordAuth}>
+        {showCookieHint ? (
+          <StatusBanner
+            message={et("mobileCookieHint")}
+            variant="warning"
+            className="mb-4"
+          />
+        ) : null}
+
+        <form className="space-y-4 mt-3" onSubmit={submitEmailPasswordAuth}>
           <TextInput
             type="text"
             required
