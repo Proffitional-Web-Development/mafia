@@ -82,18 +82,12 @@ export function ChatPanel({
   const chatEnabled = chatState?.chatEnabled ?? true;
   const chatMuted = chatState?.chatMuted ?? false;
 
-  // Reset anonymous mode if switching channels or losing mafia status
-  useEffect(() => {
-    if (channel !== "public" || !isMafia) {
-      setIsAnonymous(false);
-    }
-  }, [channel, isMafia]);
-
   // ── Derived ───────────────────────────────────────────────────────────
   const canSend =
     isAlive && (channel === "mafia" || (chatEnabled && !chatMuted));
 
   const showAnonymousToggle = isMafia && channel === "public";
+  const effectiveAnonymous = showAnonymousToggle ? isAnonymous : false;
 
   const disabledReason:
     | "muted"
@@ -125,7 +119,7 @@ export function ChatPanel({
     if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [open, messages?.length]);
+  }, [open]);
 
   // ── Handlers ──────────────────────────────────────────────────────────
   const handleSend = useCallback(
@@ -135,7 +129,7 @@ export function ChatPanel({
           gameId,
           channel,
           content,
-          anonymous: isAnonymous && channel === "public" ? true : undefined,
+          anonymous: effectiveAnonymous ? true : undefined,
         });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -146,7 +140,7 @@ export function ChatPanel({
         throw err;
       }
     },
-    [gameId, channel, sendMessage, isAnonymous],
+    [gameId, channel, sendMessage, effectiveAnonymous],
   );
 
   const handleToggleChat = useCallback(async () => {
@@ -332,36 +326,38 @@ export function ChatPanel({
                   />
                 )}
 
-                <div
-                  className={cn(
-                    "max-w-[75%] rounded-xl px-3 py-1.5 transition-colors", // Added transition
-                    isAnon
-                      ? "bg-danger/20 text-danger-light border border-danger/30"
-                      : isMe
-                        ? "bg-primary/20 text-white"
-                        : "bg-white/5 text-text-secondary",
-                    msg.isTemplate && !isAnon && "border border-white/10",
-                    isVoice && "cursor-pointer hover:bg-white/10", // Add cursor pointer for voice
-                  )}
-                  onClick={
-                    isVoice && voiceKey
-                      ? () => playVoiceClip(voiceKey)
-                      : undefined
-                  }
-                >
-                  <p
+                {isVoice && voiceKey ? (
+                  <button
+                    type="button"
                     className={cn(
-                      "text-[10px] font-semibold mb-0.5",
-                      isAnon ? "text-danger" : "text-text-muted",
+                      "max-w-[75%] rounded-xl px-3 py-1.5 transition-colors text-start",
+                      isAnon
+                        ? "bg-danger/20 text-danger-light border border-danger/30"
+                        : isMe
+                          ? "bg-primary/20 text-white"
+                          : "bg-white/5 text-text-secondary",
+                      msg.isTemplate && !isAnon && "border border-white/10",
+                      "cursor-pointer hover:bg-white/10",
                     )}
+                    onClick={() => playVoiceClip(voiceKey)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        playVoiceClip(voiceKey);
+                      }
+                    }}
                   >
-                    {isAnon ? t("anonymous.alias") : msg.senderUsername}
-                  </p>
+                    <p
+                      className={cn(
+                        "text-[10px] font-semibold mb-0.5",
+                        isAnon ? "text-danger" : "text-text-muted",
+                      )}
+                    >
+                      {isAnon ? t("anonymous.alias") : msg.senderUsername}
+                    </p>
 
-                  {isVoice ? (
                     <div className="flex items-center gap-2">
-                      <button
-                        type="button"
+                      <span
                         className={cn(
                           "flex h-6 w-6 items-center justify-center rounded-full transition-colors",
                           playingClip === voiceKey
@@ -375,12 +371,42 @@ export function ChatPanel({
                           }
                           size="sm"
                         />
-                      </button>
+                      </span>
                       <span className="text-xs italic select-none">
                         {voiceLabel}
                       </span>
                     </div>
-                  ) : (
+
+                    <p
+                      className={cn(
+                        "mt-0.5 text-end text-[9px]",
+                        isAnon ? "text-danger/60" : "text-text-muted",
+                      )}
+                    >
+                      {formatRelativeTime(msg.timestamp, locale)}
+                    </p>
+                  </button>
+                ) : (
+                  <div
+                    className={cn(
+                      "max-w-[75%] rounded-xl px-3 py-1.5 transition-colors", // Added transition
+                      isAnon
+                        ? "bg-danger/20 text-danger-light border border-danger/30"
+                        : isMe
+                          ? "bg-primary/20 text-white"
+                          : "bg-white/5 text-text-secondary",
+                      msg.isTemplate && !isAnon && "border border-white/10",
+                    )}
+                  >
+                    <p
+                      className={cn(
+                        "text-[10px] font-semibold mb-0.5",
+                        isAnon ? "text-danger" : "text-text-muted",
+                      )}
+                    >
+                      {isAnon ? t("anonymous.alias") : msg.senderUsername}
+                    </p>
+
                     <p
                       className="text-xs leading-relaxed break-words"
                       dir="auto"
@@ -395,17 +421,17 @@ export function ChatPanel({
                       )}
                       {resolveContent(msg)}
                     </p>
-                  )}
 
-                  <p
-                    className={cn(
-                      "mt-0.5 text-end text-[9px]",
-                      isAnon ? "text-danger/60" : "text-text-muted",
-                    )}
-                  >
-                    {formatRelativeTime(msg.timestamp, locale)}
-                  </p>
-                </div>
+                    <p
+                      className={cn(
+                        "mt-0.5 text-end text-[9px]",
+                        isAnon ? "text-danger/60" : "text-text-muted",
+                      )}
+                    >
+                      {formatRelativeTime(msg.timestamp, locale)}
+                    </p>
+                  </div>
+                )}
               </div>
             );
           })

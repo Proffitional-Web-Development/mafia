@@ -147,7 +147,10 @@ export function TemplatePickerPopover({
                 <Icon name="arrow_back" variant="round" size="sm" />
               </button>
               <span className="text-xs font-semibold text-text-secondary truncate">
-                {templateLabel(selectedTemplate.key, selectedTemplate.placeholders)}
+                {templateLabel(
+                  selectedTemplate.key,
+                  selectedTemplate.placeholders,
+                )}
               </span>
             </div>
 
@@ -199,7 +202,9 @@ export function TemplatePickerPopover({
                       className="shrink-0 text-text-muted"
                     />
                   )}
-                  <span dir="auto">{templateLabel(tmpl.key, tmpl.placeholders)}</span>
+                  <span dir="auto">
+                    {templateLabel(tmpl.key, tmpl.placeholders)}
+                  </span>
                 </button>
               ))
             )}

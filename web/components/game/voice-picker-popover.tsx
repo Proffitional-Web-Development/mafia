@@ -88,7 +88,8 @@ export function VoicePickerPopover({
 
   return (
     <>
-      <div
+      <button
+        type="button"
         className="fixed inset-0 z-40"
         onClick={onClose}
         aria-label="Close"
@@ -99,6 +100,7 @@ export function VoicePickerPopover({
             {t("picker.title")}
           </span>
           <button
+            type="button"
             onClick={onClose}
             className="rounded-full p-1 text-text-muted hover:text-white"
           >
@@ -125,6 +127,7 @@ export function VoicePickerPopover({
               >
                 <div className="flex items-center gap-2 overflow-hidden">
                   <button
+                    type="button"
                     onClick={() => handlePreview(clip.key, clip.file)}
                     className={cn(
                       "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 transition-all",
@@ -142,6 +145,7 @@ export function VoicePickerPopover({
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => handleSend(clip.key)}
                   disabled={isSending}
                   className="flex h-7 px-2 items-center justify-center rounded bg-primary/10 text-[10px] font-medium text-primary hover:bg-primary/20 disabled:opacity-50"
