@@ -26,6 +26,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "gallant-dragon-613.convex.cloud",
+      },
+      {
+        protocol: "https",
+        hostname: "gallant-dragon-639.convex.cloud",
+      },
+    ],
+  },
 };
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");

@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { HeaderControls } from "@/components/game/header-controls";
 import { Icon } from "@/components/ui/icon";
 import { StatusBanner } from "@/components/ui/status-banner";
 import { TimerDisplay } from "@/components/ui/timer-display";
@@ -89,7 +88,7 @@ export function PhaseHeader({
             variant === "ability-split" && "flex-col items-end gap-1",
           )}
         >
-          <HeaderControls />
+          {/* <HeaderControls /> */}
 
           {deadlineAt ? (
             <TimerDisplay

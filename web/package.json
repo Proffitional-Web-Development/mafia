@@ -11,7 +11,7 @@
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier --check .",
     "format": "prettier --write .",
-    "check": "biome check .",
+    "check": "biome check . --write",
     "typecheck": "tsc --noEmit",
     "test": "node -e \"console.log('No tests yet')\""
   },

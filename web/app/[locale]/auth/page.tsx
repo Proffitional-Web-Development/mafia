@@ -5,7 +5,6 @@ import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { Divider } from "@/components/ui/divider";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { SecondaryButton } from "@/components/ui/secondary-button";
 import { StatusBanner } from "@/components/ui/status-banner";
@@ -78,7 +77,7 @@ export default function AuthPage() {
     }
   }
 
-  async function continueWithGoogle() {
+  /*  async function continueWithGoogle() {
     setLoading(true);
     setErrorMessage(null);
 
@@ -91,7 +90,7 @@ export default function AuthPage() {
       setAwaitingSession(false);
       setLoading(false);
     }
-  }
+  } */
 
   return (
     <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-sm items-center justify-center overflow-hidden px-6 py-8 md:max-w-3xl md:px-8 lg:max-w-5xl lg:px-10">
@@ -153,7 +152,7 @@ export default function AuthPage() {
           </PrimaryButton>
         </form>
 
-        <Divider className="my-4" label={common("or")} variant="gradient" />
+        {/*  <Divider className="my-4" label={common("or")} variant="gradient" />
 
         <SecondaryButton
           type="button"
@@ -163,7 +162,7 @@ export default function AuthPage() {
           icon="g_mobiledata"
         >
           {t("continueWithGoogle")}
-        </SecondaryButton>
+        </SecondaryButton> */}
 
         <SecondaryButton
           type="button"
