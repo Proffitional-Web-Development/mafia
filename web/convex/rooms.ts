@@ -455,7 +455,8 @@ export const getRoomState = query({
       const user = userById.get(m.userId);
       return {
         userId: m.userId,
-        username: user?.username ?? user?.name ?? "Unknown",
+        username:
+          user?.displayName ?? user?.username ?? user?.name ?? "Unknown",
         avatarUrl: user?.image,
         joinedAt: m.joinedAt,
         isOwner: m.userId === room.ownerId,
@@ -536,7 +537,10 @@ export const listActiveRooms = query({
       roomId: room._id,
       code: room.code,
       ownerUserId: room.ownerId,
-      ownerUsername: ownerById.get(room.ownerId)?.username ?? "Unknown",
+      ownerUsername:
+        ownerById.get(room.ownerId)?.displayName ??
+        ownerById.get(room.ownerId)?.username ??
+        "Unknown",
       ownerAvatarUrl: ownerById.get(room.ownerId)?.image,
       playerCount: memberSets[index]?.length ?? 0,
       maxPlayers: room.settings.maxPlayers,

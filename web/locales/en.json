@@ -41,6 +41,7 @@
     "createAccount": "Create account",
     "noGuestAccess": "No guest access is allowed.",
     "email": "Email",
+    "username": "Username",
     "password": "Password",
     "continueWithGoogle": "Continue with Google",
     "needAccount": "Need an account? Create one",
@@ -50,8 +51,9 @@
   },
   "onboarding": {
     "title": "Complete your profile",
-    "description": "Choose a unique username and optional avatar.",
+    "description": "Choose a unique display name and optional avatar.",
     "username": "Username",
+    "displayName": "Display Name",
     "saving": "Saving...",
     "saveProfile": "Save Profile",
     "avatarUploadFailed": "Avatar upload failed.",

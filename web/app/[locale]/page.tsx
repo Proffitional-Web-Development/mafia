@@ -50,7 +50,7 @@ export default function HomePage() {
           </div>
           {currentUser?.hasCompletedProfile ? (
             <UserStatusCard
-              username={currentUser.username ?? undefined}
+              username={currentUser.displayName || currentUser.username || undefined}
               avatarUrl={currentUser.avatarUrl ?? undefined}
               subtitle={t("description")}
               className="absolute bottom-3 start-1/2 w-[calc(100%-1.5rem)] -translate-x-1/2"

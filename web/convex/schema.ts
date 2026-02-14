@@ -41,6 +41,7 @@ export default defineSchema({
 
   users: defineTable({
     name: v.optional(v.string()),
+    displayName: v.optional(v.string()),
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
     image: v.optional(v.string()),
@@ -59,7 +60,6 @@ export default defineSchema({
       })
     ),
   })
-    .index("email", ["email"])
     .index("phone", ["phone"])
     .index("by_username", ["username"])
     .index("by_usernameLower", ["usernameLower"])

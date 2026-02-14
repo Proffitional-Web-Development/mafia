@@ -134,7 +134,10 @@ export default function GamePage() {
         <div className="flex items-center justify-between gap-3">
           <UserStatusCard
             username={
-              currentUser.username ?? currentUser.name ?? gt("fallbackPlayer")
+              currentUser.displayName ??
+              currentUser.username ??
+              currentUser.name ??
+              gt("fallbackPlayer")
             }
             avatarUrl={currentUser.avatarUrl ?? undefined}
             subtitle={gt("lobbyTitle")}

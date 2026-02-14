@@ -45,9 +45,10 @@ export const getCurrentUser = query({
       id: user._id,
       email: user.email,
       name: user.name,
+      displayName: user.displayName,
       username: user.username,
       avatarUrl,
-      hasCompletedProfile: Boolean(user.username),
+      hasCompletedProfile: Boolean(user.displayName),
       stats: user.stats ?? {
         gamesPlayed: 0,
         wins: 0,
@@ -59,22 +60,14 @@ export const getCurrentUser = query({
 
 export const completeProfile = mutation({
   args: {
-    username: v.string(),
+    displayName: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
-    const username = validateUsername(args.username);
-    const usernameLower = normalizeUsername(username);
+    const displayName = args.displayName.trim(); // basic trim, maybe length check
 
-    const existing = await ctx.db
-      .query("users")
-      .withIndex("by_usernameLower", (queryBuilder) =>
-        queryBuilder.eq("usernameLower", usernameLower)
-      )
-      .first();
-
-    if (existing && existing._id !== userId) {
-      throw new ConvexError("Username is already taken.");
+    if (displayName.length < 3 || displayName.length > 32) {
+      throw new ConvexError("Display name must be between 3 and 32 characters.");
     }
 
     const currentUser = await ctx.db.get(userId);
@@ -83,8 +76,7 @@ export const completeProfile = mutation({
     }
 
     await ctx.db.patch(userId, {
-      username,
-      usernameLower,
+      displayName,
       createdAt: currentUser.createdAt ?? Date.now(),
       stats: currentUser.stats ?? {
         gamesPlayed: 0,

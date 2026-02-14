@@ -28,7 +28,7 @@ export default function OnboardingPage() {
   );
   const setAvatarFromStorage = useMutation(api.users.setAvatarFromStorage);
 
-  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
     null,
   );
@@ -36,12 +36,12 @@ export default function OnboardingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const usernameSuggestions = [
-    "ShadowWolf",
-    "SilentViper",
-    "NightOwl",
-    "GhostKing",
-    "CipherFox",
+  const displayNameSuggestions = [
+    "Shadow Wolf",
+    "Silent Viper",
+    "Night Owl",
+    "Ghost King",
+    "Cipher Fox",
   ];
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function OnboardingPage() {
     setErrorMessage(null);
 
     try {
-      await completeProfile({ username });
+      await completeProfile({ displayName });
 
       if (selectedAvatarFile) {
         const uploadUrl = await generateAvatarUploadUrl();
@@ -110,25 +110,25 @@ export default function OnboardingPage() {
               type="text"
               required
               minLength={3}
-              maxLength={24}
-              label={t("username")}
-              icon="alternate_email"
-              placeholder={t("username")}
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              maxLength={32}
+              label={t("displayName")}
+              icon="badge"
+              placeholder={t("displayName")}
+              value={displayName}
+              onChange={(event) => setDisplayName(event.target.value)}
               showCounter
               helperText={common("you")}
             />
 
             <SuggestedChips
-              suggestions={usernameSuggestions}
-              onSelect={(value) => setUsername(value)}
+              suggestions={displayNameSuggestions}
+              onSelect={(value) => setDisplayName(value)}
             />
 
             <PrimaryButton
               type="button"
               icon="arrow_forward"
-              disabled={username.trim().length < 3}
+              disabled={displayName.trim().length < 3}
               onClick={() => setStep(2)}
             >
               {t("saveProfile")}
@@ -143,7 +143,7 @@ export default function OnboardingPage() {
 
             <div className="flex items-center gap-4">
               <AvatarCircle
-                username={username || currentUser?.name || undefined}
+                username={displayName || currentUser?.name || undefined}
                 size={72}
                 editable
                 glowWrapper

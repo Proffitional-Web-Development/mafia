@@ -22,7 +22,7 @@ export default function AuthPage() {
   const { signIn } = useAuthActions();
 
   const [mode, setMode] = useState<AuthMode>("signIn");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export default function AuthPage() {
 
     try {
       await signIn("password", {
-        email,
+        email: username,
         password,
         flow: mode,
       });
@@ -79,13 +79,15 @@ export default function AuthPage() {
 
         <form className="space-y-4" onSubmit={submitEmailPasswordAuth}>
           <TextInput
-            type="email"
+            type="text"
             required
-            icon="alternate_email"
-            label={t("email")}
-            placeholder={t("email")}
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            minLength={3}
+            maxLength={24}
+            icon="person"
+            label={t("username")}
+            placeholder={t("username")}
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
           />
           <TextInput
             type="password"

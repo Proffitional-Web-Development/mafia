@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { InvestigationLog } from "@/components/game/investigation-log";
+import { InvestigationLog } from "@/components/game/phases/ability-phase/investigation-log";
 import { LoadingState } from "@/components/ui/loading-state";
 import { PlayerGrid } from "@/components/ui/player-grid";
 import { PrimaryButton } from "@/components/ui/primary-button";

@@ -5,15 +5,15 @@ import { useTranslations } from "next-intl";
 import {
   AbilityPhase,
   AbilityPhaseNightTransition,
-} from "@/components/game/ability-phase";
+} from "@/components/game/phases/ability-phase";
 import { DiscussionPhase } from "@/components/game/discussion-phase";
-import { FinishedPhase } from "@/components/game/finished-phase";
-import { MafiaVotingPhase } from "@/components/game/mafia-voting-phase";
+import { FinishedPhase } from "@/components/game/phases/finished-phase";
+import { MafiaVotingPhase } from "@/components/game/phases/ability-phase/mafia-voting-phase";
 import { PhaseHeader } from "@/components/game/phase-header";
-import { PhaseTransitionController } from "@/components/game/phase-transition-controller";
+import { PhaseTransitionController } from "@/components/game/phases/phase-transition-controller";
 import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
-import { ResolutionPhase } from "@/components/game/resolution-phase";
+import { ResolutionPhase } from "@/components/game/phases/ability-phase/resolution-phase";
 import { RoleLogsPanel } from "@/components/game/role-logs-panel";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
 import { LoadingState } from "@/components/ui/loading-state";
