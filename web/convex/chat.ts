@@ -13,8 +13,8 @@ import {
   resolveTemplateFallback,
   TEMPLATE_KEY_SET,
 } from "./chatTemplates";
-import { requireAuthUserId } from "./lib/auth";
 import { isCoordinatorUser } from "./coordinator";
+import { requireAuthUserId } from "./lib/auth";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -261,7 +261,8 @@ export const getChatMessages = query({
     // Check if coordinator
     const isCoord = await isCoordinatorUser(ctx, args.gameId, userId);
 
-    if (!player && !isCoord) throw new ConvexError("You are not a player in this game.");
+    if (!player && !isCoord)
+      throw new ConvexError("You are not a player in this game.");
 
     // Mafia channel: silently return empty for non-mafia (no error to avoid
     // leaking channel existence)
@@ -276,7 +277,7 @@ export const getChatMessages = query({
       .withIndex("by_gameId_channel", (q) =>
         q.eq("gameId", args.gameId).eq("channel", args.channel),
       )
-      .order("asc") // Changed to asc to match typical chat flow, though original was asc? 
+      .order("asc") // Changed to asc to match typical chat flow, though original was asc?
       // Wait, original file had `messages = ... .order("asc").take(MAX)`?
       // Actually original had `.order("asc").take(100)` at line 273.
       // Wait, take(100) with asc means OLDEST 100? Or usually NEWEST?
@@ -468,7 +469,7 @@ export const getChatState = query({
     const chatMuted = game.chatMuted === true;
 
     // Coordinators see everything but are not "mafia" per se (though they see mafia channel via other queries)
-    // isAlive true for coordinators so they don't get 'Spectating' UI if we use that flag, 
+    // isAlive true for coordinators so they don't get 'Spectating' UI if we use that flag,
     // but typically coordinators have their own UI.
     const isMafia = player?.role === "mafia" || isCoord; // Allow coord to see mafia stuff if used for permissions
     const isAlive = player?.isAlive ?? true; // Default alive for coord

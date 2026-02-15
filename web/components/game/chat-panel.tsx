@@ -87,7 +87,9 @@ export function ChatPanel({
 
   // ── Derived ───────────────────────────────────────────────────────────
   const canSend =
-    !isReadOnly && isAlive && (channel === "mafia" || (chatEnabled && !chatMuted));
+    !isReadOnly &&
+    isAlive &&
+    (channel === "mafia" || (chatEnabled && !chatMuted));
 
   const showAnonymousToggle = isMafia && channel === "public";
   const effectiveAnonymous = showAnonymousToggle ? isAnonymous : false;
@@ -122,7 +124,7 @@ export function ChatPanel({
     if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [open, messages?.length]);
+  }, [open]);
 
   // ── Handlers ──────────────────────────────────────────────────────────
   const handleSend = useCallback(
@@ -445,8 +447,8 @@ export function ChatPanel({
       <div className="relative border-t border-white/10 p-3">
         {isReadOnly ? (
           <div className="flex items-center justify-center rounded-lg bg-white/5 px-4 py-3 text-center text-xs text-text-muted border border-white/5">
-             <Icon name="visibility" size="sm" className="me-2" />
-             {tCoord("readOnlyChat")}
+            <Icon name="visibility" size="sm" className="me-2" />
+            {tCoord("readOnlyChat")}
           </div>
         ) : (
           <>
@@ -490,7 +492,9 @@ export function ChatPanel({
                   : undefined
               }
               anonymous={showAnonymousToggle ? isAnonymous : undefined}
-              onToggleAnonymous={showAnonymousToggle ? setIsAnonymous : undefined}
+              onToggleAnonymous={
+                showAnonymousToggle ? setIsAnonymous : undefined
+              }
             />
           </>
         )}

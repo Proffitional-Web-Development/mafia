@@ -9,10 +9,10 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
+import { isCoordinatorUser } from "./coordinator";
 import { logGameEvent } from "./gameEvents";
 import { requireAuthUserId } from "./lib/auth";
 import { logger } from "./lib/logger";
-import { isCoordinatorUser } from "./coordinator";
 
 const PHASE_ORDER = [
   "lobby",
@@ -595,9 +595,7 @@ export const getGameState = query({
     const playerViews = players.map((player) => {
       const user = userById.get(player.userId);
       const roleVisibleToRequester =
-        isCoord ||
-        game.phase === "finished" ||
-        (me && player._id === me._id);
+        isCoord || game.phase === "finished" || (me && player._id === me._id);
 
       return {
         playerId: player._id,
@@ -615,13 +613,15 @@ export const getGameState = query({
 
     const mafiaTeammates = isRequesterMafia
       ? players
-        .filter((player) => player.role === "mafia" && me && player._id !== me._id)
-        .map((player) => ({
-          playerId: player._id,
-          userId: player.userId,
-          username: userById.get(player.userId)?.username ?? "Unknown",
-          isAlive: player.isAlive,
-        }))
+          .filter(
+            (player) => player.role === "mafia" && me && player._id !== me._id,
+          )
+          .map((player) => ({
+            playerId: player._id,
+            userId: player.userId,
+            username: userById.get(player.userId)?.username ?? "Unknown",
+            isAlive: player.isAlive,
+          }))
       : [];
 
     return {
@@ -638,12 +638,12 @@ export const getGameState = query({
       },
       me: me
         ? {
-          playerId: me._id,
-          userId: me.userId,
-          role: me.role,
-          isAlive: me.isAlive,
-          isConnected: me.isConnected,
-        }
+            playerId: me._id,
+            userId: me.userId,
+            role: me.role,
+            isAlive: me.isAlive,
+            isConnected: me.isConnected,
+          }
         : null,
       players: playerViews,
       mafiaTeammates,

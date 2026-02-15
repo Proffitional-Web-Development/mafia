@@ -220,9 +220,7 @@ export function SettingsPageContent() {
 
       {/* Preferences Section */}
       <section className="space-y-6 rounded-2xl border border-white/10 bg-surface/40 p-6">
-        <h2 className="text-xl font-semibold text-white">
-          {t("preferences")}
-        </h2>
+        <h2 className="text-xl font-semibold text-white">{t("preferences")}</h2>
         <ThemeColorPicker />
         <div className="h-px w-full bg-white/5" />
         <div className="flex items-center justify-between">

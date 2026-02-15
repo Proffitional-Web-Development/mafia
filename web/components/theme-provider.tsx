@@ -28,22 +28,21 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: PropsWithChildren) {
   const [theme, setThemeState] = useState<AppTheme>("default");
-  
-  // Local state for accent color, initialized null
-  const [accentColor, setAccentColorState] = useState<string | null>(null);
+
+  // `undefined` means "follow user preference"; null/string are explicit overrides.
+  const [accentColorOverride, setAccentColorOverride] = useState<
+    string | null | undefined
+  >(undefined);
 
   // Fetch user preference
   const user = useQuery(api.users.getCurrentUser);
   const userThemeColor = user?.themeColor ?? null;
 
-  // Sync user preference to local state when loaded
-  useEffect(() => {
-    if (user === undefined) return; // Loading
-    setAccentColorState(userThemeColor);
-  }, [userThemeColor, user]);
+  const accentColor =
+    accentColorOverride === undefined ? userThemeColor : accentColorOverride;
 
   const setAccentColor = useCallback((color: string | null) => {
-    setAccentColorState(color);
+    setAccentColorOverride(color);
   }, []);
 
   // Apply theme palette to root element

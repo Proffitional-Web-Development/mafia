@@ -551,7 +551,7 @@ export const startGame = mutation({
     // If owner is coordinator, they don't count as a player
     const isCoordinatorMode = room.settings.ownerMode === "coordinator";
     const playingMembers = isCoordinatorMode
-      ? members.filter(m => m.userId !== room.ownerId)
+      ? members.filter((m) => m.userId !== room.ownerId)
       : members;
 
     if (playingMembers.length < MIN_PLAYERS) {
@@ -728,8 +728,7 @@ export const getRoomState = query({
       const user = userById.get(m.userId);
       return {
         userId: m.userId,
-        username:
-          user?.displayName ?? user?.username ?? "Player",
+        username: user?.displayName ?? user?.username ?? "Player",
         avatarUrl: user?.image,
         joinedAt: m.joinedAt,
         isOwner: m.userId === room.ownerId,

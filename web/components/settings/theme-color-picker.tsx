@@ -3,11 +3,11 @@
 import { useMutation } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { THEME_PRESETS, generateThemePalette } from "@/lib/theme-palette";
 import { useTheme } from "@/components/theme-provider";
 import { SecondaryButton } from "@/components/ui/secondary-button";
-import { cn } from "@/lib/utils";
 import { api } from "@/convex/_generated/api";
+import { generateThemePalette, THEME_PRESETS } from "@/lib/theme-palette";
+import { cn } from "@/lib/utils";
 
 export function ThemeColorPicker() {
   const t = useTranslations("settings.preferences");
@@ -45,7 +45,7 @@ export function ThemeColorPicker() {
   }, [customColor]);
 
   // Save when debounced value settles, only if it's currently marked as custom/active
-  // and differs from what was last saved (implied by accentColor logic, but we want 
+  // and differs from what was last saved (implied by accentColor logic, but we want
   // to avoid re-saving presets if user just clicked them).
   useEffect(() => {
     // If accentColor matches debouncedCustomColor, and it is NOT a preset (or is custom override), save it.
@@ -54,18 +54,18 @@ export function ThemeColorPicker() {
     // Let's rely on `isCustom`: if user is in custom mode (no preset matched), save.
     // But `activePreset` is derived from `accentColor`.
     // If user picks a custom color identical to a preset, it becomes a preset. That's fine.
-    
+
     // We only save if the debounced color is the one currently active in UI.
     if (debouncedCustomColor === accentColor) {
-       // Check if it's already saved? No, mutation is cheap enough.
-       // Only save if it's not a preset we just clicked? 
-       // If we clicked a preset, handlePresetSelect saved it.
-       // If we dragged custom picker, accentColor updated, then debounce updated.
-       // We can just save it.
-       
-       // Optimization: if it is a preset, we might have already saved it in handlePresetSelect.
-       // But it doesn't hurt to save again.
-       setThemeColor({ themeColor: debouncedCustomColor });
+      // Check if it's already saved? No, mutation is cheap enough.
+      // Only save if it's not a preset we just clicked?
+      // If we clicked a preset, handlePresetSelect saved it.
+      // If we dragged custom picker, accentColor updated, then debounce updated.
+      // We can just save it.
+
+      // Optimization: if it is a preset, we might have already saved it in handlePresetSelect.
+      // But it doesn't hurt to save again.
+      setThemeColor({ themeColor: debouncedCustomColor });
     }
   }, [debouncedCustomColor, accentColor, setThemeColor]);
 
@@ -80,9 +80,7 @@ export function ThemeColorPicker() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium text-text-primary">
-          {t("theme")}
-        </h3>
+        <h3 className="text-lg font-medium text-text-primary">{t("theme")}</h3>
         <SecondaryButton
           onClick={handleReset}
           className="h-8 min-h-0 w-auto px-3 text-xs"
@@ -93,9 +91,9 @@ export function ThemeColorPicker() {
       </div>
 
       <div className="space-y-3">
-        <label className="text-sm font-medium text-text-secondary">
+        <p className="text-sm font-medium text-text-secondary">
           {t("themePresets")}
-        </label>
+        </p>
         <div className="grid grid-cols-4 gap-4 sm:grid-cols-8">
           {THEME_PRESETS.map((preset) => (
             <button
@@ -121,7 +119,9 @@ export function ThemeColorPicker() {
                     viewBox="0 0 24 24"
                     fill="currentColor"
                     className="h-5 w-5"
+                    role="img"
                   >
+                    <title>{t("themePresets")}</title>
                     <path
                       fillRule="evenodd"
                       d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z"
@@ -136,12 +136,16 @@ export function ThemeColorPicker() {
       </div>
 
       <div className="space-y-3">
-        <label className="text-sm font-medium text-text-secondary">
+        <label
+          htmlFor="theme-custom-color"
+          className="text-sm font-medium text-text-secondary"
+        >
           {t("themeCustom")}
         </label>
         <div className="flex items-center gap-4">
           <div className="relative flex aspect-square h-12 w-12 items-center justify-center rounded-full border-2 border-white/20 overflow-hidden">
             <input
+              id="theme-custom-color"
               type="color"
               value={customColor}
               onChange={(e) => handleCustomColorChange(e.target.value)}
@@ -165,9 +169,9 @@ export function ThemeColorPicker() {
       </div>
 
       <div className="space-y-3">
-        <label className="text-sm font-medium text-text-secondary">
+        <p className="text-sm font-medium text-text-secondary">
           {t("themePreview")}
-        </label>
+        </p>
         <div className="grid grid-cols-5 h-16 w-full overflow-hidden rounded-lg border border-white/10">
           <div
             className="flex items-center justify-center text-xs font-medium text-white/80"

@@ -9,8 +9,8 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
-import { requireAuthUserId } from "./lib/auth";
 import { logGameEvent } from "./gameEvents";
+import { requireAuthUserId } from "./lib/auth";
 
 const BOY_REVENGE_MS = 30_000;
 
@@ -304,7 +304,11 @@ export const useBoyRevenge = mutation({
     });
 
     const room = await ctx.db.get(game.roomId);
-    if (room && room.settings.ownerMode === "player" && target.userId === room.ownerId) {
+    if (
+      room &&
+      room.settings.ownerMode === "player" &&
+      target.userId === room.ownerId
+    ) {
       await ctx.db.patch(target._id, { isCoordinator: true });
       await logGameEvent(ctx, {
         gameId: args.gameId,

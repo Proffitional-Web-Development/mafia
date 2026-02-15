@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-
 interface SettingsPanelProps {
   discussionDuration: number;
   maxPlayers: number;
@@ -43,9 +42,13 @@ function DurationInput({
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs text-text-tertiary">
         <span>{label}</span>
-        <span>{isUnlimited ? tSettings("unlimited") : t("seconds", { count: numericValue })}</span>
+        <span>
+          {isUnlimited
+            ? tSettings("unlimited")
+            : t("seconds", { count: numericValue })}
+        </span>
       </div>
-      
+
       {editable ? (
         <div className="flex items-center gap-3">
           <input
@@ -62,19 +65,27 @@ function DurationInput({
             <input
               type="checkbox"
               checked={isUnlimited}
-              onChange={(e) => onChange?.(e.target.checked ? null : defaultValue)}
+              onChange={(e) =>
+                onChange?.(e.target.checked ? null : defaultValue)
+              }
               className="h-4 w-4 rounded border-white/20 bg-white/10 accent-primary"
             />
             <span className="whitespace-nowrap text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
-              {tSettings("unlimited").split('(')[1]?.replace(')', '') || "Manual"}
+              {tSettings("unlimited").split("(")[1]?.replace(")", "") ||
+                "Manual"}
             </span>
           </div>
         </div>
       ) : (
         <div className="h-2 w-full rounded-full bg-white/10">
-          <div 
-            className={cn("h-full rounded-full bg-primary/50", isUnlimited && "w-full bg-emerald-500/50")}
-            style={{ width: isUnlimited ? "100%" : `${(numericValue / 600) * 100}%` }}
+          <div
+            className={cn(
+              "h-full rounded-full bg-primary/50",
+              isUnlimited && "w-full bg-emerald-500/50",
+            )}
+            style={{
+              width: isUnlimited ? "100%" : `${(numericValue / 600) * 100}%`,
+            }}
           />
         </div>
       )}
@@ -115,39 +126,49 @@ export function SettingsPanel({
       <div className="space-y-6">
         {/* Owner Mode */}
         <div className="space-y-2">
-            <div className="text-xs text-text-tertiary">{tSettings("ownerMode")}</div>
-            <div className="grid grid-cols-2 gap-2">
-                <button
-                    type="button"
-                    disabled={!editable}
-                    onClick={() => onOwnerModeChange?.("player")}
-                    className={cn(
-                        "flex flex-col items-center justify-center rounded-lg border border-transparent p-3 text-center transition-all",
-                        ownerMode === "player" 
-                            ? "bg-primary/20 border-primary/50 text-primary-foreground" 
-                            : "bg-white/5 text-text-secondary hover:bg-white/10",
-                        !editable && "opacity-80 cursor-default"
-                    )}
-                >
-                    <span className="text-sm font-medium">{tSettings("ownerModePlayer")}</span>
-                    <span className="text-[10px] text-text-tertiary mt-1 leading-tight">{tSettings("ownerModePlayerDesc")}</span>
-                </button>
-                <button
-                    type="button"
-                    disabled={!editable}
-                    onClick={() => onOwnerModeChange?.("coordinator")}
-                    className={cn(
-                        "flex flex-col items-center justify-center rounded-lg border border-transparent p-3 text-center transition-all",
-                        ownerMode === "coordinator" 
-                             ? "bg-purple-500/20 border-purple-500/50 text-purple-200" 
-                            : "bg-white/5 text-text-secondary hover:bg-white/10",
-                        !editable && "opacity-80 cursor-default"
-                    )}
-                >
-                    <span className="text-sm font-medium">{tSettings("ownerModeCoordinator")}</span>
-                     <span className="text-[10px] text-text-tertiary mt-1 leading-tight">{tSettings("ownerModeCoordinatorDesc")}</span>
-                </button>
-            </div>
+          <div className="text-xs text-text-tertiary">
+            {tSettings("ownerMode")}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              disabled={!editable}
+              onClick={() => onOwnerModeChange?.("player")}
+              className={cn(
+                "flex flex-col items-center justify-center rounded-lg border border-transparent p-3 text-center transition-all",
+                ownerMode === "player"
+                  ? "bg-primary/20 border-primary/50 text-primary-foreground"
+                  : "bg-white/5 text-text-secondary hover:bg-white/10",
+                !editable && "opacity-80 cursor-default",
+              )}
+            >
+              <span className="text-sm font-medium">
+                {tSettings("ownerModePlayer")}
+              </span>
+              <span className="text-[10px] text-text-tertiary mt-1 leading-tight">
+                {tSettings("ownerModePlayerDesc")}
+              </span>
+            </button>
+            <button
+              type="button"
+              disabled={!editable}
+              onClick={() => onOwnerModeChange?.("coordinator")}
+              className={cn(
+                "flex flex-col items-center justify-center rounded-lg border border-transparent p-3 text-center transition-all",
+                ownerMode === "coordinator"
+                  ? "bg-purple-500/20 border-purple-500/50 text-purple-200"
+                  : "bg-white/5 text-text-secondary hover:bg-white/10",
+                !editable && "opacity-80 cursor-default",
+              )}
+            >
+              <span className="text-sm font-medium">
+                {tSettings("ownerModeCoordinator")}
+              </span>
+              <span className="text-[10px] text-text-tertiary mt-1 leading-tight">
+                {tSettings("ownerModeCoordinatorDesc")}
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="h-px bg-white/10" />
@@ -193,26 +214,26 @@ export function SettingsPanel({
         </label>
 
         {/* Advanced Phase Timers */}
-        <DurationInput 
-            label={tSettings("publicVotingDuration")} 
-            value={publicVotingDuration} 
-            onChange={onPublicVotingDurationChange} 
-            editable={editable}
-            defaultValue={45}
+        <DurationInput
+          label={tSettings("publicVotingDuration")}
+          value={publicVotingDuration}
+          onChange={onPublicVotingDurationChange}
+          editable={editable}
+          defaultValue={45}
         />
-        <DurationInput 
-            label={tSettings("abilityPhaseDuration")} 
-            value={abilityPhaseDuration} 
-            onChange={onAbilityPhaseDurationChange} 
-            editable={editable}
-            defaultValue={30}
+        <DurationInput
+          label={tSettings("abilityPhaseDuration")}
+          value={abilityPhaseDuration}
+          onChange={onAbilityPhaseDurationChange}
+          editable={editable}
+          defaultValue={30}
         />
-        <DurationInput 
-            label={tSettings("mafiaVotingDuration")} 
-            value={mafiaVotingDuration} 
-            onChange={onMafiaVotingDurationChange} 
-            editable={editable}
-            defaultValue={45}
+        <DurationInput
+          label={tSettings("mafiaVotingDuration")}
+          value={mafiaVotingDuration}
+          onChange={onMafiaVotingDurationChange}
+          editable={editable}
+          defaultValue={45}
         />
       </div>
     </section>

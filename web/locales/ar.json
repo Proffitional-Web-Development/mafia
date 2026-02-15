@@ -156,7 +156,7 @@
     "readOnlySettings": "فقط مالك الغرفة يمكنه تغيير الإعدادات",
     "settings": {
       "mafiaCount": "عدد المافيا",
-      "seconds" : "{count} ثانية",
+      "seconds": "{count} ثانية",
       "mafiaCountAuto": "تلقائي ({count})",
       "mafiaCountCustom": "مخصص",
       "mafiaCountHelper": "يجب أن يكون عدد المافيا أقل من المواطنين",

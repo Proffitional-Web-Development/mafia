@@ -18,9 +18,9 @@ type EventParamsByType = {
 
 type PublicGameEventType =
   | Exclude<
-    GameEventType,
-    "SHEIKH_INVESTIGATION_CITIZEN" | "SHEIKH_INVESTIGATION_MAFIA"
-  >
+      GameEventType,
+      "SHEIKH_INVESTIGATION_CITIZEN" | "SHEIKH_INVESTIGATION_MAFIA"
+    >
   | "SHEIKH_INVESTIGATION";
 
 type RoundSummaryEventType =
@@ -193,7 +193,7 @@ export const getGameEvents = query({
       .map((e) => {
         const safeType: PublicGameEventType =
           e.eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
-            e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
+          e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
             ? "SHEIKH_INVESTIGATION"
             : e.eventType;
         return {
@@ -270,7 +270,7 @@ export const getRoundSummary = query({
 
         const safeType: PublicGameEventType =
           e.eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
-            e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
+          e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
             ? "SHEIKH_INVESTIGATION"
             : e.eventType;
 

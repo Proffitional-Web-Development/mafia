@@ -39,7 +39,10 @@ function iconForEventType(eventType: string) {
   if (eventType === "VOTE_ELIMINATION" || eventType === "MAFIA_ELIMINATION") {
     return "dangerous";
   }
-  if (eventType === "GIRL_PROTECTION" || eventType === "MAFIA_FAILED_ELIMINATION") {
+  if (
+    eventType === "GIRL_PROTECTION" ||
+    eventType === "MAFIA_FAILED_ELIMINATION"
+  ) {
     return "shield";
   }
   if (
@@ -157,7 +160,10 @@ export function RoundSummaryModal({
                     className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2"
                   >
                     <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/5">
-                      <Icon name={iconForEventType(event.eventType)} size="sm" />
+                      <Icon
+                        name={iconForEventType(event.eventType)}
+                        size="sm"
+                      />
                     </span>
                     <p className="text-sm text-text-secondary" dir="auto">
                       {resolveEventMessage(event)}

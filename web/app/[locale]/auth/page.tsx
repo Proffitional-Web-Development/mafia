@@ -67,7 +67,7 @@ export default function AuthPage() {
         flow: "signIn",
       });
       setAwaitingSession(true);
-    } catch (signInError: any) {
+    } catch (signInError: unknown) {
       // Step 2: If sign in fails, try to sign up
       try {
         await signIn("password", {
@@ -76,24 +76,23 @@ export default function AuthPage() {
           flow: "signUp",
         });
         setAwaitingSession(true);
-      } catch (signUpError: any) {
+      } catch (signUpError: unknown) {
         // Step 3: If sign up also fails, decide which error to show
-        let errorToShow = signInError;
+        const errorToShow = signInError;
 
         // If sign up failed because username is taken, it means the user exists
         // so the original sign-in error (e.g. wrong password) is the correct one.
         // We check for various "taken" strings just in case.
-        const signUpErrorMsg = (signUpError?.message || "").toLowerCase();
         /*
          * Note: The exact error message for "username taken" depends on the implementation.
          * Assuming standard behavior, but if signUpError is "Conflict" or similar.
          * For now, we fall back to the signInError as the primary failure reason
          * if the user existed.
          */
-        
+
         // If the error was just "User not found" (fake error for security sometimes),
-        // but here we are explicit. 
-        
+        // but here we are explicit.
+
         console.error("SignIn failed:", signInError);
         console.error("SignUp failed:", signUpError);
 
@@ -156,9 +155,7 @@ export default function AuthPage() {
             icon="login"
             type="submit"
           >
-            {loading
-              ? common("pleaseWait")
-              : t("continue")}
+            {loading ? common("pleaseWait") : t("continue")}
           </PrimaryButton>
         </form>
 

@@ -37,9 +37,7 @@ export default function RoomPage({
 
   const isCoordinator = useQuery(
     api.coordinator.checkIsCoordinator,
-    roomState?.currentGameId
-      ? { gameId: roomState.currentGameId }
-      : "skip",
+    roomState?.currentGameId ? { gameId: roomState.currentGameId } : "skip",
   );
 
   if (!roomState || !currentUser) {
