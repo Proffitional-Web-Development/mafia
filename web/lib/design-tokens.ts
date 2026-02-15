@@ -23,7 +23,7 @@ export const FACTION_COLORS = {
     bg: "bg-primary/25",
     text: "text-primary-light",
     border: "border-primary/50",
-    accent: "#8311d4",
+    accent: "var(--app-primary)",
   },
 } as const;
 

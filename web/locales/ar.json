@@ -473,7 +473,22 @@
       "title": "التفضيلات",
       "music": "الموسيقى الخلفية",
       "musicEnabled": "مفعّل",
-      "musicDisabled": "معطّل"
+      "musicDisabled": "معطّل",
+      "theme": "لون السمة",
+      "themePresets": "ألوان مُعدّة",
+      "themeCustom": "مخصص",
+      "themeReset": "إعادة تعيين إلى الافتراضي",
+      "themePreview": "معاينة",
+      "colors": {
+        "purple": "أرجواني ملكي",
+        "red": "قرمزي",
+        "blue": "أزرق محيطي",
+        "green": "زمردي",
+        "orange": "غروب",
+        "pink": "وردي",
+        "cyan": "فيروزي",
+        "gold": "ذهبي"
+      }
     },
     "saved": "تم حفظ التغييرات",
     "discardPrompt": "لديك تغييرات غير محفوظة. تجاهل؟",

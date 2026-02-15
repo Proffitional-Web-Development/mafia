@@ -60,6 +60,7 @@ export default defineSchema({
         losses: v.number(),
       }),
     ),
+    themeColor: v.optional(v.union(v.string(), v.null())),
   })
     .index("phone", ["phone"])
     .index("by_username", ["username"])

@@ -11,6 +11,7 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { ThemeColorPicker } from "./theme-color-picker";
 
 export function SettingsPageContent() {
   const t = useTranslations("settings");
@@ -220,8 +221,10 @@ export function SettingsPageContent() {
       {/* Preferences Section */}
       <section className="space-y-6 rounded-2xl border border-white/10 bg-surface/40 p-6">
         <h2 className="text-xl font-semibold text-white">
-          {t("preferences.title")}
+          {t("preferences")}
         </h2>
+        <ThemeColorPicker />
+        <div className="h-px w-full bg-white/5" />
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <div className="text-base text-text-primary">

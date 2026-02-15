@@ -38,6 +38,7 @@ export const getCurrentUser = query({
         losses: 0,
       },
       musicEnabled: user.musicEnabled ?? true,
+      themeColor: user.themeColor ?? null,
     };
   },
 });
@@ -161,6 +162,27 @@ export const setAvatarFromStorage = mutation({
     await ctx.db.patch(userId, {
       avatarStorageId: args.storageId,
       image: storageUrl,
+    });
+
+    return { success: true };
+  },
+});
+
+export const setThemeColor = mutation({
+  args: {
+    themeColor: v.union(v.string(), v.null()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+
+    if (args.themeColor !== null) {
+      if (!/^#[0-9a-fA-F]{6}$/.test(args.themeColor)) {
+        throw new ConvexError("Invalid hex color code.");
+      }
+    }
+
+    await ctx.db.patch(userId, {
+      themeColor: args.themeColor,
     });
 
     return { success: true };

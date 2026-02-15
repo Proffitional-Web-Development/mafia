@@ -473,7 +473,22 @@
       "title": "Preferences",
       "music": "Background Music",
       "musicEnabled": "Enabled",
-      "musicDisabled": "Disabled"
+      "musicDisabled": "Disabled",
+      "theme": "Theme Color",
+      "themePresets": "Presets",
+      "themeCustom": "Custom",
+      "themeReset": "Reset to Default",
+      "themePreview": "Preview",
+      "colors": {
+        "purple": "Royal Purple",
+        "red": "Crimson",
+        "blue": "Ocean Blue",
+        "green": "Emerald",
+        "orange": "Sunset",
+        "pink": "Rose",
+        "cyan": "Teal",
+        "gold": "Gold"
+      }
     },
     "saved": "Changes saved",
     "discardPrompt": "You have unsaved changes. Discard?",
