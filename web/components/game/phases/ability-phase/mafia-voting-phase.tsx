@@ -34,8 +34,8 @@ export function MafiaVotingPhase({
 
   const canSeeMafiaVotes =
     gameState?.game.phase === "mafiaVoting" &&
-    gameState?.me.role === "mafia" &&
-    gameState?.me.isAlive;
+    gameState?.me?.role === "mafia" &&
+    gameState?.me?.isAlive;
 
   const mafiaVotes = useQuery(
     api.mafiaVoting.getMafiaVotes,
@@ -81,7 +81,7 @@ export function MafiaVotingPhase({
   );
 
   const myVoteTargetId =
-    mafiaVotes.votes.find((vote) => vote.voterId === gameState.me.playerId)
+    mafiaVotes.votes.find((vote) => vote.voterId === gameState.me?.playerId)
       ?.targetId ?? null;
 
   const votesByTarget = mafiaVotes.aliveTargets.map((target) => {
