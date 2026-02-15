@@ -39,7 +39,7 @@ export function FinishedPhase({ gameId, currentUserId }: FinishedPhaseProps) {
   }
 
   const winner = gameState.game.winnerFaction;
-  const myRole = gameState.me.role;
+  const myRole = gameState.me?.role;
   const didWin =
     winner === "mafia"
       ? myRole === "mafia"

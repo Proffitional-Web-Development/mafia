@@ -57,7 +57,7 @@ export function PublicVotingPhase({
   }
 
   const { me, players } = gameState;
-  const isAlive = me.isAlive;
+  const isAlive = me?.isAlive;
   const isOwner = roomState?.ownerId === currentUserId;
 
   // Build player map for display
@@ -80,7 +80,7 @@ export function PublicVotingPhase({
 
   // Filter alive players (excluding self) as vote targets
   const alivePlayers = players.filter(
-    (p) => p.isAlive && p.playerId !== me.playerId,
+    (p) => p.isAlive && p.playerId !== me?.playerId,
   );
   const voteTargets = isRunoff
     ? alivePlayers.filter((player) => tiedCandidateIds.has(player.playerId))
@@ -257,7 +257,7 @@ export function PublicVotingPhase({
         </BottomActionBar>
       )}
 
-      {isAlive && !isRunoff ? (
+      {isAlive && !isRunoff && (
         <SecondaryButton
           variant="dashed"
           icon="block"
@@ -265,7 +265,7 @@ export function PublicVotingPhase({
         >
           {t("skipVote")}
         </SecondaryButton>
-      ) : null}
+      )}
 
       {isAlive ? (
         <section className="space-y-2 rounded-2xl border border-white/10 bg-surface/50 p-3">
@@ -306,7 +306,7 @@ export function PublicVotingPhase({
           <EmojiReactionPicker
             gameId={gameId}
             currentEmoji={
-              gameState.players.find((p) => p.playerId === me.playerId)
+              gameState.players.find((p) => p.playerId === me?.playerId)
                 ?.emojiReaction ?? undefined
             }
           />
