@@ -13,14 +13,31 @@ type EventParamsByType = {
   ROUND_END: { round: number };
   VOTE_TIE: { players: string };
   MAFIA_VOTE_TIE_RANDOM: { player: string };
+  OWNER_PROMOTED_COORDINATOR: Record<string, never>;
 };
 
 type PublicGameEventType =
   | Exclude<
-      GameEventType,
-      "SHEIKH_INVESTIGATION_CITIZEN" | "SHEIKH_INVESTIGATION_MAFIA"
-    >
+    GameEventType,
+    "SHEIKH_INVESTIGATION_CITIZEN" | "SHEIKH_INVESTIGATION_MAFIA"
+  >
   | "SHEIKH_INVESTIGATION";
+
+type RoundSummaryEventType =
+  | PublicGameEventType
+  | "SHEIKH_INVESTIGATION_CITIZEN"
+  | "SHEIKH_INVESTIGATION_MAFIA"
+  | "GIRL_PROTECTION";
+
+type RoundSummaryEvent = {
+  eventId: string;
+  eventType: RoundSummaryEventType;
+  messageKey: string;
+  messageParams?: Record<string, unknown>;
+  round: number;
+  timestamp: number;
+  memeLevel: "NORMAL" | "FUN" | "CHAOS";
+};
 
 function getPublicMessageKey(eventType: GameEventType, messageKey: string) {
   if (
@@ -47,6 +64,7 @@ function sanitizePublicParams(
     MAFIA_VOTE_TIE_RANDOM: ["player"],
     ROUND_END: ["round"],
     VOTE_TIE: ["players"],
+    OWNER_PROMOTED_COORDINATOR: [],
   };
 
   const safeKeys = safeKeysByEvent[eventType] ?? [];
@@ -175,7 +193,7 @@ export const getGameEvents = query({
       .map((e) => {
         const safeType: PublicGameEventType =
           e.eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
-          e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
+            e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
             ? "SHEIKH_INVESTIGATION"
             : e.eventType;
         return {
@@ -188,5 +206,109 @@ export const getGameEvents = query({
           _id: e._id,
         };
       });
+  },
+});
+
+export const getRoundSummary = query({
+  args: {
+    gameId: v.id("games"),
+    round: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireAuthUserId(ctx);
+
+    const player = await ctx.db
+      .query("players")
+      .withIndex("by_gameId_userId", (q) =>
+        q.eq("gameId", args.gameId).eq("userId", userId),
+      )
+      .first();
+
+    if (!player) {
+      throw new ConvexError("You are not a player in this game.");
+    }
+
+    const isSheikh = player.role === "sheikh";
+    const isGirl = player.role === "girl";
+
+    const roundEvents = await ctx.db
+      .query("gameEvents")
+      .withIndex("by_gameId_round", (q) =>
+        q.eq("gameId", args.gameId).eq("round", args.round),
+      )
+      .collect();
+
+    const summarizedEvents: RoundSummaryEvent[] = roundEvents
+      .filter(
+        (e): e is typeof e & { eventType: GameEventType; messageKey: string } =>
+          Boolean(e.eventType) && Boolean(e.messageKey),
+      )
+      .map((e) => {
+        const isSheikhInvestigation =
+          e.eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
+          e.eventType === "SHEIKH_INVESTIGATION_MAFIA";
+
+        if (isSheikhInvestigation && isSheikh) {
+          const sheikhMessageKey = e.messageKey.replace(
+            "SHEIKH_INVESTIGATION",
+            e.eventType,
+          );
+
+          return {
+            eventId: String(e._id),
+            eventType: e.eventType,
+            messageKey: sheikhMessageKey,
+            messageParams:
+              e.messageParams && typeof e.messageParams === "object"
+                ? (e.messageParams as Record<string, unknown>)
+                : undefined,
+            round: e.round,
+            timestamp: e.timestamp,
+            memeLevel: e.memeLevel ?? "FUN",
+          };
+        }
+
+        const safeType: PublicGameEventType =
+          e.eventType === "SHEIKH_INVESTIGATION_CITIZEN" ||
+            e.eventType === "SHEIKH_INVESTIGATION_MAFIA"
+            ? "SHEIKH_INVESTIGATION"
+            : e.eventType;
+
+        return {
+          eventId: String(e._id),
+          eventType: safeType,
+          messageKey: getPublicMessageKey(e.eventType, e.messageKey),
+          messageParams: sanitizePublicParams(e.eventType, e.messageParams),
+          round: e.round,
+          timestamp: e.timestamp,
+          memeLevel: e.memeLevel ?? "FUN",
+        };
+      });
+
+    if (isGirl) {
+      const girlAction = await ctx.db
+        .query("actions")
+        .withIndex("by_gameId_round_actorId", (q) =>
+          q
+            .eq("gameId", args.gameId)
+            .eq("round", args.round)
+            .eq("actorId", player._id),
+        )
+        .first();
+
+      if (girlAction && girlAction.role === "girl") {
+        summarizedEvents.push({
+          eventId: `girl-protection-${args.gameId}-${args.round}-${String(girlAction._id)}`,
+          eventType: "GIRL_PROTECTION",
+          messageKey: "events.GIRL_PROTECTION.summary",
+          messageParams: undefined,
+          round: args.round,
+          timestamp: girlAction.timestamp,
+          memeLevel: "FUN" as const,
+        });
+      }
+    }
+
+    return summarizedEvents.sort((a, b) => a.timestamp - b.timestamp);
   },
 });

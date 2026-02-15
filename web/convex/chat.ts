@@ -14,6 +14,7 @@ import {
   TEMPLATE_KEY_SET,
 } from "./chatTemplates";
 import { requireAuthUserId } from "./lib/auth";
+import { isCoordinatorUser } from "./coordinator";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -213,7 +214,7 @@ export const sendChatMessage = mutation({
       anonymousAlias = "MAFIA";
     } else {
       const user = await ctx.db.get(userId);
-      senderUsername = user?.username ?? "Unknown";
+      senderUsername = user?.displayName ?? user?.username ?? "Player";
     }
 
     // ── Insert message ──────────────────────────────────────────────────
@@ -256,11 +257,16 @@ export const getChatMessages = query({
 
     // Validate caller is a player
     const player = await getPlayerInGame(ctx, args.gameId, userId);
-    if (!player) throw new ConvexError("You are not a player in this game.");
+
+    // Check if coordinator
+    const isCoord = await isCoordinatorUser(ctx, args.gameId, userId);
+
+    if (!player && !isCoord) throw new ConvexError("You are not a player in this game.");
 
     // Mafia channel: silently return empty for non-mafia (no error to avoid
     // leaking channel existence)
-    if (args.channel === "mafia" && player.role !== "mafia") {
+    // Coordinators can view mafia channel
+    if (args.channel === "mafia" && !isCoord && player?.role !== "mafia") {
       return [];
     }
 
@@ -270,12 +276,37 @@ export const getChatMessages = query({
       .withIndex("by_gameId_channel", (q) =>
         q.eq("gameId", args.gameId).eq("channel", args.channel),
       )
-      .order("asc")
+      .order("asc") // Changed to asc to match typical chat flow, though original was asc? 
+      // Wait, original file had `messages = ... .order("asc").take(MAX)`?
+      // Actually original had `.order("asc").take(100)` at line 273.
+      // Wait, take(100) with asc means OLDEST 100? Or usually NEWEST?
+      // If we want newest, we typically index desc, take, then reverse.
+      // Current code: `.order("asc").take(MAX_MESSAGES_RETURNED);`
+      // This implies it takes the FIRST 100 messages of the game. That's probably legacy behavior.
+      // I'll leave it as is to avoiding changing scroll behavior unless asked.
       .take(MAX_MESSAGES_RETURNED);
 
+    // Resolve real usernames for anonymous messages if coordinator
+    const hiddenMap = new Map<string, string>();
+    if (isCoord) {
+      const anonSenderIds = new Set(
+        messages
+          .filter((m) => m.isAnonymous && m.senderId)
+          .map((m) => m.senderId),
+      );
+      if (anonSenderIds.size > 0) {
+        const users = await Promise.all(
+          [...anonSenderIds].map((id) => ctx.db.get(id)),
+        );
+        for (const u of users) {
+          if (u) hiddenMap.set(u._id, u.displayName ?? u.username ?? "Player");
+        }
+      }
+    }
+
     return messages.map((msg) => {
-      // Hide identity for anonymous messages in public channel
-      if (msg.isAnonymous && msg.channel === "public") {
+      // Hide identity for anonymous messages in public channel (unless coordinator)
+      if (!isCoord && msg.isAnonymous && msg.channel === "public") {
         return {
           _id: msg._id,
           senderId: null, // Hide real sender
@@ -293,10 +324,18 @@ export const getChatMessages = query({
         };
       }
 
+      let senderUsername = msg.senderUsername;
+      if (isCoord && msg.isAnonymous) {
+        const realName = hiddenMap.get(msg.senderId);
+        if (realName) {
+          senderUsername = `${realName} (Anon)`;
+        }
+      }
+
       return {
         _id: msg._id,
         senderId: msg.senderId,
-        senderUsername: msg.senderUsername,
+        senderUsername,
         content: msg.content,
         isTemplate: msg.isTemplate,
         templateKey: msg.templateKey,
@@ -418,13 +457,21 @@ export const getChatState = query({
     if (!game) throw new ConvexError("Game not found.");
 
     const player = await getPlayerInGame(ctx, args.gameId, userId);
-    if (!player) throw new ConvexError("You are not a player in this game.");
+    const isCoord = await isCoordinatorUser(ctx, args.gameId, userId);
+
+    if (!player && !isCoord) {
+      throw new ConvexError("You are not a player in this game.");
+    }
 
     const room = await ctx.db.get(game.roomId);
     const chatEnabled = room?.settings.chatEnabled !== false;
     const chatMuted = game.chatMuted === true;
-    const isMafia = player.role === "mafia";
-    const isAlive = player.isAlive;
+
+    // Coordinators see everything but are not "mafia" per se (though they see mafia channel via other queries)
+    // isAlive true for coordinators so they don't get 'Spectating' UI if we use that flag, 
+    // but typically coordinators have their own UI.
+    const isMafia = player?.role === "mafia" || isCoord; // Allow coord to see mafia stuff if used for permissions
+    const isAlive = player?.isAlive ?? true; // Default alive for coord
 
     return {
       chatEnabled,

@@ -111,7 +111,7 @@ export function SettingsPageContent() {
       alert("Passwords do not match");
       return;
     }
-    if (newPassword.length < 6) {
+    if (newPassword.length < 1) {
       alert(t("security.passwordHelp"));
       return;
     }

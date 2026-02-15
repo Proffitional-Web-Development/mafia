@@ -38,14 +38,12 @@
   },
   "auth": {
     "signIn": "Sign in",
-    "createAccount": "Create account",
+    "welcome": "Welcome",
+    "continue": "Continue",
     "noGuestAccess": "No guest access is allowed.",
     "email": "Email",
     "username": "Username",
     "password": "Password",
-    "continueWithGoogle": "Continue with Google",
-    "needAccount": "Need an account? Create one",
-    "haveAccount": "Already have an account? Sign in",
     "authenticationFailed": "Authentication failed.",
     "googleSignInFailed": "Google sign in failed."
   },
@@ -65,7 +63,64 @@
     "fallbackPlayer": "Player",
     "noEmail": "No email",
     "logout": "Log out",
-    "currentTime": "Current time: {value}"
+    "currentTime": "Current time: {value}",
+    "timer": {
+      "manualControl": "Manual Control",
+      "waitingForHost": "Waiting for host to advance"
+    },
+    "coordinator": {
+      "title": "Coordinator View",
+      "hostCoordinating": "Host is coordinating this game",
+      "cannotAct": "Coordinators cannot take actions",
+      "promoted": "You've been eliminated! As the host, you now have coordinator access.",
+      "eliminatedBadge": "Eliminated (Coordinator)",
+      "readOnlyChat": "Read-only \u2014 Coordinators cannot send messages",
+      "playersTab": "Players",
+      "activityTab": "Activity",
+      "chatTab": "Chat",
+      "activityLog": "Activity Log",
+      "votesRound": "Votes (Round {round})",
+      "publicVotes": "Public Votes",
+      "mafiaVotes": "Mafia Votes",
+      "noVotesYet": "No votes yet",
+      "skip": "Skip",
+      "actionsRound": "Actions (Round {round})",
+      "noActions": "No actions taken yet",
+      "targeted": "targeted",
+      "unknown": "Unknown",
+      "manual": "Manual",
+      "auto": "Auto",
+      "deadRound": "Dead (Rd {round})",
+      "actionsComingSoon": "Actions & Votes visualization coming soon.",
+      "actionDescription": {
+        "sheikh": "investigated",
+        "girl": "protected",
+        "boy": "used revenge on"
+      }
+    },
+    "advancePhase": "Next Phase",
+    "advancePhaseLabel": {
+      "discussion": "End Discussion",
+      "publicVoting": "Finish Voting",
+      "abilityPhase": "Finish Night Phase",
+      "mafiaVoting": "Finish Mafia Vote",
+      "resolution": "Start Next Round",
+      "cardDistribution": "Start Game",
+      "roleReveal": "Start Discussion",
+      "endCheck": "Continue",
+      "default": "Next Phase",
+      "finished": "Continue"
+    },
+    "skipTimer": "Skip Timer",
+    "advancePhaseConfirm": "Advance to next phase? Players may not have completed their actions.",
+    "roundSummary": {
+      "title": "Round {round} Summary",
+      "loading": "Loading summary...",
+      "empty": "Nothing happened this round.",
+      "continue": "Continue",
+      "sheikhFound": "Your investigation result: {faction}",
+      "girlProtected": "You protected a player this round."
+    }
   },
   "room": {
     "createRoom": "Create Room",
@@ -100,6 +155,7 @@
     "ownerBadge": "Owner",
     "readOnlySettings": "Only the room owner can change settings",
     "settings": {
+      "seconds": "{count} seconds",
       "mafiaCount": "Number of Mafia",
       "mafiaCountAuto": "Auto ({count})",
       "mafiaCountCustom": "Custom",
@@ -107,6 +163,15 @@
       "mafiaCountInvalid": "Invalid: too many mafia for current players",
       "mafiaCountReset": "Mafia count reset to auto due to player changes",
       "mafiaDisplayAuto": "Mafia: Auto ({count})",
+      "publicVotingDuration": "Public Voting Duration",
+      "abilityPhaseDuration": "Ability Phase Duration",
+      "mafiaVotingDuration": "Mafia Voting Duration",
+      "unlimited": "Unlimited (Manual Control)",
+      "ownerMode": "Owner Mode",
+      "ownerModePlayer": "Play (Normal Player)",
+      "ownerModePlayerDesc": "You play with a random role like everyone else",
+      "ownerModeCoordinator": "Coordinate (Full Visibility)",
+      "ownerModeCoordinatorDesc": "Watch with full visibility and control phase timing",
       "mafiaDisplayCustom": "Mafia: {count} (custom)"
     },
     "join": {
@@ -439,6 +504,14 @@
         "2": "⚡ Night lottery winner (unlucky): {player}.",
         "3": "🧪 Tie-break protocol engaged. Selected: {player}."
       }
+    },
+    "GIRL_PROTECTION": {
+      "summary": "🛡️ You protected a player this round."
+    },
+    "OWNER_PROMOTED_COORDINATOR": {
+      "normal": "The host was eliminated and promoted to coordinator.",
+      "fun": "🎛️ Host down, coordinator powers unlocked.",
+      "chaos": "⚡ Plot twist: the eliminated host is now coordinator."
     }
   },
   "errors": {
@@ -467,7 +540,7 @@
       "currentPassword": "Current Password",
       "newPassword": "New Password",
       "confirmNewPassword": "Confirm New Password",
-      "passwordHelp": "Must be at least 6 characters"
+      "passwordHelp": "Enter any password"
     },
     "preferences": {
       "title": "Preferences",

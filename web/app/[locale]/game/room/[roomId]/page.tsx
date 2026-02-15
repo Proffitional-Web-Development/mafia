@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { use, useCallback, useEffect, useState } from "react";
+import { CoordinatorPanel } from "@/components/game/coordinator-panel";
 import { GameRouter } from "@/components/game/game-router";
 import { SettingsPanel } from "@/components/game/settings-panel";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -34,6 +35,13 @@ export default function RoomPage({
   });
   const currentUser = useQuery(api.users.getCurrentUser);
 
+  const isCoordinator = useQuery(
+    api.coordinator.checkIsCoordinator,
+    roomState?.currentGameId
+      ? { gameId: roomState.currentGameId }
+      : "skip",
+  );
+
   if (!roomState || !currentUser) {
     return (
       <main className="flex min-h-screen items-center justify-center">
@@ -44,10 +52,17 @@ export default function RoomPage({
 
   // If room is in-game and has a currentGameId, show the game view
   if (roomState.status === "in-game" && roomState.currentGameId) {
+    if (isCoordinator) {
+      return (
+        <CoordinatorPanel
+          gameId={roomState.currentGameId}
+          currentUserId={currentUser.id}
+        />
+      );
+    }
+
     // Check if user is a member/player? If not, they shouldn't see GameRouter yet?
-    // GameRouter loads game state. If not a player, query fails?
-    // But roomState returned currentGameId.
-    // If not a member, we should probably redirect or error in RoomPage logic earlier?
+    // GameRouter loads game state. If not a member, we should probably redirect or error in RoomPage logic earlier?
     // But let's stick to RoomPage logic -> LobbyView handles joining if waiting.
     // If in-game, and user is NOT a member...
     const isMember = roomState.members.some((m) => m.userId === currentUser.id);
@@ -274,7 +289,7 @@ function LobbyView({
 
   async function handleSettingChange(
     field: string,
-    value: number | boolean | Record<string, boolean>,
+    value: number | boolean | Record<string, boolean> | string | null,
   ) {
     try {
       setInfoMessage(null);
@@ -301,6 +316,26 @@ function LobbyView({
               boy: boolean;
             },
           },
+        });
+      } else if (field === "publicVotingDuration") {
+        await updateSettings({
+          roomId,
+          settings: { publicVotingDuration: value as number | null },
+        });
+      } else if (field === "abilityPhaseDuration") {
+        await updateSettings({
+          roomId,
+          settings: { abilityPhaseDuration: value as number | null },
+        });
+      } else if (field === "mafiaVotingDuration") {
+        await updateSettings({
+          roomId,
+          settings: { mafiaVotingDuration: value as number | null },
+        });
+      } else if (field === "ownerMode") {
+        await updateSettings({
+          roomId,
+          settings: { ownerMode: value as "player" | "coordinator" },
         });
       }
       setError(null);
@@ -505,12 +540,28 @@ function LobbyView({
             <SettingsPanel
               discussionDuration={roomState.settings.discussionDuration}
               maxPlayers={roomState.settings.maxPlayers}
+              publicVotingDuration={roomState.settings.publicVotingDuration}
+              abilityPhaseDuration={roomState.settings.abilityPhaseDuration}
+              mafiaVotingDuration={roomState.settings.mafiaVotingDuration}
+              ownerMode={roomState.settings.ownerMode}
               editable={isOwner}
               onDiscussionDurationChange={(value) =>
                 handleSettingChange("discussionDuration", value)
               }
               onMaxPlayersChange={(value) =>
                 handleSettingChange("maxPlayers", value)
+              }
+              onPublicVotingDurationChange={(value) =>
+                handleSettingChange("publicVotingDuration", value)
+              }
+              onAbilityPhaseDurationChange={(value) =>
+                handleSettingChange("abilityPhaseDuration", value)
+              }
+              onMafiaVotingDurationChange={(value) =>
+                handleSettingChange("mafiaVotingDuration", value)
+              }
+              onOwnerModeChange={(value) =>
+                handleSettingChange("ownerMode", value)
               }
             />
 

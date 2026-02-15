@@ -13,7 +13,7 @@ function getInitial(username?: string) {
   if (!username || username.length === 0) {
     return "?";
   }
-  return username.slice(0, 1).toUpperCase();
+  return username.slice(0, 2).toUpperCase();
 }
 
 export function UserAvatar({

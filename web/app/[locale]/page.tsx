@@ -18,7 +18,7 @@ export default function HomePage() {
   const { setTheme } = useTheme();
   const router = useRouter();
 
-  const destination = currentUser?.hasCompletedProfile ? "/game" : "/auth";
+  const destination = currentUser ? "/game" : "/auth";
 
   useEffect(() => {
     setTheme("mafia");
@@ -49,7 +49,7 @@ export default function HomePage() {
           <div className="absolute inset-0 flex items-center justify-center text-7xl">
             🎭
           </div>
-          {currentUser?.hasCompletedProfile ? (
+          {currentUser ? (
             <UserStatusCard
               username={
                 currentUser.displayName || currentUser.username || undefined
@@ -64,11 +64,7 @@ export default function HomePage() {
         <div className="mt-auto space-y-3">
           <Link href={destination} className="block">
             <PrimaryButton variant="danger" icon="arrow_forward" shimmer>
-              {currentUser
-                ? currentUser.hasCompletedProfile
-                  ? t("goToGame")
-                  : t("completeProfile")
-                : t("signInOrSignUp")}
+              {currentUser ? t("goToGame") : t("signInOrSignUp")}
             </PrimaryButton>
           </Link>
           <p className="text-center text-xs text-text-tertiary">

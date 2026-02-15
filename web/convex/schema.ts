@@ -79,6 +79,12 @@ export default defineSchema({
       discussionDuration: v.number(),
       maxPlayers: v.number(),
       mafiaCount: v.optional(v.number()),
+      publicVotingDuration: v.optional(v.union(v.number(), v.null())),
+      abilityPhaseDuration: v.optional(v.union(v.number(), v.null())),
+      mafiaVotingDuration: v.optional(v.union(v.number(), v.null())),
+      ownerMode: v.optional(
+        v.union(v.literal("player"), v.literal("coordinator")),
+      ),
       enabledRoles: v.object({
         sheikh: v.boolean(),
         girl: v.boolean(),
@@ -156,6 +162,7 @@ export default defineSchema({
     eliminatedAtRound: v.optional(v.number()),
     joinedAt: v.number(),
     emojiReaction: v.optional(v.string()),
+    isCoordinator: v.optional(v.boolean()),
   })
     .index("by_gameId", ["gameId"])
     .index("by_userId", ["userId"])
@@ -208,6 +215,7 @@ export default defineSchema({
         v.literal("ROUND_END"),
         v.literal("VOTE_TIE"),
         v.literal("MAFIA_VOTE_TIE_RANDOM"),
+        v.literal("OWNER_PROMOTED_COORDINATOR"),
       ),
     ),
     resolvedMessage: v.optional(v.string()),

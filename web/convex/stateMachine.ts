@@ -12,6 +12,7 @@ import {
 import { logGameEvent } from "./gameEvents";
 import { requireAuthUserId } from "./lib/auth";
 import { logger } from "./lib/logger";
+import { isCoordinatorUser } from "./coordinator";
 
 const PHASE_ORDER = [
   "lobby",
@@ -41,10 +42,6 @@ const PHASE_TO_INDEX: Record<CorePhase, number> = {
   resolution: 6,
   endCheck: 7,
 };
-
-const PUBLIC_VOTING_MS = 45_000;
-const ABILITY_PHASE_MS = 30_000;
-const MAFIA_VOTING_MS = 45_000;
 
 type TransitionReason =
   | "manual"
@@ -79,13 +76,19 @@ function getDeadlineMs(
     return toMsFromSeconds(room.settings.discussionDuration);
   }
   if (nextPhase === "publicVoting") {
-    return PUBLIC_VOTING_MS;
+    const duration = room.settings.publicVotingDuration;
+    if (duration === null) return undefined;
+    return toMsFromSeconds(duration ?? 45);
   }
   if (nextPhase === "abilityPhase") {
-    return ABILITY_PHASE_MS;
+    const duration = room.settings.abilityPhaseDuration;
+    if (duration === null) return undefined;
+    return toMsFromSeconds(duration ?? 30);
   }
   if (nextPhase === "mafiaVoting") {
-    return MAFIA_VOTING_MS;
+    const duration = room.settings.mafiaVotingDuration;
+    if (duration === null) return undefined;
+    return toMsFromSeconds(duration ?? 45);
   }
   return undefined;
 }
@@ -176,8 +179,6 @@ async function getPlayersByGame(
     .collect();
 }
 
-// Legacy event logging functions removed to align with new gameEvents schema.
-
 async function isRoomOwner(
   ctx: MutationCtx,
   game: Doc<"games">,
@@ -253,11 +254,6 @@ async function finishGame(
     delayMs: 60 * 60 * 1000,
   });
 
-  /*
-  await appendTransitionEvent(...);
-  await appendGameFinishedEvent(...);
-  */
-
   return { phase: "finished" as const, round: game.round };
 }
 
@@ -288,7 +284,11 @@ async function transitionCore(
 
   if (args.actorUserId) {
     const owner = await isRoomOwner(ctx, game, args.actorUserId);
-    assertOrThrow(owner, "Only the room owner can manually advance phase.");
+    const isCoord = await isCoordinatorUser(ctx, args.gameId, args.actorUserId);
+    assertOrThrow(
+      owner || isCoord,
+      "Only the room owner or coordinator can manually advance phase.",
+    );
   }
 
   if (currentPhase === "resolution") {
@@ -319,26 +319,6 @@ async function transitionCore(
       args.reason !== "manual",
       "Cannot manually advance from publicVoting. Use confirmVoting or wait for timeout.",
     );
-
-    /*
-    const roundEvents = await ctx.db
-      .query("gameEvents")
-      .withIndex("by_gameId_round", (queryBuilder) =>
-        queryBuilder.eq("gameId", game._id).eq("round", game.round),
-      )
-      .collect();
-
-    const hasVotingResolution = roundEvents.some(
-      (event) =>
-       // @ts-expect-error
-        event.type === "public_elimination" || event.type === "no_elimination",
-    );
-
-    assertOrThrow(
-      hasVotingResolution,
-      "Cannot enter abilityPhase before public voting resolution is recorded.",
-    );
-    */
   }
 
   if (currentPhase === "mafiaVoting" && nextPhase === "resolution") {
@@ -376,8 +356,6 @@ async function transitionCore(
 
   let nextRound = game.round;
   if (currentPhase === "resolution" && nextPhase === "endCheck") {
-    // T13: if there is no winner after resolution, continue directly to next
-    // round discussion.
     nextPhase = "discussion";
     nextRound += 1;
   } else if (currentPhase === "endCheck" && nextPhase === "discussion") {
@@ -401,7 +379,6 @@ async function transitionCore(
       nextPhase === "publicVoting" ? undefined : game.tiedCandidates,
   });
 
-  // Clear emoji reactions when entering publicVoting phase
   if (nextPhase === "publicVoting") {
     const players = await getPlayersByGame(ctx, game._id);
     await Promise.all(
@@ -419,25 +396,9 @@ async function transitionCore(
     });
   }
 
-  /*
-  await appendTransitionEvent(
-    ctx,
-    game._id,
-    nextRound,
-    currentPhase,
-    nextPhase,
-    resolvedReason,
-    {
-      phaseDeadlineAt,
-      phaseToken: nextPhaseToken,
-    },
-  );
-  */
-
   if (phaseDeadlineAt !== undefined && isTimedPhase(nextPhase)) {
     const delayMs = deadlineDurationMs ?? 0;
     if (nextPhase === "publicVoting") {
-      // Route through publicVoting auto-resolve so votes are tallied
       await ctx.scheduler.runAfter(
         delayMs,
         internal.publicVoting.autoResolvePublicVoting,
@@ -447,7 +408,6 @@ async function transitionCore(
         },
       );
     } else if (nextPhase === "mafiaVoting") {
-      // Route through mafiaVoting auto-resolve so private votes are tallied
       await ctx.scheduler.runAfter(
         delayMs,
         internal.mafiaVoting.autoResolveMafiaVoting,
@@ -492,10 +452,11 @@ export const advancePhase = mutation({
   },
   handler: async (ctx, args) => {
     const actorUserId = await requireAuthUserId(ctx);
+    const isCoord = await isCoordinatorUser(ctx, args.gameId, actorUserId);
     return transitionCore(ctx, {
       gameId: args.gameId,
       actorUserId,
-      ownerOverride: args.ownerOverride,
+      ownerOverride: args.ownerOverride || isCoord,
       reason: "manual",
     });
   },
@@ -613,7 +574,10 @@ export const getGameState = query({
     const players = await getPlayersByGame(ctx, args.gameId);
     const me = players.find((player) => player.userId === requesterUserId);
 
-    if (!me) {
+    // If not a player, check if coordinator
+    const isCoord = await isCoordinatorUser(ctx, args.gameId, requesterUserId);
+
+    if (!me && !isCoord) {
       throw new ConvexError("Requester is not a player in this game.");
     }
 
@@ -626,12 +590,14 @@ export const getGameState = query({
         .map((user) => [user._id, user]),
     );
 
-    const isRequesterMafia = me.role === "mafia";
+    const isRequesterMafia = me?.role === "mafia";
 
     const playerViews = players.map((player) => {
       const user = userById.get(player.userId);
       const roleVisibleToRequester =
-        game.phase === "finished" || player._id === me._id;
+        isCoord ||
+        game.phase === "finished" ||
+        (me && player._id === me._id);
 
       return {
         playerId: player._id,
@@ -643,18 +609,19 @@ export const getGameState = query({
         eliminatedAtRound: player.eliminatedAtRound,
         role: roleVisibleToRequester ? player.role : undefined,
         emojiReaction: player.emojiReaction,
+        isCoordinator: player.isCoordinator,
       };
     });
 
     const mafiaTeammates = isRequesterMafia
       ? players
-          .filter((player) => player.role === "mafia" && player._id !== me._id)
-          .map((player) => ({
-            playerId: player._id,
-            userId: player.userId,
-            username: userById.get(player.userId)?.username ?? "Unknown",
-            isAlive: player.isAlive,
-          }))
+        .filter((player) => player.role === "mafia" && me && player._id !== me._id)
+        .map((player) => ({
+          playerId: player._id,
+          userId: player.userId,
+          username: userById.get(player.userId)?.username ?? "Unknown",
+          isAlive: player.isAlive,
+        }))
       : [];
 
     return {
@@ -669,15 +636,18 @@ export const getGameState = query({
         phaseStartedAt: game.phaseStartedAt,
         phaseDeadlineAt: game.phaseDeadlineAt,
       },
-      me: {
-        playerId: me._id,
-        userId: me.userId,
-        role: me.role,
-        isAlive: me.isAlive,
-        isConnected: me.isConnected,
-      },
+      me: me
+        ? {
+          playerId: me._id,
+          userId: me.userId,
+          role: me.role,
+          isAlive: me.isAlive,
+          isConnected: me.isConnected,
+        }
+        : null,
       players: playerViews,
       mafiaTeammates,
+      isCoordinator: isCoord,
     };
   },
 });

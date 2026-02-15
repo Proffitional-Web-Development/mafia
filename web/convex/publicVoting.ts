@@ -429,6 +429,24 @@ async function resolvePublicVoting(ctx: MutationCtx, gameId: Id<"games">) {
         player: eliminatedName,
       },
     });
+
+    // Check for owner promotion
+    const room = await ctx.db.get(game.roomId);
+    if (
+      room &&
+      eliminatedUser &&
+      room.ownerId === eliminatedUser._id &&
+      room.settings.ownerMode === "player"
+    ) {
+      await ctx.db.patch(eliminatedPlayerId as Id<"players">, {
+        isCoordinator: true,
+      });
+      await logGameEvent(ctx, {
+        gameId,
+        eventType: "OWNER_PROMOTED_COORDINATOR",
+        params: {},
+      });
+    }
   } else {
     // No elimination (skip or tie without runoff) - no event logged per current specs
   }

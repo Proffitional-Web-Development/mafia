@@ -1,8 +1,11 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
+import { playPhaseCue } from "@/lib/phase-audio";
 import { cn } from "@/lib/utils";
 
 interface PhaseTransitionControllerProps {
@@ -13,19 +16,37 @@ export function PhaseTransitionController({
   phase,
 }: PhaseTransitionControllerProps) {
   const t = useTranslations("phases");
+  const user = useQuery(api.users.getCurrentUser);
   // We force a remount when phase changes by using the key prop.
-  return <PhaseFlash key={phase} title={t(phase as unknown as "lobby")} />;
+  return (
+    <PhaseFlash
+      key={phase}
+      phase={phase}
+      title={t(phase as unknown as "lobby")}
+      musicEnabled={user?.musicEnabled ?? true}
+    />
+  );
 }
 
-function PhaseFlash({ title }: { title: string }) {
+function PhaseFlash({
+  title,
+  phase,
+  musicEnabled,
+}: {
+  title: string;
+  phase: Doc<"games">["phase"];
+  musicEnabled: boolean;
+}) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    playPhaseCue(phase, musicEnabled);
+
     const timer = setTimeout(() => {
       setVisible(false);
     }, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [phase, musicEnabled]);
 
   if (!visible) return null;
 

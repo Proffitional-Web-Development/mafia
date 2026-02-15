@@ -26,6 +26,14 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
           email: trimmed,
           username: trimmed,
           usernameLower: trimmed.toLowerCase(),
+          displayName: trimmed,
+          stats: {
+            gamesPlayed: 0,
+            wins: 0,
+            losses: 0,
+          },
+          musicEnabled: true,
+          createdAt: Date.now(),
           ...(name.length > 0 ? { name } : {}),
         };
       },

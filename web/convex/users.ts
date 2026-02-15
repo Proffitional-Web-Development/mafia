@@ -28,10 +28,10 @@ export const getCurrentUser = query({
       id: user._id,
       email: user.email,
       name: user.name,
-      displayName: user.displayName,
+      displayName: user.displayName ?? user.username ?? "Player",
       username: user.username,
       avatarUrl,
-      hasCompletedProfile: Boolean(user.displayName),
+      hasCompletedProfile: true, // Always true now, onboarding is removed
       stats: user.stats ?? {
         gamesPlayed: 0,
         wins: 0,
@@ -107,6 +107,10 @@ export const getAuthMethod = query({
  * account updates (depends on configuration).
  */
 
+/**
+ * @deprecated This mutation is no longer used as onboarding is removed.
+ * Kept for backward compatibility.
+ */
 export const completeProfile = mutation({
   args: {
     displayName: v.string(),

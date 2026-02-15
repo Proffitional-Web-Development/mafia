@@ -10,6 +10,7 @@ import {
   query,
 } from "./_generated/server";
 import { requireAuthUserId } from "./lib/auth";
+import { logGameEvent } from "./gameEvents";
 
 const BOY_REVENGE_MS = 30_000;
 
@@ -302,6 +303,16 @@ export const useBoyRevenge = mutation({
       eliminatedAtRound: game.round,
     });
 
+    const room = await ctx.db.get(game.roomId);
+    if (room && room.settings.ownerMode === "player" && target.userId === room.ownerId) {
+      await ctx.db.patch(target._id, { isCoordinator: true });
+      await logGameEvent(ctx, {
+        gameId: args.gameId,
+        eventType: "OWNER_PROMOTED_COORDINATOR",
+        params: {},
+      });
+    }
+
     // T13: Check win condition immediately after boy revenge elimination
     const winnerDetected = await checkAndTriggerWinCondition(
       ctx,
@@ -420,7 +431,7 @@ export const getResolutionState = query({
       if (hasMafiaElimination) causes.push("mafiaVote");
       return {
         playerId: String(player._id),
-        username: user?.username ?? "Unknown",
+        username: user?.displayName ?? user?.username ?? "Player",
         causes,
       };
     });
@@ -453,7 +464,10 @@ export const getResolutionState = query({
       players: allPlayers.map((player) => ({
         playerId: player._id,
         userId: player.userId,
-        username: userById.get(player.userId)?.username ?? "Unknown",
+        username:
+          userById.get(player.userId)?.displayName ??
+          userById.get(player.userId)?.username ??
+          "Player",
         avatarUrl: userById.get(player.userId)?.image,
         isAlive: player.isAlive,
         eliminatedAtRound: player.eliminatedAtRound,

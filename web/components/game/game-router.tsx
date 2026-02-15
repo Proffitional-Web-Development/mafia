@@ -2,10 +2,12 @@
 
 import { useQuery } from "convex/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatPanel } from "@/components/game/chat-panel";
+import { CoordinatorPanel } from "@/components/game/coordinator-panel";
 import { DiscussionPhase } from "@/components/game/discussion-phase";
 import { GameEventTimeline } from "@/components/game/game-event-timeline";
+import { MusicToggle } from "@/components/game/header-controls";
 import { PhaseHeader } from "@/components/game/phase-header";
 import {
   AbilityPhase,
@@ -19,6 +21,7 @@ import { PlayerGraveyard } from "@/components/game/player-graveyard";
 import { PublicVotingPhase } from "@/components/game/public-voting-phase";
 import { RoleLogsPanel } from "@/components/game/role-logs-panel";
 import { RoleRevealPhase } from "@/components/game/role-reveal-phase";
+import { RoundSummaryModal } from "@/components/game/round-summary-modal";
 import { VoiceMessagePlayer } from "@/components/providers/voice-message-player";
 import { Icon } from "@/components/ui/icon";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -46,8 +49,34 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
   const cht = useTranslations("chat");
   const [isLogOpen, setIsLogOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showRoundSummary, setShowRoundSummary] = useState(false);
+  const [summaryRound, setSummaryRound] = useState<number | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const previousRoundRef = useRef<number | null>(null);
   const chatUnread = useChatUnread(gameId, isChatOpen);
+
+  useEffect(() => {
+    if (!gameState) return;
+
+    const currentRound = gameState.game.round;
+    const previousRound = previousRoundRef.current;
+
+    if (previousRound === null) {
+      previousRoundRef.current = currentRound;
+      return;
+    }
+
+    if (
+      currentRound > previousRound &&
+      previousRound >= 1 &&
+      gameState.game.phase !== "finished"
+    ) {
+      setSummaryRound(previousRound);
+      setShowRoundSummary(true);
+    }
+
+    previousRoundRef.current = currentRound;
+  }, [gameState]);
 
   if (!gameState) {
     return (
@@ -57,7 +86,15 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
     );
   }
 
-  const { game, me } = gameState;
+  const { game, me, isCoordinator } = gameState;
+
+  if (isCoordinator) {
+    return <CoordinatorPanel gameId={gameId} currentUserId={currentUserId} />;
+  }
+
+  if (!me) {
+    return null;
+  }
 
   function toggleGameLog() {
     setIsLogOpen((prev) => !prev);
@@ -82,6 +119,8 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
         memeLevel={roomState?.memeLevel}
         actions={
           <div className="flex items-center gap-1.5">
+            <MusicToggle />
+
             {/* Chat toggle */}
             <button
               type="button"
@@ -220,6 +259,15 @@ export function GameRouter({ gameId, currentUserId }: GameRouterProps) {
       )}
 
       <VoiceMessagePlayer gameId={gameId} />
+
+      {summaryRound !== null ? (
+        <RoundSummaryModal
+          gameId={gameId}
+          round={summaryRound}
+          open={showRoundSummary}
+          onClose={() => setShowRoundSummary(false)}
+        />
+      ) : null}
     </main>
   );
 }

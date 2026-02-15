@@ -54,8 +54,11 @@ export function ChatPanel({
   open,
   onClose,
   className,
-}: ChatPanelProps) {
+  isCoordinator,
+  isReadOnly,
+}: ChatPanelProps & { isCoordinator?: boolean; isReadOnly?: boolean }) {
   const t = useTranslations("chat");
+  const tCoord = useTranslations("game.coordinator");
   const tt = useTranslations("chat.template");
   const tVoice = useTranslations("chat.voice");
   const locale = useLocale();
@@ -84,7 +87,7 @@ export function ChatPanel({
 
   // ── Derived ───────────────────────────────────────────────────────────
   const canSend =
-    isAlive && (channel === "mafia" || (chatEnabled && !chatMuted));
+    !isReadOnly && isAlive && (channel === "mafia" || (chatEnabled && !chatMuted));
 
   const showAnonymousToggle = isMafia && channel === "public";
   const effectiveAnonymous = showAnonymousToggle ? isAnonymous : false;
@@ -119,7 +122,7 @@ export function ChatPanel({
     if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [open]);
+  }, [open, messages?.length]);
 
   // ── Handlers ──────────────────────────────────────────────────────────
   const handleSend = useCallback(
@@ -228,7 +231,7 @@ export function ChatPanel({
         >
           {t("channel.public")}
         </button>
-        {isMafia && (
+        {(isMafia || isCoordinator) && (
           <button
             type="button"
             onClick={() => setChannel("mafia")}
@@ -353,7 +356,7 @@ export function ChatPanel({
                         isAnon ? "text-danger" : "text-text-muted",
                       )}
                     >
-                      {isAnon ? t("anonymous.alias") : msg.senderUsername}
+                      {msg.senderUsername}
                     </p>
 
                     <div className="flex items-center gap-2">
@@ -404,7 +407,7 @@ export function ChatPanel({
                         isAnon ? "text-danger" : "text-text-muted",
                       )}
                     >
-                      {isAnon ? t("anonymous.alias") : msg.senderUsername}
+                      {msg.senderUsername}
                     </p>
 
                     <p
@@ -440,48 +443,57 @@ export function ChatPanel({
 
       {/* ── Input area ───────────────────────────────────────────────── */}
       <div className="relative border-t border-white/10 p-3">
-        {templatePickerOpen && (
-          <TemplatePickerPopover
-            gameId={gameId}
-            channel={channel}
-            players={templatePlayers}
-            onClose={() => setTemplatePickerOpen(false)}
-            anonymous={effectiveAnonymous}
-          />
-        )}
+        {isReadOnly ? (
+          <div className="flex items-center justify-center rounded-lg bg-white/5 px-4 py-3 text-center text-xs text-text-muted border border-white/5">
+             <Icon name="visibility" size="sm" className="me-2" />
+             {tCoord("readOnlyChat")}
+          </div>
+        ) : (
+          <>
+            {templatePickerOpen && (
+              <TemplatePickerPopover
+                gameId={gameId}
+                channel={channel}
+                players={templatePlayers}
+                onClose={() => setTemplatePickerOpen(false)}
+                anonymous={effectiveAnonymous}
+              />
+            )}
 
-        {voicePickerOpen && (
-          <VoicePickerPopover
-            gameId={gameId}
-            channel={channel}
-            onClose={() => setVoicePickerOpen(false)}
-            anonymous={effectiveAnonymous}
-          />
-        )}
+            {voicePickerOpen && (
+              <VoicePickerPopover
+                gameId={gameId}
+                channel={channel}
+                onClose={() => setVoicePickerOpen(false)}
+                anonymous={effectiveAnonymous}
+              />
+            )}
 
-        <ChatInput
-          onSend={handleSend}
-          disabled={!canSend}
-          disabledReason={disabledReason}
-          onOpenTemplates={
-            canSend
-              ? () => {
-                  setTemplatePickerOpen((o) => !o);
-                  setVoicePickerOpen(false);
-                }
-              : undefined
-          }
-          onOpenVoice={
-            canSend
-              ? () => {
-                  setVoicePickerOpen((o) => !o);
-                  setTemplatePickerOpen(false);
-                }
-              : undefined
-          }
-          anonymous={showAnonymousToggle ? isAnonymous : undefined}
-          onToggleAnonymous={showAnonymousToggle ? setIsAnonymous : undefined}
-        />
+            <ChatInput
+              onSend={handleSend}
+              disabled={!canSend}
+              disabledReason={disabledReason}
+              onOpenTemplates={
+                canSend
+                  ? () => {
+                      setTemplatePickerOpen((o) => !o);
+                      setVoicePickerOpen(false);
+                    }
+                  : undefined
+              }
+              onOpenVoice={
+                canSend
+                  ? () => {
+                      setVoicePickerOpen((o) => !o);
+                      setTemplatePickerOpen(false);
+                    }
+                  : undefined
+              }
+              anonymous={showAnonymousToggle ? isAnonymous : undefined}
+              onToggleAnonymous={showAnonymousToggle ? setIsAnonymous : undefined}
+            />
+          </>
+        )}
       </div>
     </div>
   );

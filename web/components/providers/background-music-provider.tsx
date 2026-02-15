@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "@/convex/_generated/api";
 
 export function BackgroundMusicProvider({
@@ -11,6 +11,7 @@ export function BackgroundMusicProvider({
 }) {
   const user = useQuery(api.users.getCurrentUser);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [ambientUnavailable, setAmbientUnavailable] = useState(false);
 
   // Default to true if user is not loaded yet or if preference is missing (though schema default is handled)
   // Logic: if user is undefined (loading), don't play yet? Or play if default is yes?
@@ -21,7 +22,12 @@ export function BackgroundMusicProvider({
   useEffect(() => {
     const handleInteraction = () => {
       // Try resolving autoplay restriction if pending
-      if (audioRef.current && isMusicEnabled && audioRef.current.paused) {
+      if (
+        audioRef.current &&
+        !ambientUnavailable &&
+        isMusicEnabled &&
+        audioRef.current.paused
+      ) {
         audioRef.current.play().catch(() => {});
       }
     };
@@ -35,10 +41,10 @@ export function BackgroundMusicProvider({
       window.removeEventListener("keydown", handleInteraction);
       window.removeEventListener("touchstart", handleInteraction);
     };
-  }, [isMusicEnabled]);
+  }, [ambientUnavailable, isMusicEnabled]);
 
   useEffect(() => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || ambientUnavailable) return;
 
     if (isMusicEnabled) {
       const playPromise = audioRef.current.play();
@@ -52,7 +58,7 @@ export function BackgroundMusicProvider({
     } else {
       audioRef.current.pause();
     }
-  }, [isMusicEnabled]); // Re-run when preference changes
+  }, [ambientUnavailable, isMusicEnabled]); // Re-run when preference changes
 
   useEffect(() => {
     if (audioRef.current) {
@@ -67,6 +73,7 @@ export function BackgroundMusicProvider({
         src="/audio/game-ambient.mp3"
         loop
         preload="auto"
+        onError={() => setAmbientUnavailable(true)}
         className="hidden"
       >
         <track

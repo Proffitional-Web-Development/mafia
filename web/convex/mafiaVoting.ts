@@ -8,6 +8,7 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import { isCoordinatorUser } from "./coordinator";
 import { logGameEvent } from "./gameEvents";
 import { requireAuthUserId } from "./lib/auth";
 
@@ -177,6 +178,20 @@ async function resolveMafiaVoting(
           player: targetName,
         },
       });
+
+      // Check for owner promotion
+      const room = await ctx.db.get(game.roomId);
+      if (room && room.settings.ownerMode === "player") {
+        const p = await ctx.db.get(intendedEliminatedPlayerId as Id<"players">);
+        if (p && p.userId === room.ownerId) {
+          await ctx.db.patch(p._id, { isCoordinator: true });
+          await logGameEvent(ctx, {
+            gameId,
+            eventType: "OWNER_PROMOTED_COORDINATOR",
+            params: {},
+          });
+        }
+      }
     }
   } else {
     // No elimination (no votes) - No log
@@ -333,7 +348,10 @@ export const confirmMafiaVoting = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await requireAuthUserId(ctx);
-    await getMafiaVoterOrThrow(ctx, args.gameId, userId);
+    const isCoord = await isCoordinatorUser(ctx, args.gameId, userId);
+    if (!isCoord) {
+      await getMafiaVoterOrThrow(ctx, args.gameId, userId);
+    }
 
     const resolved = await resolveMafiaVoting(ctx, args.gameId);
 

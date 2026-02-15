@@ -97,6 +97,12 @@ export const createRoom = mutation({
     settings: v.optional(
       v.object({
         mafiaCount: v.optional(v.number()),
+        publicVotingDuration: v.optional(v.union(v.number(), v.null())),
+        abilityPhaseDuration: v.optional(v.union(v.number(), v.null())),
+        mafiaVotingDuration: v.optional(v.union(v.number(), v.null())),
+        ownerMode: v.optional(
+          v.union(v.literal("player"), v.literal("coordinator")),
+        ),
       }),
     ),
   },
@@ -151,6 +157,10 @@ export const createRoom = mutation({
         discussionDuration: DEFAULT_DISCUSSION_DURATION,
         maxPlayers: DEFAULT_MAX_PLAYERS,
         mafiaCount: preliminaryMafiaCount,
+        publicVotingDuration: args.settings?.publicVotingDuration ?? 45,
+        abilityPhaseDuration: args.settings?.abilityPhaseDuration ?? 30,
+        mafiaVotingDuration: args.settings?.mafiaVotingDuration ?? 45,
+        ownerMode: args.settings?.ownerMode ?? "player",
         enabledRoles: { sheikh: true, girl: true, boy: true },
       },
       status: "waiting",
@@ -340,6 +350,12 @@ export const updateRoomSettings = mutation({
       discussionDuration: v.optional(v.number()),
       maxPlayers: v.optional(v.number()),
       mafiaCount: v.optional(v.union(v.number(), v.null())),
+      publicVotingDuration: v.optional(v.union(v.number(), v.null())),
+      abilityPhaseDuration: v.optional(v.union(v.number(), v.null())),
+      mafiaVotingDuration: v.optional(v.union(v.number(), v.null())),
+      ownerMode: v.optional(
+        v.union(v.literal("player"), v.literal("coordinator")),
+      ),
       enabledRoles: v.optional(
         v.object({
           sheikh: v.boolean(),
@@ -368,6 +384,19 @@ export const updateRoomSettings = mutation({
         args.settings.discussionDuration ?? current.discussionDuration,
       maxPlayers: args.settings.maxPlayers ?? current.maxPlayers,
       mafiaCount: requestedMafiaCount,
+      publicVotingDuration:
+        args.settings.publicVotingDuration === undefined
+          ? current.publicVotingDuration
+          : args.settings.publicVotingDuration,
+      abilityPhaseDuration:
+        args.settings.abilityPhaseDuration === undefined
+          ? current.abilityPhaseDuration
+          : args.settings.abilityPhaseDuration,
+      mafiaVotingDuration:
+        args.settings.mafiaVotingDuration === undefined
+          ? current.mafiaVotingDuration
+          : args.settings.mafiaVotingDuration,
+      ownerMode: args.settings.ownerMode ?? current.ownerMode,
       enabledRoles: args.settings.enabledRoles ?? current.enabledRoles,
     };
 
@@ -377,6 +406,23 @@ export const updateRoomSettings = mutation({
         "Discussion duration must be between 10 and 600 seconds.",
       );
     }
+
+    const validateDuration = (
+      label: string,
+      val: number | null | undefined,
+    ) => {
+      if (val === null || val === undefined) return;
+      if (val < 5 || val > 600) {
+        throw new ConvexError(
+          `${label} duration must be between 5 and 600 seconds.`,
+        );
+      }
+    };
+
+    validateDuration("Public Voting", next.publicVotingDuration);
+    validateDuration("Ability Phase", next.abilityPhaseDuration);
+    validateDuration("Mafia Voting", next.mafiaVotingDuration);
+
     if (
       next.maxPlayers < MIN_PLAYERS ||
       next.maxPlayers > ABSOLUTE_MAX_PLAYERS
@@ -501,9 +547,16 @@ export const startGame = mutation({
     }
 
     const members = await getRoomMembers(ctx, args.roomId);
-    if (members.length < MIN_PLAYERS) {
+
+    // If owner is coordinator, they don't count as a player
+    const isCoordinatorMode = room.settings.ownerMode === "coordinator";
+    const playingMembers = isCoordinatorMode
+      ? members.filter(m => m.userId !== room.ownerId)
+      : members;
+
+    if (playingMembers.length < MIN_PLAYERS) {
       throw new ConvexError(
-        `At least ${MIN_PLAYERS} players are required to start.`,
+        `At least ${MIN_PLAYERS} players are required to start${isCoordinatorMode ? " (excluding coordinator)" : ""}.`,
       );
     }
 
@@ -511,7 +564,7 @@ export const startGame = mutation({
     if (room.settings.mafiaCount !== undefined) {
       const validation = validateMafiaCount(
         room.settings.mafiaCount,
-        members.length,
+        playingMembers.length,
       );
       if (!validation.valid) {
         mafiaCountReset = true;
@@ -545,7 +598,7 @@ export const startGame = mutation({
     });
 
     // Create player records (role = "citizen" placeholder — distributeCards sets real roles)
-    for (const member of members) {
+    for (const member of playingMembers) {
       await ctx.db.insert("players", {
         gameId,
         userId: member.userId,
@@ -676,7 +729,7 @@ export const getRoomState = query({
       return {
         userId: m.userId,
         username:
-          user?.displayName ?? user?.username ?? user?.name ?? "Unknown",
+          user?.displayName ?? user?.username ?? "Player",
         avatarUrl: user?.image,
         joinedAt: m.joinedAt,
         isOwner: m.userId === room.ownerId,

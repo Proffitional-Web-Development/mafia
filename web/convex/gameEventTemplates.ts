@@ -6,7 +6,8 @@ export type GameEventType =
   | "SHEIKH_INVESTIGATION_MAFIA"
   | "ROUND_END"
   | "VOTE_TIE"
-  | "MAFIA_VOTE_TIE_RANDOM";
+  | "MAFIA_VOTE_TIE_RANDOM"
+  | "OWNER_PROMOTED_COORDINATOR";
 
 export type MemeLevel = "NORMAL" | "FUN" | "CHAOS";
 
@@ -132,6 +133,11 @@ const TEMPLATES: Record<GameEventType, Record<MemeLevel, string[]>> = {
       "events.MAFIA_VOTE_TIE_RANDOM.chaos.2",
       "events.MAFIA_VOTE_TIE_RANDOM.chaos.3",
     ],
+  },
+  OWNER_PROMOTED_COORDINATOR: {
+    NORMAL: ["events.OWNER_PROMOTED_COORDINATOR.normal"],
+    FUN: ["events.OWNER_PROMOTED_COORDINATOR.fun"],
+    CHAOS: ["events.OWNER_PROMOTED_COORDINATOR.chaos"],
   },
 };
 
