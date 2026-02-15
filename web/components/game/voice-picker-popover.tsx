@@ -74,7 +74,7 @@ export function VoicePickerPopover({
           gameId,
           channel,
           voiceClipKey: key,
-          anonymous,
+          anonymous: anonymous || undefined,
         });
         onClose();
       } catch {

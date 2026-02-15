@@ -67,7 +67,7 @@ export function TemplatePickerPopover({
             channel,
             templateKey: key,
             templateParams: {},
-            anonymous,
+            anonymous: anonymous || undefined,
           });
           onClose();
         } catch {
@@ -90,7 +90,7 @@ export function TemplatePickerPopover({
           channel,
           templateKey: selectedTemplateKey,
           templateParams: { player: username },
-          anonymous,
+          anonymous: anonymous || undefined,
         });
         onClose();
       } catch {

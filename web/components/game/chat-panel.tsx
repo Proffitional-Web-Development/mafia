@@ -446,7 +446,7 @@ export function ChatPanel({
             channel={channel}
             players={templatePlayers}
             onClose={() => setTemplatePickerOpen(false)}
-            anonymous={isAnonymous}
+            anonymous={effectiveAnonymous}
           />
         )}
 
@@ -455,7 +455,7 @@ export function ChatPanel({
             gameId={gameId}
             channel={channel}
             onClose={() => setVoicePickerOpen(false)}
-            anonymous={isAnonymous}
+            anonymous={effectiveAnonymous}
           />
         )}
 
